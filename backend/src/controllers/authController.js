@@ -13,7 +13,28 @@ const generateToken = (user) => {
 // @access Public
 export const register = async (req, res) => {
   try {
-    const { name, email, phone, password, role } = req.body;
+    const { name, email, phone, password } = req.body;
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ message: "Invalid email format" });
+    }
+
+    // Validate phone format
+    const phoneRegex = /^\d{10}$/;
+    if (!phoneRegex.test(phone)) {
+      return res
+        .status(400)
+        .json({ message: "Phone number must be exactly 10 digits" });
+    }
+
+    // Validate password length (minimum 6 characters)
+    if (password && !/^.{6,}$/.test(password)) {
+      return res
+        .status(400)
+        .json({ message: "Password must be at least 6 characters" });
+    }
 
     const existingEmailUser = await User.findOne({ email });
     if (existingEmailUser)
@@ -23,12 +44,10 @@ export const register = async (req, res) => {
     if (existingPhoneUser)
       return res.status(400).json({ message: "Phone number already in use" });
 
-    const user = await User.create({ name, email, phone, password, role });
+    const user = await User.create({ name, email, phone, password });
 
-    const token = generateToken(user);
     res.status(201).json({
       message: "User registered successfully",
-      token,
     });
   } catch (err) {
     res.status(500).json({ message: "Server error", error: err.message });
