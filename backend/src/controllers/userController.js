@@ -33,7 +33,7 @@ export const updateUser = async (req, res) => {
 
 // @desc   Logout user
 // @route  POST /api/auth/logout
-// @access Public (client just deletes token)
+// @access Protected
 export const logout = (req, res) => {
   res
     .status(200)
