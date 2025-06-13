@@ -15,9 +15,13 @@ export const register = async (req, res) => {
   try {
     const { name, email, phone, password, role } = req.body;
 
-    const existingUser = await User.findOne({ email });
-    if (existingUser)
+    const existingEmailUser = await User.findOne({ email });
+    if (existingEmailUser)
       return res.status(400).json({ message: "Email already in use" });
+
+    const existingPhoneUser = await User.findOne({ phone });
+    if (existingPhoneUser)
+      return res.status(400).json({ message: "Phone number already in use" });
 
     const user = await User.create({ name, email, phone, password, role });
 
@@ -31,14 +35,24 @@ export const register = async (req, res) => {
   }
 };
 
-// @desc   Login user
+// @desc   Login user with email or phone
 // @route  POST /api/auth/login
 // @access Public
 export const login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { identifier, password } = req.body; // use "identifier" instead of just email
 
-    const user = await User.findOne({ email });
+    if (!identifier || !password) {
+      return res
+        .status(400)
+        .json({ message: "Please provide email/phone and password" });
+    }
+
+    // Try finding the user by email or phone
+    const user = await User.findOne({
+      $or: [{ email: identifier }, { phone: identifier }],
+    });
+
     if (!user) return res.status(401).json({ message: "Invalid credentials" });
 
     const isMatch = await user.comparePassword(password);
