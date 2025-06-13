@@ -30,12 +30,3 @@ export const updateUser = async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
-
-// @desc   Logout user
-// @route  POST /api/auth/logout
-// @access Protected
-export const logout = (req, res) => {
-  res
-    .status(200)
-    .json({ message: "Logout successful — delete token on client" });
-};
