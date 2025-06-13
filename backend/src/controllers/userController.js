@@ -1,7 +1,7 @@
 import User from "../models/User.js";
 
 // @desc   Update user profile
-// @route  PUT /api/users/update
+// @route  PATCH /api/users/update
 // @access Protected
 export const updateUser = async (req, res) => {
   try {
