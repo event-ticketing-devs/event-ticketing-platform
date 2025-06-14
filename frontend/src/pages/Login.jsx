@@ -7,18 +7,23 @@ export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
+  const [loading, setLoading] = useState(false);
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+    setLoading(true);
     try {
       const user = await loginUser(identifier, password);
       login(user);
       navigate("/dashboard");
     } catch (err) {
       setError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -48,8 +53,14 @@ export default function Login() {
             <span className="block sm:inline ml-2">{error}</span>
           </div>
         )}
-        <button className="w-full bg-blue-600 text-white py-2 rounded">
-          Login
+        <button
+          type="submit"
+          disabled={loading}
+          className={`w-full py-2 rounded text-white ${
+            loading ? "bg-blue-300 cursor-not-allowed" : "bg-blue-600"
+          }`}
+        >
+          {loading ? "Logging in..." : "Login"}
         </button>
       </form>
     </div>
