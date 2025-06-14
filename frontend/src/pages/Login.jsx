@@ -46,12 +46,6 @@ const Login = () => {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        {error && (
-          <div className="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-            <strong className="font-bold">Error:</strong>
-            <span className="block sm:inline ml-2">{error}</span>
-          </div>
-        )}
         <button
           type="submit"
           disabled={loading}

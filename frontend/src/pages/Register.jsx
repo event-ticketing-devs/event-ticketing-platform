@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { registerUser } from "../services/authService";
 
@@ -9,6 +9,7 @@ const Register = () => {
     email: "",
     phone: "",
     password: "",
+    confirmPassword: "",
   });
   const [loading, setLoading] = useState(false);
 
@@ -20,9 +21,16 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (form.password !== form.confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+
     setLoading(true);
     try {
-      await registerUser(form);
+      const { confirmPassword, ...userData } = form; // exclude confirmPassword
+      await registerUser(userData);
       toast.success("Registered successfully! Please login.");
       navigate("/login");
     } catch (err) {
@@ -72,6 +80,15 @@ const Register = () => {
           className="w-full border p-2 rounded"
           required
         />
+        <input
+          name="confirmPassword"
+          type="password"
+          value={form.confirmPassword}
+          onChange={handleChange}
+          placeholder="Confirm Password"
+          className="w-full border p-2 rounded"
+          required
+        />
 
         <button
           type="submit"
@@ -80,14 +97,14 @@ const Register = () => {
             loading ? "bg-blue-400 cursor-not-allowed" : "bg-blue-600"
           }`}
         >
-          {loading ? "Signing Up..." : "Sign Up"}
+          {loading ? "Registering..." : "Sign Up"}
         </button>
 
         <p className="text-sm text-center">
           Already have an account?{" "}
-          <Link to="/login" className="text-blue-600 hover:underline">
+          <a href="/login" className="text-blue-600 hover:underline">
             Log in
-          </Link>
+          </a>
         </p>
       </form>
     </div>
