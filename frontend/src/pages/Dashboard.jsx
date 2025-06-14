@@ -15,16 +15,6 @@ export default function Dashboard() {
         <li>
           <strong>Phone:</strong> {currentUser.phone}
         </li>
-        <li>
-          <strong>Role:</strong> {currentUser.role}
-        </li>
-        <li>
-          <strong>Verified:</strong> {currentUser.isVerified ? "Yes" : "No"}
-        </li>
-        <li>
-          <strong>Last Login:</strong>{" "}
-          {new Date(currentUser.lastLogin).toLocaleString()}
-        </li>
       </ul>
       <button
         onClick={logout}

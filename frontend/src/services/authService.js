@@ -1,16 +1,42 @@
-import axios from "axios";
+// src/services/authService.js
+import apiClient from "../api/apiClient";
 
-// Simulate login
-export const loginUser = async (email, password) => {
-  const res = await axios.get("/mock/users.json");
-  const user = res.data.find(
-    (u) => u.email === email && u.password === password
-  );
+export const loginUser = async (identifier, password) => {
+  try {
+    const response = await apiClient.post("/auth/login", {
+      identifier,
+      password,
+    });
+    const token = response.data.token;
 
-  if (!user) throw new Error("Invalid credentials");
-  if (!user.isVerified) throw new Error("Account not verified");
+    // Decode token to get user data (or call profile route)
+    const userProfile = await getProfile(token);
 
-  // Simulate updating lastLogin
-  user.lastLogin = new Date().toISOString();
-  return user;
+    return {
+      ...userProfile,
+      token,
+    };
+  } catch (error) {
+    throw new Error(
+      error?.response?.data?.message || "Login failed. Please try again."
+    );
+  }
+};
+
+export const getProfile = async (token) => {
+  try {
+    const response = await apiClient.get("/users/profile", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return {
+      ...response.data.user,
+      token,
+    };
+  } catch (error) {
+    throw new Error(
+      error?.response?.data?.message || "Failed to fetch user profile."
+    );
+  }
 };
