@@ -41,3 +41,18 @@ export const updateProfile = async (formData) => {
   const response = await apiClient.patch("/users/update", formData);
   return response.data.user; // updated user object
 };
+
+export const deleteAccount = async () => {
+  try {
+    const response = await apiClient.delete("/users/delete", {
+      headers: {
+        Authorization: `Bearer ${
+          JSON.parse(localStorage.getItem("user")).token
+        }`,
+      },
+    });
+    return response.data;
+  } catch (err) {
+    throw new Error(err.response?.data?.message || "Account deletion failed");
+  }
+};
