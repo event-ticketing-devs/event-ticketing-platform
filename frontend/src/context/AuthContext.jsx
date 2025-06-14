@@ -1,51 +1,44 @@
-// src/context/AuthContext.js
 import { createContext, useContext, useState, useEffect } from "react";
-import apiClient from "../api/apiClient";
-import { getProfile } from "../services/authService";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
-  const [loading, setLoading] = useState(true); // prevent flicker
+  const [loading, setLoading] = useState(true); // NEW
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-
-    if (token) {
-      apiClient.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-
-      getProfile()
-        .then((user) => {
-          setCurrentUser({ ...user, token });
-        })
-        .catch((err) => {
-          console.error("Invalid token or failed to fetch profile:", err);
-          localStorage.removeItem("token");
-          delete apiClient.defaults.headers.common["Authorization"];
-        })
-        .finally(() => setLoading(false));
-    } else {
-      setLoading(false);
+    try {
+      const stored = localStorage.getItem("user");
+      if (stored) {
+        setCurrentUser(JSON.parse(stored));
+      }
+    } catch (err) {
+      console.error("Failed to parse user from localStorage:", err);
     }
+    setLoading(false);
   }, []);
 
   const login = (user) => {
-    const { token, ...userInfo } = user;
-    localStorage.setItem("token", token);
-    apiClient.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-    setCurrentUser({ ...userInfo, token });
+    localStorage.setItem("user", JSON.stringify(user));
+    setCurrentUser(user);
   };
 
   const logout = () => {
-    localStorage.removeItem("token");
-    delete apiClient.defaults.headers.common["Authorization"];
+    localStorage.removeItem("user");
     setCurrentUser(null);
   };
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-lg font-semibold">Loading...</p>
+      </div>
+    );
+  }
+
   return (
     <AuthContext.Provider value={{ currentUser, login, logout }}>
-      {!loading && children}
+      {children}
     </AuthContext.Provider>
   );
 };
