@@ -1,39 +1,51 @@
-import { createContext, useContext, useState } from "react";
+// src/context/AuthContext.js
+import { createContext, useContext, useState, useEffect } from "react";
 import apiClient from "../api/apiClient";
+import { getProfile } from "../services/authService";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [currentUser, setCurrentUser] = useState(() => {
-    try {
-      const stored = localStorage.getItem("user");
-      const parsed = stored ? JSON.parse(stored) : null;
-      if (parsed?.token) {
-        apiClient.defaults.headers.common[
-          "Authorization"
-        ] = `Bearer ${parsed.token}`;
-      }
-      return parsed;
-    } catch (err) {
-      return null;
+  const [currentUser, setCurrentUser] = useState(null);
+  const [loading, setLoading] = useState(true); // prevent flicker
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (token) {
+      apiClient.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
+      getProfile()
+        .then((user) => {
+          setCurrentUser({ ...user, token });
+        })
+        .catch((err) => {
+          console.error("Invalid token or failed to fetch profile:", err);
+          localStorage.removeItem("token");
+          delete apiClient.defaults.headers.common["Authorization"];
+        })
+        .finally(() => setLoading(false));
+    } else {
+      setLoading(false);
     }
-  });
+  }, []);
 
   const login = (user) => {
-    localStorage.setItem("user", JSON.stringify(user));
-    apiClient.defaults.headers.common["Authorization"] = `Bearer ${user.token}`;
-    setCurrentUser(user);
+    const { token, ...userInfo } = user;
+    localStorage.setItem("token", token);
+    apiClient.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    setCurrentUser({ ...userInfo, token });
   };
 
   const logout = () => {
-    localStorage.removeItem("user");
+    localStorage.removeItem("token");
     delete apiClient.defaults.headers.common["Authorization"];
     setCurrentUser(null);
   };
 
   return (
     <AuthContext.Provider value={{ currentUser, login, logout }}>
-      {children}
+      {!loading && children}
     </AuthContext.Provider>
   );
 };

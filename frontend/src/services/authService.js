@@ -7,10 +7,14 @@ export const loginUser = async (identifier, password) => {
       identifier,
       password,
     });
+
     const token = response.data.token;
 
-    // Decode token to get user data (or call profile route)
-    const userProfile = await getProfile(token);
+    // Set token globally
+    apiClient.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
+    // Fetch user profile after setting global header
+    const userProfile = await getProfile();
 
     return {
       ...userProfile,
@@ -23,17 +27,10 @@ export const loginUser = async (identifier, password) => {
   }
 };
 
-export const getProfile = async (token) => {
+export const getProfile = async () => {
   try {
-    const response = await apiClient.get("/users/profile", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    return {
-      ...response.data.user,
-      token,
-    };
+    const response = await apiClient.get("/users/profile");
+    return response.data.user;
   } catch (error) {
     throw new Error(
       error?.response?.data?.message || "Failed to fetch user profile."
