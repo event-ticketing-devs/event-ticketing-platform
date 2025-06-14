@@ -1,7 +1,8 @@
+// src/api/apiClient.js
 import axios from "axios";
 
 const apiClient = axios.create({
-  baseURL: "/api", // Base URL for all API requests
+  baseURL: "/api",
   headers: {
     "Content-Type": "application/json",
   },
@@ -9,6 +10,13 @@ const apiClient = axios.create({
 
 apiClient.interceptors.request.use(
   (config) => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      const { token } = JSON.parse(storedUser);
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+    }
     return config;
   },
   (error) => Promise.reject(error)

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
 import { loginUser } from "../services/authService";
 
@@ -14,16 +15,14 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
-    setLoading(true);
     try {
       const user = await loginUser(identifier, password);
       login(user);
+      toast.success("Login successful");
       navigate("/dashboard");
     } catch (err) {
       setError(err.message);
-    } finally {
-      setLoading(false);
+      toast.error(err.message || "Login failed");
     }
   };
 

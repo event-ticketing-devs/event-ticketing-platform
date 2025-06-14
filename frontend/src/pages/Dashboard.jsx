@@ -1,3 +1,4 @@
+import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
 
 export default function Dashboard() {
@@ -17,7 +18,10 @@ export default function Dashboard() {
         </li>
       </ul>
       <button
-        onClick={logout}
+        onClick={() => {
+          logout();
+          toast.success("Logged out");
+        }}
         className="bg-red-500 text-white px-4 py-2 rounded"
       >
         Logout
