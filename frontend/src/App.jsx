@@ -9,6 +9,7 @@ import Profile from "./pages/Profile";
 import ProfileUpdate from "./pages/ProfileUpdate";
 import PrivateRoute from "./components/PrivateRoute";
 import PublicRoute from "./components/PublicRoute";
+import Register from "./pages/Register";
 
 function App() {
   return (
@@ -24,6 +25,14 @@ function App() {
             element={
               <PublicRoute>
                 <Login />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <PublicRoute>
+                <Register />
               </PublicRoute>
             }
           />

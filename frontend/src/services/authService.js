@@ -37,8 +37,8 @@ export const getProfile = async () => {
   }
 };
 
-export const updateProfile = async (formData) => {
-  const response = await apiClient.patch("/users/update", formData);
+export const updateProfile = async (userData) => {
+  const response = await apiClient.patch("/users/update", userData);
   return response.data.user; // updated user object
 };
 
@@ -55,4 +55,9 @@ export const deleteAccount = async () => {
   } catch (err) {
     throw new Error(err.response?.data?.message || "Account deletion failed");
   }
+};
+
+export const registerUser = async (userData) => {
+  const { data } = await apiClient.post("/auth/register", userData);
+  return data;
 };
