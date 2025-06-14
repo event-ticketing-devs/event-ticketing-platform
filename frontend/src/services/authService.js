@@ -1,4 +1,3 @@
-// src/services/authService.js
 import apiClient from "../api/apiClient";
 
 export const loginUser = async (identifier, password) => {
@@ -36,4 +35,9 @@ export const getProfile = async () => {
       error?.response?.data?.message || "Failed to fetch user profile."
     );
   }
+};
+
+export const updateProfile = async (formData) => {
+  const response = await apiClient.patch("/users/update", formData);
+  return response.data.user; // updated user object
 };

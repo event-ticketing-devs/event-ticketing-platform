@@ -3,5 +3,5 @@ import { useAuth } from "../context/AuthContext";
 
 export default function PublicRoute({ children }) {
   const { currentUser } = useAuth();
-  return currentUser ? <Navigate to="/dashboard" /> : children;
+  return currentUser ? <Navigate to="/profile" /> : children;
 }

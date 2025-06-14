@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
 import { loginUser } from "../services/authService";
 
-export default function Login() {
+const Login = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -19,7 +19,7 @@ export default function Login() {
       const user = await loginUser(identifier, password);
       login(user);
       toast.success("Login successful");
-      navigate("/dashboard");
+      navigate("/profile");
     } catch (err) {
       setError(err.message);
       toast.error(err.message || "Login failed");
@@ -64,4 +64,6 @@ export default function Login() {
       </form>
     </div>
   );
-}
+};
+
+export default Login;

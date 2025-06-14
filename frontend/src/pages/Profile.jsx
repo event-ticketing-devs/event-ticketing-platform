@@ -1,7 +1,8 @@
 import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
+import { Link } from "react-router-dom";
 
-export default function Dashboard() {
+const Profile = () => {
   const { currentUser, logout } = useAuth();
 
   return (
@@ -17,6 +18,12 @@ export default function Dashboard() {
           <strong>Phone:</strong> {currentUser.phone}
         </li>
       </ul>
+      <Link
+        to="/profile/update"
+        className="text-blue-500 hover:underline mb-4 block"
+      >
+        Update Profile
+      </Link>
       <button
         onClick={() => {
           logout();
@@ -28,4 +35,6 @@ export default function Dashboard() {
       </button>
     </div>
   );
-}
+};
+
+export default Profile;

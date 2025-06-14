@@ -5,7 +5,8 @@ import Home from "./pages/Home";
 import Events from "./pages/Events";
 import Login from "./pages/Login";
 import EventDetails from "./pages/EventDetails";
-import Dashboard from "./pages/Dashboard";
+import Profile from "./pages/Profile";
+import ProfileUpdate from "./pages/ProfileUpdate";
 import PrivateRoute from "./components/PrivateRoute";
 import PublicRoute from "./components/PublicRoute";
 
@@ -27,10 +28,18 @@ function App() {
             }
           />
           <Route
-            path="/dashboard"
+            path="/profile"
             element={
               <PrivateRoute>
-                <Dashboard />
+                <Profile />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/profile/update"
+            element={
+              <PrivateRoute>
+                <ProfileUpdate />
               </PrivateRoute>
             }
           />
