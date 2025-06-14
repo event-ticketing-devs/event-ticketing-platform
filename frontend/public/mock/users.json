@@ -1,0 +1,22 @@
+[
+  {
+    "id": "u1",
+    "name": "John Doe",
+    "email": "user@example.com",
+    "phone": "9876543210",
+    "password": "user123",
+    "role": "user",
+    "isVerified": true,
+    "lastLogin": "2025-06-10T18:45:00Z"
+  },
+  {
+    "id": "o1",
+    "name": "Organizer Dev",
+    "email": "organizer@example.com",
+    "phone": "9012345678",
+    "password": "org123",
+    "role": "organizer",
+    "isVerified": true,
+    "lastLogin": "2025-06-09T12:00:00Z"
+  }
+]

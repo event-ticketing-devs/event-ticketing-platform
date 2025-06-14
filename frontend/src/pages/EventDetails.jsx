@@ -1,4 +1,4 @@
-const Event = () => {
+const EventDetails = () => {
   return (
     <div>
       <div className="flex flex-col items-center justify-center h-screen">
@@ -12,4 +12,4 @@ const Event = () => {
   );
 };
 
-export default Event;
+export default EventDetails;
