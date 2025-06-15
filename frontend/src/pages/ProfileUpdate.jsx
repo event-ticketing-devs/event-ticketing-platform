@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { updateProfile } from "../services/authService";
 import { useAuth } from "../context/AuthContext";
+import toast from "react-hot-toast";
 
 const ProfileUpdate = () => {
   const { currentUser, login } = useAuth();
@@ -14,8 +15,6 @@ const ProfileUpdate = () => {
     password: "",
   });
 
-  const [message, setMessage] = useState("");
-
   const handleChange = (e) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
@@ -23,19 +22,22 @@ const ProfileUpdate = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const updatedUser = await updateProfile(formData);
-      login({ ...currentUser, ...updatedUser }); // Update AuthContext
-      setMessage("Profile updated successfully!");
+      const filteredData = Object.fromEntries(
+        Object.entries(formData).filter(([_, value]) => value.trim() !== "")
+      );
+
+      const updatedUser = await updateProfile(filteredData);
+      login({ ...currentUser, ...updatedUser });
+      toast.success("Profile updated successfully!");
       setTimeout(() => navigate("/profile"), 1500);
     } catch (error) {
-      setMessage(error.response?.data?.message || "Update failed");
+      toast.error(error.response?.data?.message || "Update failed");
     }
   };
 
   return (
     <div className="max-w-xl mx-auto p-6">
       <h2 className="text-2xl font-semibold mb-4">Update Profile</h2>
-      {message && <p className="mb-4 text-sm text-green-600">{message}</p>}
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
           name="name"
