@@ -12,14 +12,16 @@ const bookingSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    noOfSeats: {
-      type: Number,
-      required: true,
-      min: 1,
+    noOfSeats: { type: Number, required: true },
+    priceAtBooking: { type: Number, required: true },
+    refundStatus: {
+      type: String,
+      enum: ["none", "pending", "processed"],
+      default: "none",
     },
+    cancelledByEvent: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
 
-const Booking = mongoose.model("Booking", bookingSchema);
-export default Booking;
+export default mongoose.model("Booking", bookingSchema);
