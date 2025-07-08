@@ -20,34 +20,46 @@ export const createEvent = async (req, res) => {
 
     // Validate required fields
     const missingFields = [];
-    if (!title) missingFields.push('title');
-    if (!description) missingFields.push('description');
-    if (!date) missingFields.push('date');
-    if (!categoryId) missingFields.push('categoryId');
-    if (!venue) missingFields.push('venue');
-    if (price == null) missingFields.push('price');
-    if (totalSeats == null) missingFields.push('totalSeats');
+    if (!title) missingFields.push("title");
+    if (!description) missingFields.push("description");
+    if (!date) missingFields.push("date");
+    if (!categoryId) missingFields.push("categoryId");
+    if (!venue) missingFields.push("venue");
+    if (price == null) missingFields.push("price");
+    if (totalSeats == null) missingFields.push("totalSeats");
     if (missingFields.length > 0) {
-      return res.status(400).json({ message: `Missing required field(s): ${missingFields.join(', ')}` });
+      return res.status(400).json({
+        message: `Missing required field(s): ${missingFields.join(", ")}`,
+      });
     }
 
-    // Check for duplicate event title
-    const existingEvent = await Event.findOne({ title });
+    // Check for duplicate event title (case-insensitive)
+    const existingEvent = await Event.findOne({
+      title: { $regex: `^${title}$`, $options: "i" },
+    });
     if (existingEvent) {
-      return res.status(400).json({ message: "Event with same title already exists" });
+      return res
+        .status(400)
+        .json({ message: "Event with same title already exists" });
     }
 
     // Validate price and totalSeats
     if (isNaN(price) || price < 0) {
-      return res.status(400).json({ message: "Price must be a non-negative number" });
+      return res
+        .status(400)
+        .json({ message: "Price must be a non-negative number" });
     }
     if (!Number.isInteger(totalSeats) || totalSeats <= 0) {
-      return res.status(400).json({ message: "Total seats must be a positive integer" });
+      return res
+        .status(400)
+        .json({ message: "Total seats must be a positive integer" });
     }
 
     // Prevent creating events with past dates
     if (new Date(date) < new Date()) {
-      return res.status(400).json({ message: "Event date must be in the future" });
+      return res
+        .status(400)
+        .json({ message: "Event date must be in the future" });
     }
 
     const event = await Event.create({
@@ -120,20 +132,38 @@ export const updateEvent = async (req, res) => {
       return res.status(400).json({ message: "Cannot update past events" });
     }
 
-
     // Validate fields if present in update
-    if (Object.prototype.hasOwnProperty.call(req.body, 'price')) {
+    if (Object.prototype.hasOwnProperty.call(req.body, "price")) {
       if (isNaN(req.body.price) || req.body.price < 0) {
-        return res.status(400).json({ message: "Price must be a non-negative number" });
+        return res
+          .status(400)
+          .json({ message: "Price must be a non-negative number" });
       }
     }
-    if (Object.prototype.hasOwnProperty.call(req.body, 'totalSeats')) {
+    if (Object.prototype.hasOwnProperty.call(req.body, "totalSeats")) {
       if (!Number.isInteger(req.body.totalSeats) || req.body.totalSeats <= 0) {
-        return res.status(400).json({ message: "Total seats must be a positive integer" });
+        return res
+          .status(400)
+          .json({ message: "Total seats must be a positive integer" });
+      }
+      // Check if reducing totalSeats below already booked seats
+      const totalBooked = await Booking.aggregate([
+        { $match: { eventId: event._id } },
+        { $group: { _id: null, total: { $sum: "$noOfSeats" } } },
+      ]);
+      const bookedSeats = totalBooked[0]?.total || 0;
+      if (req.body.totalSeats < bookedSeats) {
+        return res
+          .status(400)
+          .json({
+            message: `Cannot set totalSeats below already booked seats (${bookedSeats})`,
+          });
       }
     }
     if (req.body.date && new Date(req.body.date) < new Date()) {
-      return res.status(400).json({ message: "Event date must be in the future" });
+      return res
+        .status(400)
+        .json({ message: "Event date must be in the future" });
     }
 
     const prevDate = event.date;
@@ -147,7 +177,7 @@ export const updateEvent = async (req, res) => {
       "venue",
       "price",
       "totalSeats",
-      "photo"
+      "photo",
     ];
     let isDifferent = false;
     for (const field of updatableFields) {
@@ -160,7 +190,9 @@ export const updateEvent = async (req, res) => {
       }
     }
     if (!isDifferent) {
-      return res.status(400).json({ message: "No changes detected. Event not updated." });
+      return res
+        .status(400)
+        .json({ message: "No changes detected. Event not updated." });
     }
 
     Object.assign(event, req.body);

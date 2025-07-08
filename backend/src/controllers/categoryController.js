@@ -1,5 +1,5 @@
-// controllers/categoryController.js
 import Category from "../models/Category.js";
+import Event from "../models/Event.js";
 
 // @desc    Create a new category
 // @route   POST /api/categories
@@ -46,6 +46,22 @@ export const getCategories = async (req, res) => {
 // @route   PATCH /api/categories/:id
 // @access  Admin Only
 export const updateCategory = async (req, res) => {
+  // Check for duplicate category name (case-insensitive) if name is being updated
+  if (
+    Object.prototype.hasOwnProperty.call(req.body, "name") &&
+    req.body.name &&
+    req.body.name !== existingCategory.name
+  ) {
+    const duplicate = await Category.findOne({
+      name: { $regex: `^${req.body.name}$`, $options: "i" },
+      _id: { $ne: req.params.id },
+    });
+    if (duplicate) {
+      return res
+        .status(400)
+        .json({ message: "Category with the same name already exists" });
+    }
+  }
   try {
     // Find the existing category first
     const existingCategory = await Category.findById(req.params.id);
@@ -76,7 +92,9 @@ export const updateCategory = async (req, res) => {
       }
     }
     if (!isDifferent) {
-      return res.status(400).json({ message: "No changes detected. Category not updated." });
+      return res
+        .status(400)
+        .json({ message: "No changes detected. Category not updated." });
     }
 
     const category = await Category.findByIdAndUpdate(req.params.id, req.body, {
@@ -93,10 +111,19 @@ export const updateCategory = async (req, res) => {
 // @access  Admin Only
 export const deleteCategory = async (req, res) => {
   try {
-    const category = await Category.findByIdAndDelete(req.params.id);
+    const category = await Category.findById(req.params.id);
     if (!category)
       return res.status(404).json({ message: "Category not found" });
 
+    // Check if any events exist with this category
+    const hasEvents = await Event.exists({ categoryId: category._id });
+    if (hasEvents) {
+      return res
+        .status(400)
+        .json({ message: "Cannot delete category with existing events" });
+    }
+
+    await category.deleteOne();
     res.json({ message: "Category deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });

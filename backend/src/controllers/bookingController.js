@@ -1,0 +1,128 @@
+import Booking from "../models/Booking.js";
+import Event from "../models/Event.js";
+
+// @desc Create a new booking
+// @route POST /api/bookings
+// @access Logged-in users
+export const createBooking = async (req, res) => {
+  try {
+    const { eventId, noOfSeats } = req.body;
+    const userId = req.user._id;
+
+    if (!eventId || noOfSeats == null) {
+      return res
+        .status(400)
+        .json({ message: "Event ID and seat count are required" });
+    }
+    if (!Number.isInteger(noOfSeats) || noOfSeats <= 0 || noOfSeats > 10) {
+      return res
+        .status(400)
+        .json({ message: "Seat count must be between 1 and 10" });
+    }
+
+    const event = await Event.findById(eventId);
+    if (!event) return res.status(404).json({ message: "Event not found" });
+
+    if (event.cancelled) {
+      return res.status(400).json({ message: "Cannot book a cancelled event" });
+    }
+
+    if (new Date(event.date) < new Date()) {
+      return res.status(400).json({ message: "Cannot book past events" });
+    }
+
+    const existing = await Booking.findOne({ eventId, userId });
+    if (existing)
+      return res.status(400).json({ message: "You already booked this event" });
+
+    const totalBooked = await Booking.aggregate([
+      { $match: { eventId: event._id } },
+      { $group: { _id: null, total: { $sum: "$noOfSeats" } } },
+    ]);
+    const bookedSeats = totalBooked[0]?.total || 0;
+
+    if (bookedSeats + noOfSeats > event.totalSeats) {
+      return res.status(400).json({ message: "Not enough seats available" });
+    }
+
+    const booking = await Booking.create({
+      eventId,
+      userId,
+      noOfSeats,
+      priceAtBooking: event.price,
+    });
+
+    res.status(201).json(booking);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc Cancel a booking
+// @route DELETE /api/bookings/:id
+// @access Booking owner only
+export const cancelBooking = async (req, res) => {
+  try {
+    const booking = await Booking.findById(req.params.id);
+    if (!booking) return res.status(404).json({ message: "Booking not found" });
+
+    if (booking.userId.toString() !== req.user._id.toString()) {
+      return res
+        .status(403)
+        .json({ message: "Not authorized to cancel this booking" });
+    }
+
+    const event = await Event.findById(booking.eventId);
+    if (event && new Date(event.date) < new Date()) {
+      return res
+        .status(400)
+        .json({ message: "Cannot cancel booking for past events" });
+    }
+
+    await booking.deleteOne();
+    res.json({ message: "Booking cancelled successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc Get bookings for logged-in user
+// @route GET /api/bookings/user
+// @access Logged-in users
+export const getUserBookings = async (req, res) => {
+  try {
+    const bookings = await Booking.find({ userId: req.user._id }).populate(
+      "eventId"
+    );
+    res.json(bookings);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc Get bookings for a specific event
+// @route GET /api/bookings/event/:eventId
+// @access Organizer or Admin
+export const getBookingsByEvent = async (req, res) => {
+  try {
+    const event = await Event.findById(req.params.eventId);
+    if (!event) return res.status(404).json({ message: "Event not found" });
+
+    if (
+      event.organizerId.toString() !== req.user._id.toString() &&
+      req.user.role !== "admin"
+    ) {
+      return res
+        .status(403)
+        .json({ message: "Not authorized to view these bookings" });
+    }
+
+    const bookings = await Booking.find({ eventId: event._id }).populate(
+      "userId",
+      "name email"
+    );
+    res.json(bookings);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
