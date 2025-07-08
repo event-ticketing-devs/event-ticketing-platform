@@ -117,6 +117,22 @@ export const getEventById = async (req, res) => {
 // @route   PATCH /api/events/:id
 // @access  Organizer Only
 export const updateEvent = async (req, res) => {
+  // Check for duplicate event title (case-insensitive) if title is being updated
+  if (
+    Object.prototype.hasOwnProperty.call(req.body, "title") &&
+    req.body.title &&
+    req.body.title !== event.title
+  ) {
+    const duplicate = await Event.findOne({
+      title: { $regex: `^${req.body.title}$`, $options: "i" },
+      _id: { $ne: req.params.id },
+    });
+    if (duplicate) {
+      return res
+        .status(400)
+        .json({ message: "Event with same title already exists" });
+    }
+  }
   try {
     const event = await Event.findById(req.params.id);
     if (!event) return res.status(404).json({ message: "Event not found" });
