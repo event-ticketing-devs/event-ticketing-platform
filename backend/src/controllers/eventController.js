@@ -21,7 +21,6 @@ export const createEvent = async (req, res) => {
     // Validate required fields
     const missingFields = [];
     if (!title) missingFields.push("title");
-    if (!description) missingFields.push("description");
     if (!date) missingFields.push("date");
     if (!categoryId) missingFields.push("categoryId");
     if (!venue) missingFields.push("venue");
@@ -122,7 +121,9 @@ export const updateEvent = async (req, res) => {
     const event = await Event.findById(req.params.id);
     if (!event) return res.status(404).json({ message: "Event not found" });
 
-    if (req.user._id.toString() !== event.organizerId.toString()) {
+    const isOwner = req.user._id.toString() === event.organizerId.toString();
+    const isAdmin = req.user.role === "admin";
+    if (!isOwner && !isAdmin) {
       return res
         .status(403)
         .json({ message: "Not authorized to update this event" });
@@ -153,11 +154,9 @@ export const updateEvent = async (req, res) => {
       ]);
       const bookedSeats = totalBooked[0]?.total || 0;
       if (req.body.totalSeats < bookedSeats) {
-        return res
-          .status(400)
-          .json({
-            message: `Cannot set totalSeats below already booked seats (${bookedSeats})`,
-          });
+        return res.status(400).json({
+          message: `Cannot set totalSeats below already booked seats (${bookedSeats})`,
+        });
       }
     }
     if (req.body.date && new Date(req.body.date) < new Date()) {
@@ -242,12 +241,10 @@ export const deleteEvent = async (req, res) => {
         req.body.cancelledReason || "Cancelled by organizer";
       await event.save();
 
-      const bookings = await Booking.find({ eventId: event._id });
-      for (const booking of bookings) {
-        booking.cancelledByEvent = true;
-        booking.refundStatus = "pending"; // placeholder for future refund processing
-        await booking.save();
-      }
+      await Booking.updateMany(
+        { eventId: event._id },
+        { $set: { cancelledByEvent: true, refundStatus: "pending" } }
+      );
 
       return res.json({
         message: "Event cancelled and refunds marked as pending",
