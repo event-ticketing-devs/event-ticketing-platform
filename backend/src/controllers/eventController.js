@@ -18,6 +18,38 @@ export const createEvent = async (req, res) => {
       photo,
     } = req.body;
 
+    // Validate required fields
+    const missingFields = [];
+    if (!title) missingFields.push('title');
+    if (!description) missingFields.push('description');
+    if (!date) missingFields.push('date');
+    if (!categoryId) missingFields.push('categoryId');
+    if (!venue) missingFields.push('venue');
+    if (price == null) missingFields.push('price');
+    if (totalSeats == null) missingFields.push('totalSeats');
+    if (missingFields.length > 0) {
+      return res.status(400).json({ message: `Missing required field(s): ${missingFields.join(', ')}` });
+    }
+
+    // Check for duplicate event title
+    const existingEvent = await Event.findOne({ title });
+    if (existingEvent) {
+      return res.status(400).json({ message: "Event with same title already exists" });
+    }
+
+    // Validate price and totalSeats
+    if (isNaN(price) || price < 0) {
+      return res.status(400).json({ message: "Price must be a non-negative number" });
+    }
+    if (!Number.isInteger(totalSeats) || totalSeats <= 0) {
+      return res.status(400).json({ message: "Total seats must be a positive integer" });
+    }
+
+    // Prevent creating events with past dates
+    if (new Date(date) < new Date()) {
+      return res.status(400).json({ message: "Event date must be in the future" });
+    }
+
     const event = await Event.create({
       title,
       description,
@@ -88,8 +120,48 @@ export const updateEvent = async (req, res) => {
       return res.status(400).json({ message: "Cannot update past events" });
     }
 
+
+    // Validate fields if present in update
+    if (Object.prototype.hasOwnProperty.call(req.body, 'price')) {
+      if (isNaN(req.body.price) || req.body.price < 0) {
+        return res.status(400).json({ message: "Price must be a non-negative number" });
+      }
+    }
+    if (Object.prototype.hasOwnProperty.call(req.body, 'totalSeats')) {
+      if (!Number.isInteger(req.body.totalSeats) || req.body.totalSeats <= 0) {
+        return res.status(400).json({ message: "Total seats must be a positive integer" });
+      }
+    }
+    if (req.body.date && new Date(req.body.date) < new Date()) {
+      return res.status(400).json({ message: "Event date must be in the future" });
+    }
+
     const prevDate = event.date;
     const prevPrice = event.price;
+
+    const updatableFields = [
+      "title",
+      "description",
+      "date",
+      "categoryId",
+      "venue",
+      "price",
+      "totalSeats",
+      "photo"
+    ];
+    let isDifferent = false;
+    for (const field of updatableFields) {
+      if (
+        Object.prototype.hasOwnProperty.call(req.body, field) &&
+        String(event[field]) !== String(req.body[field])
+      ) {
+        isDifferent = true;
+        break;
+      }
+    }
+    if (!isDifferent) {
+      return res.status(400).json({ message: "No changes detected. Event not updated." });
+    }
 
     Object.assign(event, req.body);
     await event.save();
