@@ -17,11 +17,11 @@ export const createCategory = async (req, res) => {
         .status(400)
         .json({ message: "Category name must be a non-empty string" });
     }
-    // Validate description is a non-empty string
-    if (typeof description !== "string" || description.trim().length === 0) {
+    // Allow description to be optional or empty string
+    if (description != null && typeof description !== "string") {
       return res
         .status(400)
-        .json({ message: "Category description must be a non-empty string" });
+        .json({ message: "Category description must be a string if provided" });
     }
     const existing = await Category.findOne({ name });
     if (existing)
@@ -86,12 +86,14 @@ export const updateCategory = async (req, res) => {
     }
     if (Object.prototype.hasOwnProperty.call(req.body, "description")) {
       if (
-        typeof req.body.description !== "string" ||
-        req.body.description.trim().length === 0
+        req.body.description != null &&
+        typeof req.body.description !== "string"
       ) {
         return res
           .status(400)
-          .json({ message: "Category description must be a non-empty string" });
+          .json({
+            message: "Category description must be a string if provided",
+          });
       }
     }
     // Check if the update data is actually different
