@@ -4,6 +4,7 @@ import apiClient from "../api/apiClient";
 import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
 import ConfirmModal from "../components/ConfirmModal";
+import EventDetailsModal from "../components/EventDetailsModal";
 
 export default function OrganizerDashboard() {
   const { currentUser } = useAuth();
@@ -14,6 +15,7 @@ export default function OrganizerDashboard() {
   const [showModal, setShowModal] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
   const [eventToDelete, setEventToDelete] = useState(null);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
 
   const fetchEvents = async () => {
     try {
@@ -53,6 +55,7 @@ export default function OrganizerDashboard() {
       const res = await apiClient.get(`/bookings/event/${event._id}`);
       setSelectedEvent(event);
       setAttendees(res.data);
+      setShowDetailsModal(true);
     } catch (err) {
       toast.error("Failed to fetch attendees");
     }
@@ -88,7 +91,9 @@ export default function OrganizerDashboard() {
               <div className="flex space-x-2 mt-2">
                 <button
                   onClick={() => navigate(`/events/edit/${event._id}`)}
-                  className="bg-yellow-500 text-white px-3 py-1 rounded"
+                  className={`bg-yellow-500 text-white px-3 py-1 rounded${
+                    event.cancelled ? "" : " cursor-pointer"
+                  }`}
                   disabled={event.cancelled}
                 >
                   Edit
@@ -103,14 +108,14 @@ export default function OrganizerDashboard() {
                 ) : (
                   <button
                     onClick={() => handleDelete(event._id, false)}
-                    className="bg-red-600 text-white px-3 py-1 rounded"
+                    className="bg-red-600 text-white px-3 py-1 rounded cursor-pointer"
                   >
                     Cancel
                   </button>
                 )}
                 <button
                   onClick={() => viewDetails(event)}
-                  className="bg-blue-600 text-white px-3 py-1 rounded"
+                  className="bg-blue-600 text-white px-3 py-1 rounded cursor-pointer"
                 >
                   View Details
                 </button>
@@ -136,31 +141,12 @@ export default function OrganizerDashboard() {
         inputValue={cancelReason}
         setInputValue={setCancelReason}
       />
-
-      {selectedEvent && (
-        <div className="mt-6 p-4 border-t">
-          <h2 className="text-xl font-bold mb-2">
-            {selectedEvent.title} – Details
-          </h2>
-          <p>Date: {new Date(selectedEvent.date).toLocaleString()}</p>
-          <p>Description: {selectedEvent.description}</p>
-          <p>Total Seats: {selectedEvent.totalSeats}</p>
-          <p>Price: ₹{selectedEvent.price}</p>
-
-          <h3 className="mt-4 text-lg font-semibold">Attendees:</h3>
-          {attendees.length === 0 ? (
-            <p>No attendees yet.</p>
-          ) : (
-            <ul className="list-disc pl-6">
-              {attendees.map(({ _id, userId, noOfSeats }) => (
-                <li key={_id}>
-                  {userId.name} ({userId.email}) – Seats: {noOfSeats}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      )}
+      <EventDetailsModal
+        open={showDetailsModal}
+        event={selectedEvent}
+        attendees={attendees}
+        onClose={() => setShowDetailsModal(false)}
+      />
     </div>
   );
 }

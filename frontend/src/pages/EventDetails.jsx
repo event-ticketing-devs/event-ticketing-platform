@@ -101,6 +101,13 @@ export default function EventDetailsPage() {
 
   return (
     <div className="p-4 max-w-3xl mx-auto">
+      {event.photo && (
+        <img
+          src={event.photo}
+          alt={event.title}
+          className="w-full max-h-80 object-cover rounded mb-4 border"
+        />
+      )}
       <h1 className="text-3xl font-bold mb-2">{event.title}</h1>
       <p className="text-gray-600 mb-2">
         {format(new Date(event.date), "PPpp")}
