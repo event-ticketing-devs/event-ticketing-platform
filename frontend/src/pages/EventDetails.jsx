@@ -1,15 +1,141 @@
-const EventDetails = () => {
+// src/pages/EventDetailsPage.jsx
+import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+import apiClient from "../api/apiClient";
+import { useAuth } from "../context/AuthContext";
+import { format } from "date-fns";
+
+export default function EventDetailsPage() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { currentUser } = useAuth();
+
+  const [event, setEvent] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [alreadyBooked, setAlreadyBooked] = useState(false);
+  const [userBookingId, setUserBookingId] = useState(null);
+  const [availableSeats, setAvailableSeats] = useState(0);
+
+  const fetchEvent = async () => {
+    try {
+      const res = await apiClient.get(`/events/${id}`);
+      setEvent(res.data);
+
+      // Always fetch bookings for the event to calculate available seats
+      let totalBooked = 0;
+      let alreadyBooked = false;
+      let bookingId = null;
+      let bookingRes = { data: [] };
+      try {
+        bookingRes = await apiClient.get(`/bookings/event/${id}`);
+        totalBooked = bookingRes.data.reduce((sum, b) => sum + b.noOfSeats, 0);
+      } catch (e) {
+        // If not authorized, just skip booking details, but still show available seats as 0 booked
+        totalBooked = 0;
+      }
+
+      if (currentUser) {
+        // For all users, check if they have a booking for this event
+        const userBooking = bookingRes.data.find(
+          (b) => b.userId && b.userId._id === currentUser._id
+        );
+        alreadyBooked = !!userBooking;
+        bookingId = userBooking ? userBooking._id : null;
+        // For normal users, fallback to /bookings/user if not authorized for /bookings/event/:id
+        if (!userBooking && bookingRes.data.length === 0) {
+          try {
+            const userBookingsRes = await apiClient.get("/bookings/user");
+            const userBooking2 = userBookingsRes.data.find(
+              (b) => b.eventId && b.eventId._id === id
+            );
+            alreadyBooked = !!userBooking2;
+            bookingId = userBooking2 ? userBooking2._id : null;
+          } catch {}
+        }
+      }
+
+      setAvailableSeats(res.data.totalSeats - totalBooked);
+      setAlreadyBooked(alreadyBooked);
+      setUserBookingId(bookingId);
+      setLoading(false);
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to fetch event");
+      setLoading(false);
+    }
+  };
+
+  const handleBooking = async () => {
+    if (!currentUser) {
+      toast("Please log in to book a seat", { icon: "🔒" });
+      return navigate("/login");
+    }
+
+    toast
+      .promise(apiClient.post("/bookings", { eventId: id, noOfSeats: 1 }), {
+        loading: "Booking seat...",
+        success: "Booking successful!",
+        error: (err) => err.response?.data?.message || "Booking failed",
+      })
+      .then(fetchEvent);
+  };
+
+  const handleUnregister = async () => {
+    if (!userBookingId) return toast.error("No booking found");
+    try {
+      toast
+        .promise(apiClient.delete(`/bookings/${userBookingId}`), {
+          loading: "Cancelling booking...",
+          success: "Booking cancelled",
+          error: (err) => err.response?.data?.message || "Unregister failed",
+        })
+        .then(fetchEvent);
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Unregister failed");
+    }
+  };
+
+  useEffect(() => {
+    fetchEvent();
+    // eslint-disable-next-line
+  }, [id]);
+
+  if (loading) return <p className="p-4">Loading...</p>;
+  if (error) return <p className="p-4 text-red-500">{error}</p>;
+
   return (
-    <div>
-      <div className="flex flex-col items-center justify-center h-screen">
-        <h2 className="text-2xl font-bold mb-4">Event Details</h2>
-        {/* Placeholder for event details */}
-        <p className="text-gray-500">
-          No event details available at the moment.
-        </p>
-      </div>
+    <div className="p-4 max-w-3xl mx-auto">
+      <h1 className="text-3xl font-bold mb-2">{event.title}</h1>
+      <p className="text-gray-600 mb-2">
+        {format(new Date(event.date), "PPpp")}
+      </p>
+      <p className="mb-4">{event.description}</p>
+      <p className="mb-2">Price: ₹{event.price}</p>
+      <p className="mb-4">Available Seats: {availableSeats}</p>
+
+      {!currentUser ? (
+        <button
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          onClick={handleBooking}
+        >
+          Login to Book
+        </button>
+      ) : alreadyBooked ? (
+        <button
+          onClick={handleUnregister}
+          className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+        >
+          Unregister
+        </button>
+      ) : (
+        <button
+          onClick={handleBooking}
+          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+        >
+          Book Now
+        </button>
+      )}
     </div>
   );
-};
-
-export default EventDetails;
+}
