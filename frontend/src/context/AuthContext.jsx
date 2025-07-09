@@ -4,7 +4,7 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
-  const [loading, setLoading] = useState(true); // NEW
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     try {
@@ -13,6 +13,7 @@ export const AuthProvider = ({ children }) => {
         setCurrentUser(JSON.parse(stored));
       }
     } catch (err) {
+      // TODO: Handle JSON parsing error
       console.error("Failed to parse user from localStorage:", err);
     }
     setLoading(false);

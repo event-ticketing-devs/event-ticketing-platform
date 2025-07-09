@@ -59,7 +59,7 @@ export default function EventDetailsPage() {
 
   const handleBooking = async () => {
     if (!currentUser) {
-      toast("Please log in to book a seat", { icon: "🔒" });
+      toast("Please log in to book", { icon: "🔒" });
       return navigate("/login");
     }
     // Placeholder for payment gateway integration

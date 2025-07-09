@@ -3,7 +3,7 @@ import { useAuth } from "../context/AuthContext";
 
 export default function Navbar() {
   const { currentUser, logout } = useAuth();
-  console.log("Current User:", currentUser);
+
   return (
     <nav className="backdrop-blur bg-white/80 border-b border-slate-200 text-slate-800 px-6 py-3 flex justify-between items-center shadow-lg rounded-b-xl sticky top-0 z-40">
       <div className="flex items-center gap-6">
@@ -29,7 +29,9 @@ export default function Navbar() {
             Dashboard
           </Link>
         )}
-        {currentUser && (
+        {["organizer", "admin"].includes(
+          currentUser?.role?.toLowerCase?.()
+        ) && (
           <Link
             to="/organizer"
             className="hover:text-blue-600 transition-colors font-medium"

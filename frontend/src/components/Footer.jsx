@@ -7,26 +7,6 @@ export default function Footer() {
           <span className="font-bold text-blue-700">Eventify</span>. All rights
           reserved.
         </span>
-        <span className="text-xs">
-          Made with <span className="text-pink-500">♥</span> by{" "}
-          <a
-            href="https://github.com/param-chandarana"
-            className="text-blue-500 hover:underline"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Param
-          </a>
-          <span className="mx-1">and</span>
-          <a
-            href="https://github.com/ParthZee"
-            className="text-blue-500 hover:underline"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Parth
-          </a>
-        </span>
       </div>
     </footer>
   );
