@@ -69,30 +69,43 @@ export default function OrganizerDashboard() {
     <div className="p-4 max-w-5xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">Organizer Dashboard</h1>
       {events.length === 0 ? (
-        <p>You haven’t created any events yet.</p>
+        <p className="text-slate-500">You haven’t created any events yet.</p>
       ) : (
         <ul className="space-y-4">
           {events.map((event) => (
             <li
               key={event._id}
-              className={`p-4 border rounded shadow-sm ${
-                event.cancelled ? "bg-gray-100 opacity-70" : ""
+              className={`bg-white p-4 border rounded-xl shadow-md flex flex-col gap-2 ${
+                event.cancelled
+                  ? "bg-gray-100 opacity-70"
+                  : "hover:shadow-lg transition-all"
               }`}
             >
-              <div className="flex items-center gap-2">
-                <h2 className="text-xl font-semibold">{event.title}</h2>
+              <div className="flex items-center gap-2 mb-1">
+                <h2 className="text-xl font-semibold text-blue-700 flex-1">
+                  {event.title}
+                </h2>
+                {event.categoryId && (
+                  <span className="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded">
+                    {typeof event.categoryId === "object"
+                      ? event.categoryId.name
+                      : event.categoryId}
+                  </span>
+                )}
                 {event.cancelled && (
                   <span className="ml-2 px-2 py-1 text-xs bg-red-200 text-red-800 rounded">
                     Cancelled
                   </span>
                 )}
               </div>
-              <p>{new Date(event.date).toLocaleString()}</p>
+              <p className="text-slate-600 text-sm mb-1">
+                {new Date(event.date).toLocaleString()}
+              </p>
               <div className="flex space-x-2 mt-2">
                 <button
                   onClick={() => navigate(`/events/edit/${event._id}`)}
-                  className={`bg-yellow-500 text-white px-3 py-1 rounded${
-                    event.cancelled ? "" : " cursor-pointer"
+                  className={`bg-yellow-500 text-white px-3 py-1 rounded-lg font-medium transition-all ${
+                    event.cancelled ? "" : "hover:bg-yellow-600 cursor-pointer"
                   }`}
                   disabled={event.cancelled}
                 >
@@ -100,7 +113,7 @@ export default function OrganizerDashboard() {
                 </button>
                 {event.cancelled ? (
                   <button
-                    className="bg-gray-400 text-white px-3 py-1 rounded cursor-not-allowed"
+                    className="bg-gray-400 text-white px-3 py-1 rounded-lg font-medium cursor-not-allowed"
                     disabled
                   >
                     Cancelled
@@ -108,14 +121,14 @@ export default function OrganizerDashboard() {
                 ) : (
                   <button
                     onClick={() => handleDelete(event._id, false)}
-                    className="bg-red-600 text-white px-3 py-1 rounded cursor-pointer"
+                    className="bg-gradient-to-r from-red-500 to-pink-500 text-white px-3 py-1 rounded-lg font-medium hover:from-red-600 hover:to-pink-600 transition-all cursor-pointer"
                   >
                     Cancel
                   </button>
                 )}
                 <button
                   onClick={() => viewDetails(event)}
-                  className="bg-blue-600 text-white px-3 py-1 rounded cursor-pointer"
+                  className="bg-gradient-to-r from-blue-600 to-teal-400 text-white px-3 py-1 rounded-lg font-medium hover:from-blue-700 hover:to-teal-500 transition-all cursor-pointer"
                 >
                   View Details
                 </button>

@@ -103,93 +103,95 @@ export default function EventFormPage() {
 
   return (
     <div className="p-4 max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">
-        {isEditing ? "Edit Event" : "Create Event"}
-      </h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <input
-          type="text"
-          name="title"
-          value={form.title}
-          onChange={handleChange}
-          placeholder="Title"
-          className="w-full p-2 border rounded"
-          required
-        />
-        <textarea
-          name="description"
-          value={form.description}
-          onChange={handleChange}
-          placeholder="Description"
-          className="w-full p-2 border rounded"
-          required
-        />
-        <input
-          type="datetime-local"
-          name="date"
-          value={form.date}
-          onChange={handleChange}
-          className="w-full p-2 border rounded"
-          required
-        />
-        <select
-          name="categoryId"
-          value={form.categoryId}
-          onChange={handleChange}
-          className="w-full p-2 border rounded"
-          required
-        >
-          <option value="">Select Category</option>
-          {categories.map((cat) => (
-            <option key={cat._id} value={cat._id}>
-              {cat.name}
-            </option>
-          ))}
-        </select>
-        <input
-          type="text"
-          name="venue"
-          value={form.venue}
-          onChange={handleChange}
-          placeholder="Venue"
-          className="w-full p-2 border rounded"
-          required
-        />
-        <input
-          type="number"
-          name="price"
-          value={form.price}
-          onChange={handleChange}
-          placeholder="Price"
-          className="w-full p-2 border rounded"
-          required
-        />
-        <input
-          type="number"
-          name="totalSeats"
-          value={form.totalSeats}
-          onChange={handleChange}
-          placeholder="Total Seats"
-          className="w-full p-2 border rounded"
-          min={1}
-          step={1}
-          required
-        />
-        <input
-          type="text"
-          name="photo"
-          value={form.photo}
-          onChange={handleChange}
-          placeholder="Photo URL"
-          className="w-full p-2 border rounded"
-        />
-        <button
-          type="submit"
-          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-        >
-          {isEditing ? "Update" : "Create"} Event
-        </button>
-      </form>
+      <div className="bg-white rounded-xl shadow-lg border p-8 mt-6">
+        <h1 className="text-2xl font-bold mb-6 text-blue-700">
+          {isEditing ? "Edit Event" : "Create Event"}
+        </h1>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <input
+            type="text"
+            name="title"
+            placeholder="Title"
+            className="block w-full border p-3 rounded focus:ring-2 focus:ring-blue-400 bg-slate-50"
+            value={form.title}
+            onChange={handleChange}
+            required
+          />
+          <textarea
+            name="description"
+            placeholder="Description"
+            className="block w-full border p-3 rounded focus:ring-2 focus:ring-blue-400 bg-slate-50"
+            value={form.description}
+            onChange={handleChange}
+            required
+          />
+          <input
+            type="datetime-local"
+            name="date"
+            className="block w-full border p-3 rounded focus:ring-2 focus:ring-blue-400 bg-slate-50"
+            value={form.date}
+            onChange={handleChange}
+            required
+          />
+          <select
+            name="categoryId"
+            className="block w-full border p-3 rounded focus:ring-2 focus:ring-blue-400 bg-slate-50"
+            value={form.categoryId}
+            onChange={handleChange}
+            required
+          >
+            <option value="">Select Category</option>
+            {categories.map((cat) => (
+              <option key={cat._id} value={cat._id}>
+                {cat.name}
+              </option>
+            ))}
+          </select>
+          <input
+            type="text"
+            name="venue"
+            placeholder="Venue"
+            className="block w-full border p-3 rounded focus:ring-2 focus:ring-blue-400 bg-slate-50"
+            value={form.venue}
+            onChange={handleChange}
+            required
+          />
+          <input
+            type="number"
+            name="price"
+            placeholder="Price"
+            className="block w-full border p-3 rounded focus:ring-2 focus:ring-blue-400 bg-slate-50"
+            value={form.price}
+            onChange={handleChange}
+            min={0}
+            required
+          />
+          <input
+            type="number"
+            name="totalSeats"
+            placeholder="Total Seats"
+            className="block w-full border p-3 rounded focus:ring-2 focus:ring-blue-400 bg-slate-50"
+            value={form.totalSeats}
+            onChange={handleChange}
+            min={1}
+            required
+          />
+          <input
+            type="text"
+            name="photo"
+            placeholder="Image URL"
+            className="block w-full border p-3 rounded focus:ring-2 focus:ring-blue-400 bg-slate-50"
+            value={form.photo}
+            onChange={handleChange}
+          />
+          <button
+            type="submit"
+            className="bg-gradient-to-r from-blue-600 to-teal-400 text-white px-6 py-2 rounded-lg shadow hover:from-blue-700 hover:to-teal-500 transition-all font-semibold cursor-pointer"
+          >
+            {isEditing ? "Update Event" : "Create Event"}
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

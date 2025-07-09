@@ -41,72 +41,76 @@ const Register = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 border rounded shadow">
-      <h2 className="text-2xl font-semibold mb-4">Sign Up</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="max-w-md mx-auto mt-16 p-8 border rounded-xl shadow-lg bg-white">
+      <h2 className="text-2xl font-bold mb-6 text-blue-700">Register</h2>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <input
-          name="name"
           type="text"
+          name="name"
+          placeholder="Name"
+          className="block w-full border p-3 rounded focus:ring-2 focus:ring-blue-400 bg-slate-50"
           value={form.name}
           onChange={handleChange}
-          placeholder="Name"
-          className="w-full border p-2 rounded"
           required
         />
         <input
-          name="email"
           type="email"
+          name="email"
+          placeholder="Email"
+          className="block w-full border p-3 rounded focus:ring-2 focus:ring-blue-400 bg-slate-50"
           value={form.email}
           onChange={handleChange}
-          placeholder="Email"
-          className="w-full border p-2 rounded"
           required
         />
         <input
+          type="text"
           name="phone"
-          type="tel"
+          placeholder="Phone"
+          className="block w-full border p-3 rounded focus:ring-2 focus:ring-blue-400 bg-slate-50"
           value={form.phone}
           onChange={handleChange}
-          placeholder="Phone"
-          className="w-full border p-2 rounded"
           required
         />
         <input
-          name="password"
           type="password"
+          name="password"
+          placeholder="Password"
+          className="block w-full border p-3 rounded focus:ring-2 focus:ring-blue-400 bg-slate-50"
           value={form.password}
           onChange={handleChange}
-          placeholder="Password"
-          className="w-full border p-2 rounded"
           required
         />
         <input
-          name="confirmPassword"
           type="password"
+          name="confirmPassword"
+          placeholder="Confirm Password"
+          className="block w-full border p-3 rounded focus:ring-2 focus:ring-blue-400 bg-slate-50"
           value={form.confirmPassword}
           onChange={handleChange}
-          placeholder="Confirm Password"
-          className="w-full border p-2 rounded"
           required
         />
-
-        <button
-          type="submit"
-          disabled={loading}
-          className={`w-full py-2 rounded text-white ${
-            loading ? "bg-blue-400 cursor-not-allowed" : "bg-blue-600"
-          }`}
-        >
-          {loading ? "Registering..." : "Sign Up"}
-        </button>
-
-        <p className="text-sm text-center">
-          Already have an account?{" "}
-          <a href="/login" className="text-blue-600 hover:underline">
-            Log in
-          </a>
-        </p>
+        {loading ? (
+          <button
+            type="button"
+            className="bg-gradient-to-r from-blue-600 to-teal-400 text-white px-6 py-2 rounded-lg shadow font-semibold opacity-60 cursor-not-allowed"
+          >
+            Registering...
+          </button>
+        ) : (
+          <button
+            type="submit"
+            className="bg-gradient-to-r from-blue-600 to-teal-400 text-white px-6 py-2 rounded-lg shadow hover:from-blue-700 hover:to-teal-500 transition-all font-semibold cursor-pointer"
+          >
+            Register
+          </button>
+        )}
       </form>
+      <div className="mt-4 text-center text-slate-600">
+        Already have an account?{" "}
+        <a href="/login" className="text-blue-600 hover:underline">
+          Login
+        </a>
+      </div>
     </div>
   );
 };
