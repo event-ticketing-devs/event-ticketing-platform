@@ -1,5 +1,6 @@
 import Booking from "../models/Booking.js";
 import Event from "../models/Event.js";
+import User from "../models/User.js";
 
 // @desc Create a new booking
 // @route POST /api/bookings
@@ -20,8 +21,13 @@ export const createBooking = async (req, res) => {
         .json({ message: "Seat count must be between 1 and 10" });
     }
 
+    // Validate eventId exists
     const event = await Event.findById(eventId);
     if (!event) return res.status(404).json({ message: "Event not found" });
+
+    // Validate userId exists (should always exist if authenticated, but for completeness)
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
 
     if (event.cancelled) {
       return res.status(400).json({ message: "Cannot book a cancelled event" });

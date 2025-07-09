@@ -23,40 +23,30 @@ export default function EventDetailsPage() {
       const res = await apiClient.get(`/events/${id}`);
       setEvent(res.data);
 
-      // Always fetch bookings for the event to calculate available seats
-      let totalBooked = 0;
+      // Fetch seat info from the new API
+      let remainingSeats = 0;
+      try {
+        const seatRes = await apiClient.get(`/events/${id}/seats`);
+        remainingSeats = seatRes.data.remainingSeats;
+      } catch (e) {
+        remainingSeats = 0;
+      }
+
       let alreadyBooked = false;
       let bookingId = null;
-      let bookingRes = { data: [] };
-      try {
-        bookingRes = await apiClient.get(`/bookings/event/${id}`);
-        totalBooked = bookingRes.data.reduce((sum, b) => sum + b.noOfSeats, 0);
-      } catch (e) {
-        // If not authorized, just skip booking details, but still show available seats as 0 booked
-        totalBooked = 0;
-      }
-
       if (currentUser) {
         // For all users, check if they have a booking for this event
-        const userBooking = bookingRes.data.find(
-          (b) => b.userId && b.userId._id === currentUser._id
-        );
-        alreadyBooked = !!userBooking;
-        bookingId = userBooking ? userBooking._id : null;
-        // For normal users, fallback to /bookings/user if not authorized for /bookings/event/:id
-        if (!userBooking && bookingRes.data.length === 0) {
-          try {
-            const userBookingsRes = await apiClient.get("/bookings/user");
-            const userBooking2 = userBookingsRes.data.find(
-              (b) => b.eventId && b.eventId._id === id
-            );
-            alreadyBooked = !!userBooking2;
-            bookingId = userBooking2 ? userBooking2._id : null;
-          } catch {}
-        }
+        try {
+          const userBookingsRes = await apiClient.get("/bookings/user");
+          const userBooking = userBookingsRes.data.find(
+            (b) => b.eventId && b.eventId._id === id
+          );
+          alreadyBooked = !!userBooking;
+          bookingId = userBooking ? userBooking._id : null;
+        } catch {}
       }
 
-      setAvailableSeats(res.data.totalSeats - totalBooked);
+      setAvailableSeats(remainingSeats);
       setAlreadyBooked(alreadyBooked);
       setUserBookingId(bookingId);
       setLoading(false);

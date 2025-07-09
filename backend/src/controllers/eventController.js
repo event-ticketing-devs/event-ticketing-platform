@@ -1,6 +1,7 @@
 import Event from "../models/Event.js";
 import User from "../models/User.js";
 import Booking from "../models/Booking.js";
+import Category from "../models/Category.js";
 
 // @desc    Create new event
 // @route   POST /api/events
@@ -30,6 +31,12 @@ export const createEvent = async (req, res) => {
       return res.status(400).json({
         message: `Missing required field(s): ${missingFields.join(", ")}`,
       });
+    }
+
+    // Validate categoryId exists
+    const category = await Category.findById(categoryId);
+    if (!category) {
+      return res.status(400).json({ message: "Invalid categoryId" });
     }
 
     // Check for duplicate event title (case-insensitive)
@@ -120,6 +127,18 @@ export const updateEvent = async (req, res) => {
   try {
     const event = await Event.findById(req.params.id);
     if (!event) return res.status(404).json({ message: "Event not found" });
+
+    // Validate categoryId if being updated
+    if (
+      Object.prototype.hasOwnProperty.call(req.body, "categoryId") &&
+      req.body.categoryId &&
+      req.body.categoryId !== String(event.categoryId)
+    ) {
+      const category = await Category.findById(req.body.categoryId);
+      if (!category) {
+        return res.status(400).json({ message: "Invalid categoryId" });
+      }
+    }
 
     // Check for duplicate event title (case-insensitive) if title is being updated
     if (
@@ -272,5 +291,31 @@ export const deleteEvent = async (req, res) => {
     res.json({ message: "Event deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc Get seat availability for a specific event
+// @route GET /api/events/:id/seats
+// @access Public
+export const getEventSeatInfo = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const event = await Event.findById(id);
+    if (!event) return res.status(404).json({ message: "Event not found" });
+
+    // FIX: Use eventId field to find bookings for this event
+    const bookings = await Booking.find({ eventId: id });
+    const bookedSeats = bookings.reduce((sum, b) => sum + b.noOfSeats, 0);
+
+    return res.status(200).json({
+      id: event._id,
+      totalSeats: event.totalSeats,
+      bookedSeats,
+      remainingSeats: event.totalSeats - bookedSeats,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Server error" });
   }
 };
