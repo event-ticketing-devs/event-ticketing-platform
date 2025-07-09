@@ -1,18 +1,23 @@
+import React from "react";
+
 export default function ConfirmModal({
   open,
   title = "Are you sure?",
-  message = "This action cannot be undone.",
+  description = "This action cannot be undone.",
   confirmText = "Confirm",
   cancelText = "Cancel",
   confirmColor = "red",
   onConfirm,
-  onCancel,
+  onClose,
+  showInput = false,
+  inputValue = "",
+  setInputValue = () => {},
 }) {
   if (!open) return null;
 
   const handleBackdropClick = (e) => {
     if (e.target === e.currentTarget) {
-      onCancel();
+      onClose();
     }
   };
 
@@ -33,10 +38,20 @@ export default function ConfirmModal({
     >
       <div className="bg-white p-6 rounded-xl max-w-sm shadow-lg text-center">
         <h2 className="text-lg font-semibold mb-4">{title}</h2>
-        <p className="mb-6 text-gray-600">{message}</p>
+        <p className="mb-6 text-gray-600">{description}</p>
+        {showInput && (
+          <textarea
+            className="w-full border rounded p-2 mb-4 resize-none focus:outline-none focus:ring-2 focus:ring-blue-400"
+            rows={3}
+            placeholder="Enter reason..."
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            autoFocus
+          />
+        )}
         <div className="flex justify-center gap-4">
           <button
-            onClick={onCancel}
+            onClick={onClose}
             className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
           >
             {cancelText}

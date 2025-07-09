@@ -10,49 +10,92 @@ import ProfileUpdate from "./pages/ProfileUpdate";
 import PrivateRoute from "./components/PrivateRoute";
 import PublicRoute from "./components/PublicRoute";
 import Register from "./pages/Register";
+import Dashboard from "./pages/Dashboard";
+import OrganizerDashboard from "./pages/OrganizerDashboard";
+import EventForm from "./pages/EventForm";
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 
 function App() {
   return (
     <Router>
       <AuthProvider>
         <Toaster position="top-right" reverseOrder={false} />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/events" element={<Events />} />
-          <Route path="/events/:id" element={<EventDetails />} />
-          <Route
-            path="/login"
-            element={
-              <PublicRoute>
-                <Login />
-              </PublicRoute>
-            }
-          />
-          <Route
-            path="/register"
-            element={
-              <PublicRoute>
-                <Register />
-              </PublicRoute>
-            }
-          />
-          <Route
-            path="/profile"
-            element={
-              <PrivateRoute>
-                <Profile />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/profile/update"
-            element={
-              <PrivateRoute>
-                <ProfileUpdate />
-              </PrivateRoute>
-            }
-          />
-        </Routes>
+        <div className="flex flex-col min-h-screen">
+          <Navbar />
+          <main className="flex-1">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/events" element={<Events />} />
+              <Route path="/events/:id" element={<EventDetails />} />
+              <Route
+                path="/login"
+                element={
+                  <PublicRoute>
+                    <Login />
+                  </PublicRoute>
+                }
+              />
+              <Route
+                path="/register"
+                element={
+                  <PublicRoute>
+                    <Register />
+                  </PublicRoute>
+                }
+              />
+              <Route
+                path="/profile"
+                element={
+                  <PrivateRoute>
+                    <Profile />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/profile/update"
+                element={
+                  <PrivateRoute>
+                    <ProfileUpdate />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/dashboard"
+                element={
+                  <PrivateRoute>
+                    <Dashboard />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/organizer"
+                element={
+                  <PrivateRoute>
+                    <OrganizerDashboard />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/events/create"
+                element={
+                  <PrivateRoute>
+                    <EventForm />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/events/edit/:id"
+                element={
+                  <PrivateRoute>
+                    <EventForm />
+                  </PrivateRoute>
+                }
+              />
+            </Routes>
+          </main>
+          <Footer />
+        </div>
       </AuthProvider>
     </Router>
   );

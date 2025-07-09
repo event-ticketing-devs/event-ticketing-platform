@@ -17,6 +17,7 @@ export default function EventDetailsPage() {
   const [alreadyBooked, setAlreadyBooked] = useState(false);
   const [userBookingId, setUserBookingId] = useState(null);
   const [availableSeats, setAvailableSeats] = useState(0);
+  const [seatCount, setSeatCount] = useState(1);
 
   const fetchEvent = async () => {
     try {
@@ -61,13 +62,17 @@ export default function EventDetailsPage() {
       toast("Please log in to book a seat", { icon: "🔒" });
       return navigate("/login");
     }
-
+    // Placeholder for payment gateway integration
+    // TODO: Integrate payment gateway here before booking confirmation
     toast
-      .promise(apiClient.post("/bookings", { eventId: id, noOfSeats: 1 }), {
-        loading: "Booking seat...",
-        success: "Booking successful!",
-        error: (err) => err.response?.data?.message || "Booking failed",
-      })
+      .promise(
+        apiClient.post("/bookings", { eventId: id, noOfSeats: seatCount }),
+        {
+          loading: "Booking seat(s)...",
+          success: "Booking successful!",
+          error: (err) => err.response?.data?.message || "Booking failed",
+        }
+      )
       .then(fetchEvent);
   };
 
@@ -102,8 +107,32 @@ export default function EventDetailsPage() {
       </p>
       <p className="mb-4">{event.description}</p>
       <p className="mb-2">Price: ₹{event.price}</p>
-      <p className="mb-4">Available Seats: {availableSeats}</p>
-
+      <p className="mb-2">Available Seats: {availableSeats}</p>
+      {currentUser && !alreadyBooked && (
+        <div className="mb-4 flex items-center gap-4">
+          <label htmlFor="seatCount" className="font-medium">
+            Number of Seats:
+          </label>
+          <input
+            id="seatCount"
+            type="number"
+            min={1}
+            max={Math.min(10, availableSeats)}
+            value={seatCount}
+            onChange={(e) =>
+              setSeatCount(Math.max(1, Math.min(10, Number(e.target.value))))
+            }
+            className="border p-2 rounded w-20"
+            disabled={availableSeats === 0}
+          />
+          <span className="ml-2">(max {Math.min(10, availableSeats)})</span>
+        </div>
+      )}
+      {currentUser && !alreadyBooked && (
+        <p className="mb-4 font-semibold">
+          Total Price: ₹{event.price * seatCount}
+        </p>
+      )}
       {!currentUser ? (
         <button
           className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
@@ -122,10 +151,13 @@ export default function EventDetailsPage() {
         <button
           onClick={handleBooking}
           className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+          disabled={availableSeats === 0}
         >
           Book Now
         </button>
       )}
+      {/* Payment gateway integration placeholder */}
+      {/* TODO: Integrate payment gateway here before confirming booking */}
     </div>
   );
 }
