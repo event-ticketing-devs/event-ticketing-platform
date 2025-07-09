@@ -141,7 +141,7 @@ export default function OrganizerDashboard() {
         open={showModal}
         title={"Cancel Event"}
         description={
-          "This action cannot be undone. Please provide a reason for cancellation:"
+          "This action cannot be undone. If you wish to proceed, please provide a reason for cancellation:"
         }
         onClose={() => {
           setShowModal(false);
