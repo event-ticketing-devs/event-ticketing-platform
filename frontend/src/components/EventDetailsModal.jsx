@@ -2,6 +2,24 @@ import React from "react";
 
 export default function EventDetailsModal({ open, event, attendees, onClose }) {
   if (!open || !event) return null;
+
+  // Calculate values for the donut chart
+  const totalSeats =
+    typeof event.totalSeats === "number" ? event.totalSeats : 0;
+  const availableSeats =
+    typeof event.availableSeats === "number" ? event.availableSeats : 0;
+  const bookedSeats = totalSeats - availableSeats;
+  const percentBooked = totalSeats
+    ? Math.round((bookedSeats / totalSeats) * 100)
+    : 0;
+
+  // Donut chart parameters
+  const radius = 32;
+  const stroke = 10;
+  const normalizedRadius = radius - stroke / 2;
+  const circumference = 2 * Math.PI * normalizedRadius;
+  const bookedStroke = circumference * (bookedSeats / totalSeats || 0);
+
   return (
     <div
       className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
@@ -49,6 +67,58 @@ export default function EventDetailsModal({ open, event, attendees, onClose }) {
             Reason: {event.cancelledReason}
           </p>
         )}
+        {/* Donut chart for seat availability */}
+        <div className="flex items-center gap-4 my-4">
+          <svg width={radius * 2} height={radius * 2}>
+            <circle
+              cx={radius}
+              cy={radius}
+              r={normalizedRadius}
+              fill="none"
+              stroke="#e5e7eb"
+              strokeWidth={stroke}
+            />
+            <circle
+              cx={radius}
+              cy={radius}
+              r={normalizedRadius}
+              fill="none"
+              stroke="#3b82f6"
+              strokeWidth={stroke}
+              strokeDasharray={circumference}
+              strokeDashoffset={circumference - bookedStroke}
+              strokeLinecap="round"
+              style={{ transition: "stroke-dashoffset 0.5s" }}
+            />
+            <text
+              x="50%"
+              y="50%"
+              textAnchor="middle"
+              dy="0.3em"
+              fontSize="1.1em"
+              fill="#1e293b"
+              fontWeight="bold"
+            >
+              {totalSeats ? `${percentBooked}%` : "N/A"}
+            </text>
+          </svg>
+          <div>
+            <div>
+              <span className="font-semibold">Booked:</span> {bookedSeats} /{" "}
+              {totalSeats || "N/A"}
+            </div>
+            <div>
+              <span className="font-semibold">Available:</span>{" "}
+              {availableSeats === 0 ? (
+                <span className="text-red-600 font-semibold">Sold out</span>
+              ) : typeof event.availableSeats === "number" ? (
+                event.availableSeats
+              ) : (
+                "N/A"
+              )}
+            </div>
+          </div>
+        </div>
         <h3 className="mt-4 text-lg font-semibold text-blue-700">Attendees:</h3>
         {attendees && attendees.length === 0 ? (
           <p className="text-slate-500">No attendees yet.</p>
