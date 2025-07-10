@@ -39,8 +39,8 @@ export const updateUser = async (req, res) => {
         .json({ message: "Phone number must be exactly 10 digits" });
     }
 
-    // Validate password length (minimum 6 characters)
-    if (password && !/^.{6,}$/.test(password)) {
+    // For regular users (no googleId), validate password length if updating password
+    if (!user.googleId && password && !/^.{6,}$/.test(password)) {
       return res
         .status(400)
         .json({ message: "Password must be at least 6 characters" });
@@ -73,7 +73,7 @@ export const updateUser = async (req, res) => {
     }
 
     if (!isSameName) user.name = name;
-    if (!isSamePassword) user.password = password; // Will be hashed by pre-save
+    if (!isSamePassword && password) user.password = password; // Will be hashed by pre-save
 
     await user.save();
 

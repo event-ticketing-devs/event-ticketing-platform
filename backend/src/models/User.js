@@ -17,14 +17,14 @@ const userSchema = new mongoose.Schema(
     },
     phone: {
       type: String,
-      required: [true, "Phone number is required"],
-      unique: true,
+      required: false, // Made optional for OAuth users
+      unique: false, // Not all OAuth users will have phone
       trim: true,
       match: [/^\d{10}$/, "Phone number must be 10 digits"],
     },
     password: {
       type: String,
-      required: [true, "Password is required"],
+      required: false, // Made optional for OAuth users
       minlength: [6, "Password must be at least 6 characters"],
     },
     role: {
@@ -38,6 +38,11 @@ const userSchema = new mongoose.Schema(
     },
     lastLogin: {
       type: Date,
+    },
+    googleId: {
+      type: String,
+      unique: true,
+      sparse: true, // Allows multiple docs with null googleId
     },
   },
   { timestamps: true }

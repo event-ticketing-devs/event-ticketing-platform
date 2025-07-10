@@ -13,24 +13,38 @@ const generateToken = (user) => {
 // @access Public
 export const register = async (req, res) => {
   try {
-    const { name, email, phone, password } = req.body;
+    const { name, email, phone, password, googleId } = req.body;
 
-    // Validate email format
+    // Validate email format (required for both regular and Google users)
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return res.status(400).json({ message: "Invalid email format" });
+    if (!email || !emailRegex.test(email)) {
+      return res.status(400).json({ message: "Invalid or missing email" });
     }
 
-    // Validate phone format
+    // If registering via Google OAuth (googleId present)
+    if (googleId) {
+      // Check if user already exists with this googleId or email
+      let user = await User.findOne({ $or: [{ googleId }, { email }] });
+      if (user) {
+        return res.status(400).json({ message: "User already exists" });
+      }
+      // Phone is optional for Google users
+      user = await User.create({ name, email, googleId, phone });
+      return res
+        .status(201)
+        .json({ message: "User registered via Google OAuth" });
+    }
+
+    // For regular signup, phone is required
     const phoneRegex = /^\d{10}$/;
-    if (!phoneRegex.test(phone)) {
+    if (!phone || !phoneRegex.test(phone)) {
       return res
         .status(400)
         .json({ message: "Phone number must be exactly 10 digits" });
     }
 
-    // Validate password length (minimum 6 characters)
-    if (password && !/^.{6,}$/.test(password)) {
+    // Require password for regular signup
+    if (!password || !/^.{6,}$/.test(password)) {
       return res
         .status(400)
         .json({ message: "Password must be at least 6 characters" });
