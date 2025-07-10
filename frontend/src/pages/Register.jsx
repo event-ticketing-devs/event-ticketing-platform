@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
 import { registerUser } from "../services/authService";
+import GoogleLoginButton from "../components/GoogleLoginButton";
 
 const Register = () => {
   const [form, setForm] = useState({
@@ -111,6 +112,12 @@ const Register = () => {
         <Link to="/login" className="text-blue-600 hover:underline">
           Login
         </Link>
+      </div>
+      <div className="my-6 flex items-center justify-center">
+        <span className="text-slate-400 text-sm">or</span>
+      </div>
+      <div className="flex justify-center">
+        <GoogleLoginButton />
       </div>
     </div>
   );

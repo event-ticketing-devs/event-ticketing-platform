@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
 import { loginUser } from "../services/authService";
+import GoogleLoginButton from "../components/GoogleLoginButton";
 
 const Login = () => {
   const { login } = useAuth();
@@ -60,6 +61,12 @@ const Login = () => {
         <Link to="/register" className="text-blue-600 hover:underline">
           Register
         </Link>
+      </div>
+      <div className="my-6 flex items-center justify-center">
+        <span className="text-slate-400 text-sm">or</span>
+      </div>
+      <div className="flex justify-center">
+        <GoogleLoginButton />
       </div>
     </div>
   );
