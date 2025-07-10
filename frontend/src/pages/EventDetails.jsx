@@ -106,6 +106,8 @@ export default function EventDetailsPage() {
     );
   if (error) return <p className="p-4 text-red-500">{error}</p>;
 
+  const isPastEvent = event && new Date(event.date) < new Date();
+
   return (
     <div className="p-4 max-w-3xl mx-auto">
       {event.photo && (
@@ -136,6 +138,11 @@ export default function EventDetailsPage() {
         <p className="text-slate-600 mb-2">
           {format(new Date(event.date), "PPpp")}
         </p>
+        {isPastEvent && (
+          <div className="mb-4 p-3 bg-yellow-100 text-yellow-800 rounded font-semibold">
+            This event has ended.
+          </div>
+        )}
         <p className="mb-4 text-slate-700">{event.description}</p>
         <div className="flex flex-wrap gap-4 mb-2 text-sm">
           <span className="font-medium">Venue:</span> <span>{event.venue}</span>
@@ -153,7 +160,8 @@ export default function EventDetailsPage() {
             Reason: {event.cancelledReason}
           </p>
         )}
-        {currentUser && !alreadyBooked && (
+        {/* Hide booking controls if event is past */}
+        {!isPastEvent && currentUser && !alreadyBooked && (
           <div className="mb-4 flex items-center gap-4">
             <label htmlFor="seatCount" className="font-medium">
               Number of Seats:
@@ -175,34 +183,39 @@ export default function EventDetailsPage() {
             </span>
           </div>
         )}
-        {currentUser && !alreadyBooked && (
+        {!isPastEvent && currentUser && !alreadyBooked && (
           <p className="mb-4 font-semibold">
             Total Price: ₹{event.price * seatCount}
           </p>
         )}
         <div className="flex gap-4 mt-4">
-          {!currentUser ? (
-            <button
-              className="bg-gradient-to-r from-blue-600 to-teal-400 text-white px-6 py-2 rounded-lg shadow hover:from-blue-700 hover:to-teal-500 transition-all font-semibold cursor-pointer"
-              onClick={handleBooking}
-            >
-              Login to Book
-            </button>
-          ) : alreadyBooked ? (
-            <button
-              onClick={handleUnregister}
-              className="bg-gradient-to-r from-red-500 to-pink-500 text-white px-6 py-2 rounded-lg shadow hover:from-red-600 hover:to-pink-600 transition-all font-semibold cursor-pointer"
-            >
-              Unregister
-            </button>
-          ) : (
-            <button
-              onClick={handleBooking}
-              className="bg-gradient-to-r from-green-500 to-teal-400 text-white px-6 py-2 rounded-lg shadow hover:from-green-600 hover:to-teal-500 transition-all font-semibold cursor-pointer"
-              disabled={availableSeats === 0}
-            >
-              Book Now
-            </button>
+          {/* Hide all booking/unregister buttons if event is past */}
+          {!isPastEvent && (
+            <>
+              {!currentUser ? (
+                <button
+                  className="bg-gradient-to-r from-blue-600 to-teal-400 text-white px-6 py-2 rounded-lg shadow hover:from-blue-700 hover:to-teal-500 transition-all font-semibold cursor-pointer"
+                  onClick={handleBooking}
+                >
+                  Login to Book
+                </button>
+              ) : alreadyBooked ? (
+                <button
+                  onClick={handleUnregister}
+                  className="bg-gradient-to-r from-red-500 to-pink-500 text-white px-6 py-2 rounded-lg shadow hover:from-red-600 hover:to-pink-600 transition-all font-semibold cursor-pointer"
+                >
+                  Unregister
+                </button>
+              ) : (
+                <button
+                  onClick={handleBooking}
+                  className="bg-gradient-to-r from-green-500 to-teal-400 text-white px-6 py-2 rounded-lg shadow hover:from-green-600 hover:to-teal-500 transition-all font-semibold cursor-pointer"
+                  disabled={availableSeats === 0}
+                >
+                  Book Now
+                </button>
+              )}
+            </>
           )}
         </div>
       </div>

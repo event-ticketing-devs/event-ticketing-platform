@@ -41,6 +41,8 @@ const EventListPage = () => {
 
   const filteredEvents = events.filter((event) => {
     if (event.cancelled) return false;
+    // Exclude past events
+    if (new Date(event.date) < new Date()) return false;
     const matchCategory = filters.category
       ? (event.categoryId && (event.categoryId._id || event.categoryId)) ===
         filters.category
