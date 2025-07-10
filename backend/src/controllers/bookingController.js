@@ -1,5 +1,11 @@
 import Booking from "../models/Booking.js";
 import Event from "../models/Event.js";
+import User from "../models/User.js";
+import crypto from "crypto";
+
+function generateTicketCode() {
+  return crypto.randomBytes(4).toString("hex").toUpperCase();
+}
 
 // @desc Create a new booking
 // @route POST /api/bookings
@@ -20,8 +26,13 @@ export const createBooking = async (req, res) => {
         .json({ message: "Seat count must be between 1 and 10" });
     }
 
+    // Validate eventId exists
     const event = await Event.findById(eventId);
     if (!event) return res.status(404).json({ message: "Event not found" });
+
+    // Validate userId exists (should always exist if authenticated, but for completeness)
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
 
     if (event.cancelled) {
       return res.status(400).json({ message: "Cannot book a cancelled event" });
@@ -45,12 +56,24 @@ export const createBooking = async (req, res) => {
       return res.status(400).json({ message: "Not enough seats available" });
     }
 
+    // Generate unique ticket code
+    let ticketCode;
+    let codeExists = true;
+    while (codeExists) {
+      ticketCode = generateTicketCode();
+      codeExists = await Booking.exists({ ticketCode });
+    }
+
     const booking = await Booking.create({
       eventId,
       userId,
       noOfSeats,
       priceAtBooking: event.price,
+      ticketCode,
+      verified: false,
     });
+
+    // TODO: Send confirmation email with ticketCode
 
     res.status(201).json(booking);
   } catch (error) {
@@ -91,9 +114,9 @@ export const cancelBooking = async (req, res) => {
 // @access Logged-in users
 export const getUserBookings = async (req, res) => {
   try {
-    const bookings = await Booking.find({ userId: req.user._id }).populate(
-      "eventId"
-    );
+    const bookings = await Booking.find({ userId: req.user._id })
+      .populate("eventId")
+      .select("+ticketCode +verified"); // ensure ticketCode and verified are included
     res.json(bookings);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -122,6 +145,36 @@ export const getBookingsByEvent = async (req, res) => {
       "name email"
     );
     res.json(bookings);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc Organizer verifies ticket code
+// @route POST /api/bookings/verify
+// @access Organizer
+export const verifyBookingCode = async (req, res) => {
+  try {
+    const { code, eventId } = req.body;
+    const booking = await Booking.findOne({ ticketCode: code });
+    if (!booking)
+      return res
+        .status(404)
+        .json({ message: "Invalid code or booking cancelled" });
+
+    // Check if booking belongs to the selected event
+    if (eventId && booking.eventId.toString() !== eventId) {
+      return res
+        .status(400)
+        .json({ message: "Ticket code does not belong to this event" });
+    }
+
+    if (booking.verified)
+      return res.status(400).json({ message: "Already verified" });
+
+    booking.verified = true;
+    await booking.save();
+    res.json({ message: "Booking verified", booking });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

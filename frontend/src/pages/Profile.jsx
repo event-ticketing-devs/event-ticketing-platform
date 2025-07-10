@@ -23,11 +23,11 @@ const Profile = () => {
   };
 
   return (
-    <div className="p-6 max-w-xl mx-auto">
-      <h1 className="text-2xl font-semibold mb-4">
+    <div className="p-6 max-w-xl mx-auto bg-white rounded-xl shadow-lg border mt-10">
+      <h1 className="text-2xl font-semibold mb-4 text-blue-700">
         Welcome, {currentUser.name}
       </h1>
-      <ul className="mb-4 space-y-1">
+      <ul className="mb-4 space-y-1 text-slate-700">
         <li>
           <strong>Email:</strong> {currentUser.email}
         </li>
@@ -39,36 +39,22 @@ const Profile = () => {
         to="/profile/update"
         className="text-blue-600 hover:underline mb-4 block"
       >
-        Update Profile
+        Edit Profile
       </Link>
       <button
-        onClick={() => {
-          logout();
-          toast.success("Logged out");
-        }}
-        className="bg-blue-600 text-white px-4 py-2 rounded block"
-      >
-        Logout
-      </button>
-      <button
         onClick={() => setShowModal(true)}
-        className="bg-red-600 text-white px-4 py-2 rounded mt-3"
+        className="bg-gradient-to-r from-red-500 to-pink-500 text-white px-4 py-2 rounded-lg shadow hover:from-red-600 hover:to-pink-600 transition-all font-semibold cursor-pointer"
       >
-        Delete My Account
+        Delete Account
       </button>
-
       <ConfirmModal
         open={showModal}
-        title="Delete Account?"
-        message="This action cannot be undone. Are you sure you want to delete your account?"
+        title="Delete Account"
+        description="Are you sure you want to delete your account? This action cannot be undone."
+        onClose={() => setShowModal(false)}
+        onConfirm={handleDelete}
         confirmText="Delete"
-        cancelText="Cancel"
         confirmColor="red"
-        onCancel={() => setShowModal(false)}
-        onConfirm={() => {
-          setShowModal(false);
-          handleDelete();
-        }}
       />
     </div>
   );
