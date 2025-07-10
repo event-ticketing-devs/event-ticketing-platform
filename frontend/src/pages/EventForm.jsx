@@ -20,17 +20,21 @@ export default function EventFormPage() {
   });
 
   const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(isEditing);
 
   const fetchCategories = async () => {
+    setLoading(true);
     try {
       const res = await apiClient.get("/categories");
       setCategories(res.data);
     } catch {
       toast.error("Failed to fetch categories");
     }
+    setLoading(false);
   };
 
   const fetchEvent = async () => {
+    setLoading(true);
     try {
       const res = await apiClient.get(`/events/${id}`);
       const {
@@ -59,6 +63,7 @@ export default function EventFormPage() {
     } catch {
       toast.error("Failed to fetch event");
     }
+    setLoading(false);
   };
 
   const handleChange = (e) => {
@@ -100,6 +105,13 @@ export default function EventFormPage() {
     fetchCategories();
     if (isEditing) fetchEvent();
   }, [id]);
+
+  if (loading)
+    return (
+      <div className="text-center py-10 text-blue-600 font-semibold">
+        Loading event form...
+      </div>
+    );
 
   return (
     <div className="p-4 max-w-2xl mx-auto">

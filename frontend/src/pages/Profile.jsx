@@ -35,12 +35,12 @@ const Profile = () => {
           <strong>Phone:</strong> {currentUser.phone}
         </li>
       </ul>
-      <a
-        href="/profile/update"
+      <Link
+        to="/profile/update"
         className="text-blue-600 hover:underline mb-4 block"
       >
         Edit Profile
-      </a>
+      </Link>
       <button
         onClick={() => setShowModal(true)}
         className="bg-gradient-to-r from-red-500 to-pink-500 text-white px-4 py-2 rounded-lg shadow hover:from-red-600 hover:to-pink-600 transition-all font-semibold cursor-pointer"

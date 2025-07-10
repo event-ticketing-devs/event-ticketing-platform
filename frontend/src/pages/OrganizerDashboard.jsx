@@ -16,8 +16,10 @@ export default function OrganizerDashboard() {
   const [cancelReason, setCancelReason] = useState("");
   const [eventToDelete, setEventToDelete] = useState(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const fetchEvents = async () => {
+    setLoading(true);
     try {
       const res = await apiClient.get("/events");
       const myEvents = res.data.filter(
@@ -27,6 +29,7 @@ export default function OrganizerDashboard() {
     } catch (err) {
       toast.error("Failed to fetch events");
     }
+    setLoading(false);
   };
 
   const handleDelete = (eventId, isCancelled) => {
@@ -68,7 +71,9 @@ export default function OrganizerDashboard() {
   return (
     <div className="p-4 max-w-5xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">Organizer Dashboard</h1>
-      {events.length === 0 ? (
+      {loading ? (
+        <p className="text-blue-600 animate-pulse">Loading your events...</p>
+      ) : events.length === 0 ? (
         <p className="text-slate-500">You haven’t created any events yet.</p>
       ) : (
         <ul className="space-y-4">

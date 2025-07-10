@@ -4,17 +4,21 @@ import apiClient from "../api/apiClient";
 import { useAuth } from "../context/AuthContext";
 import { Link } from "react-router-dom";
 
+// ...existing imports...
 export default function DashboardPage() {
   const { currentUser } = useAuth();
   const [bookings, setBookings] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const fetchBookings = async () => {
+    setLoading(true);
     try {
       const res = await apiClient.get("/bookings/user");
       setBookings(res.data);
     } catch (err) {
       console.error(err);
     }
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -26,7 +30,9 @@ export default function DashboardPage() {
       <h1 className="text-2xl font-bold mb-4 text-blue-700">
         Your Booked Events
       </h1>
-      {bookings.length === 0 ? (
+      {loading ? (
+        <p className="text-blue-600 animate-pulse">Loading your bookings...</p>
+      ) : bookings.length === 0 ? (
         <p className="text-slate-500">
           You haven’t registered for any events yet.
         </p>
@@ -48,12 +54,12 @@ export default function DashboardPage() {
                   Seats Booked:{" "}
                   <span className="font-semibold">{noOfSeats}</span>
                 </p>
-                <a
-                  href={`/events/${eventId._id}`}
+                <Link
+                  to={`/events/${eventId._id}`}
                   className="mt-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-teal-400 text-white rounded-lg shadow hover:from-blue-700 hover:to-teal-500 transition-all text-center font-semibold cursor-pointer w-fit"
                 >
                   View Details
-                </a>
+                </Link>
               </li>
             )
           )}

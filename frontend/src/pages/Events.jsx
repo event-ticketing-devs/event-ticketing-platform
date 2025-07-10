@@ -6,6 +6,7 @@ import { format } from "date-fns";
 const EventListPage = () => {
   const [events, setEvents] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
     category: "",
     date: "",
@@ -14,12 +15,14 @@ const EventListPage = () => {
   });
 
   const fetchEvents = async () => {
+    setLoading(true);
     try {
       const res = await apiClient.get("/events");
       setEvents(res.data);
     } catch (err) {
       console.error(err);
     }
+    setLoading(false);
   };
 
   const fetchCategories = async () => {
@@ -60,51 +63,59 @@ const EventListPage = () => {
   return (
     <div className="p-4 max-w-5xl mx-auto">
       <h1 className="text-3xl font-bold mb-6 text-blue-700">Browse Events</h1>
-      <div className="flex flex-wrap gap-4 mb-6">
-        <select
-          className="border p-2 rounded"
-          value={filters.category}
-          onChange={(e) => setFilters({ ...filters, category: e.target.value })}
-        >
-          <option value="">All Categories</option>
-          {categories.map((cat) => (
-            <option key={cat._id} value={cat._id}>
-              {cat.name}
-            </option>
-          ))}
-        </select>
+      {loading ? (
+        <div className="text-center py-10 text-blue-600 font-semibold">
+          Loading events...
+        </div>
+      ) : (
+        <div className="flex flex-wrap gap-4 mb-6">
+          <select
+            className="border p-2 rounded"
+            value={filters.category}
+            onChange={(e) =>
+              setFilters({ ...filters, category: e.target.value })
+            }
+          >
+            <option value="">All Categories</option>
+            {categories.map((cat) => (
+              <option key={cat._id} value={cat._id}>
+                {cat.name}
+              </option>
+            ))}
+          </select>
 
-        <input
-          type="date"
-          className="border p-2 rounded"
-          value={filters.date}
-          onChange={(e) => setFilters({ ...filters, date: e.target.value })}
-        />
+          <input
+            type="date"
+            className="border p-2 rounded"
+            value={filters.date}
+            onChange={(e) => setFilters({ ...filters, date: e.target.value })}
+          />
 
-        <select
-          className="border p-2 rounded"
-          value={filters.venue}
-          onChange={(e) => setFilters({ ...filters, venue: e.target.value })}
-        >
-          <option value="">All Venues</option>
-          {venues.map((venue) => (
-            <option key={venue} value={venue}>
-              {venue}
-            </option>
-          ))}
-        </select>
+          <select
+            className="border p-2 rounded"
+            value={filters.venue}
+            onChange={(e) => setFilters({ ...filters, venue: e.target.value })}
+          >
+            <option value="">All Venues</option>
+            {venues.map((venue) => (
+              <option key={venue} value={venue}>
+                {venue}
+              </option>
+            ))}
+          </select>
 
-        <input
-          type="number"
-          min="0"
-          className="border p-2 rounded"
-          placeholder="Max Price"
-          value={filters.price}
-          onChange={(e) => setFilters({ ...filters, price: e.target.value })}
-        />
-      </div>
+          <input
+            type="number"
+            min="0"
+            className="border p-2 rounded"
+            placeholder="Max Price"
+            value={filters.price}
+            onChange={(e) => setFilters({ ...filters, price: e.target.value })}
+          />
+        </div>
+      )}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {filteredEvents.length === 0 ? (
+        {filteredEvents.length === 0 && !loading ? (
           <p className="col-span-full text-slate-500">No events found.</p>
         ) : (
           filteredEvents.map((event) => (

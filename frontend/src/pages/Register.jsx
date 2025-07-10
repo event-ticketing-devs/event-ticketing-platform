@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { Link } from "react-router-dom";
 import { registerUser } from "../services/authService";
 
 const Register = () => {
@@ -107,9 +108,9 @@ const Register = () => {
       </form>
       <div className="mt-4 text-center text-slate-600">
         Already have an account?{" "}
-        <a href="/login" className="text-blue-600 hover:underline">
+        <Link to="/login" className="text-blue-600 hover:underline">
           Login
-        </a>
+        </Link>
       </div>
     </div>
   );

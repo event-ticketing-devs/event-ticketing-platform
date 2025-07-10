@@ -20,6 +20,7 @@ export default function EventDetailsPage() {
   const [seatCount, setSeatCount] = useState(1);
 
   const fetchEvent = async () => {
+    setLoading(true);
     try {
       const res = await apiClient.get(`/events/${id}`);
       setEvent(res.data);
@@ -32,6 +33,7 @@ export default function EventDetailsPage() {
       } catch (e) {
         remainingSeats = 0;
       }
+      setLoading(false);
 
       let alreadyBooked = false;
       let bookingId = null;
@@ -96,7 +98,12 @@ export default function EventDetailsPage() {
     // eslint-disable-next-line
   }, [id]);
 
-  if (loading) return <p className="p-4">Loading...</p>;
+  if (loading)
+    return (
+      <p className="text-center py-10 text-blue-600 font-semibold">
+        Loading...
+      </p>
+    );
   if (error) return <p className="p-4 text-red-500">{error}</p>;
 
   return (
