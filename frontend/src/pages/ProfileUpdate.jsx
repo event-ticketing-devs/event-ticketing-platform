@@ -68,14 +68,17 @@ const ProfileUpdate = () => {
           onChange={handleChange}
           required
         />
-        <input
-          type="password"
-          name="password"
-          placeholder="New Password (leave blank to keep current)"
-          className="block w-full border p-3 rounded focus:ring-2 focus:ring-blue-400 bg-slate-50"
-          value={formData.password}
-          onChange={handleChange}
-        />
+        {/* Only show password field for non-OAuth users */}
+        {!currentUser.googleId && (
+          <input
+            type="password"
+            name="password"
+            placeholder="New Password (leave blank to keep current)"
+            className="block w-full border p-3 rounded focus:ring-2 focus:ring-blue-400 bg-slate-50"
+            value={formData.password}
+            onChange={handleChange}
+          />
+        )}
         <button
           type="submit"
           className="bg-gradient-to-r from-blue-600 to-teal-400 text-white px-6 py-2 rounded-lg shadow hover:from-blue-700 hover:to-teal-500 transition-all font-semibold cursor-pointer"
