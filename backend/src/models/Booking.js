@@ -20,6 +20,8 @@ const bookingSchema = new mongoose.Schema(
       default: "none",
     },
     cancelledByEvent: { type: Boolean, default: false },
+    ticketCode: { type: String, unique: true, required: true },
+    verified: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

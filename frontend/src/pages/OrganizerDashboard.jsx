@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import apiClient from "../api/apiClient";
 import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
@@ -184,6 +184,12 @@ export default function OrganizerDashboard() {
                       >
                         View Details
                       </button>
+                      <Link
+                        to={`/events/verify/${event._id}`}
+                        className="bg-green-600 text-white px-3 py-1 rounded-lg font-medium hover:bg-green-700 transition-all cursor-pointer"
+                      >
+                        Verify Tickets
+                      </Link>
                     </div>
                   </li>
                 ))}
@@ -230,6 +236,12 @@ export default function OrganizerDashboard() {
                     >
                       View Details
                     </button>
+                    <Link
+                      to={`/organizer/verify/${event._id}`}
+                      className="bg-green-600 text-white px-3 py-1 rounded-lg font-medium hover:bg-green-700 transition-all cursor-pointer"
+                    >
+                      Verify Tickets
+                    </Link>
                   </div>
                 </li>
               ))}

@@ -16,6 +16,7 @@ import EventForm from "./pages/EventForm";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import NotFound from "./pages/NotFound";
+import OrganizerVerify from "./pages/OrganizerVerify";
 
 function App() {
   return (
@@ -75,6 +76,22 @@ function App() {
                 element={
                   <PrivateRoute>
                     <OrganizerDashboard />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/events/verify/:eventId"
+                element={
+                  <PrivateRoute>
+                    <OrganizerVerify />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/events/verify"
+                element={
+                  <PrivateRoute>
+                    <OrganizerVerify />
                   </PrivateRoute>
                 }
               />
