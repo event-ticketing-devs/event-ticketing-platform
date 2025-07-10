@@ -15,6 +15,7 @@ import OrganizerDashboard from "./pages/OrganizerDashboard";
 import EventForm from "./pages/EventForm";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import NotFound from "./pages/NotFound";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/events" element={<Events />} />
               <Route path="/events/:id" element={<EventDetails />} />
+              <Route path="*" element={<NotFound />} />
               <Route
                 path="/login"
                 element={
