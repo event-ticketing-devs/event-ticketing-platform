@@ -64,7 +64,15 @@ const EventListPage = () => {
 
   return (
     <div className="p-4 max-w-5xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6 text-blue-700">Browse Events</h1>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-3xl font-bold text-blue-700">Browse Events</h1>
+        <Link
+          to="/events/create"
+          className="px-4 py-2 bg-gradient-to-r from-teal-500 to-blue-600 text-white rounded-lg shadow hover:from-teal-600 hover:to-blue-700 transition-all font-semibold"
+        >
+          Create Event
+        </Link>
+      </div>
       {loading ? (
         <div className="text-center py-10 text-blue-600 font-semibold">
           Loading events...
