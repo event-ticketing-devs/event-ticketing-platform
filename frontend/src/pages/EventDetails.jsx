@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import apiClient from "../api/apiClient";
 import { useAuth } from "../context/AuthContext";
 import { format } from "date-fns";
+import StripeCheckout from "../components/StripeCheckout";
 
 export default function EventDetailsPage() {
   const { id } = useParams();
@@ -19,6 +20,7 @@ export default function EventDetailsPage() {
   const [userBookingId, setUserBookingId] = useState(null);
   const [availableSeats, setAvailableSeats] = useState(0);
   const [seatCount, setSeatCount] = useState(1);
+  const [showPayment, setShowPayment] = useState(false);
   const [showUnregisterModal, setShowUnregisterModal] = useState(false);
 
   const fetchEvent = async () => {
@@ -59,6 +61,12 @@ export default function EventDetailsPage() {
       setError(err.response?.data?.message || "Failed to fetch event");
       setLoading(false);
     }
+  };
+
+  const handleBookingSuccess = () => {
+    toast.success("Booking successful!");
+    setShowPayment(false);
+    fetchEvent();
   };
 
   const handleBooking = async () => {
@@ -167,7 +175,7 @@ export default function EventDetailsPage() {
           </p>
         )}
         {/* Hide booking controls if event is past */}
-        {!isPastEvent && currentUser && !alreadyBooked && (
+        {!isPastEvent && currentUser && !alreadyBooked && !showPayment && (
           <div className="mb-4 flex items-center gap-4">
             <label htmlFor="seatCount" className="font-medium">
               Number of Seats:
@@ -189,7 +197,7 @@ export default function EventDetailsPage() {
             </span>
           </div>
         )}
-        {!isPastEvent && currentUser && !alreadyBooked && (
+        {!isPastEvent && currentUser && !alreadyBooked && !showPayment && (
           <p className="mb-4 font-semibold">
             Total Price: ₹{event.price * seatCount}
           </p>
@@ -201,7 +209,7 @@ export default function EventDetailsPage() {
               {!currentUser ? (
                 <button
                   className="bg-gradient-to-r from-blue-600 to-teal-400 text-white px-6 py-2 rounded-lg shadow hover:from-blue-700 hover:to-teal-500 transition-all font-semibold cursor-pointer"
-                  onClick={handleBooking}
+                  onClick={() => navigate("/login")}
                 >
                   Login to Book
                 </button>
@@ -212,9 +220,29 @@ export default function EventDetailsPage() {
                 >
                   Unregister
                 </button>
+              ) : showPayment ? (
+                <div className="w-full">
+                  <StripeCheckout
+                    amount={event.price * seatCount}
+                    onSuccess={async (paymentIntent) => {
+                      await apiClient.post("/bookings", {
+                        eventId: event._id,
+                        noOfSeats: seatCount,
+                        paymentIntentId: paymentIntent.id,
+                      });
+                      handleBookingSuccess();
+                    }}
+                  />
+                  <button
+                    className="mt-4 text-blue-500 underline"
+                    onClick={() => setShowPayment(false)}
+                  >
+                    Cancel Payment
+                  </button>
+                </div>
               ) : (
                 <button
-                  onClick={handleBooking}
+                  onClick={() => setShowPayment(true)}
                   className="bg-gradient-to-r from-green-500 to-teal-400 text-white px-6 py-2 rounded-lg shadow hover:from-green-600 hover:to-teal-500 transition-all font-semibold cursor-pointer"
                   disabled={availableSeats === 0}
                 >

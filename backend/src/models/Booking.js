@@ -22,6 +22,7 @@ const bookingSchema = new mongoose.Schema(
     cancelledByEvent: { type: Boolean, default: false },
     ticketCode: { type: String, unique: true, required: true },
     verified: { type: Boolean, default: false },
+    paymentIntentId: { type: String },
   },
   { timestamps: true }
 );
