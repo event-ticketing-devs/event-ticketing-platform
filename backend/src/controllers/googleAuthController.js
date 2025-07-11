@@ -5,14 +5,14 @@ import jwt from "jsonwebtoken";
 const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const client = new OAuth2Client(CLIENT_ID);
 
-// Utility to generate JWT (reuse from authController)
+// Generate JWT
 const generateToken = (user) => {
   return jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
 };
 
-// @desc    Verify Google ID token, create/login user, return JWT and user info
+// @desc    Google OAuth login/signup
 // @route   POST /api/auth/google
 // @access  Public
 export const googleAuth = async (req, res) => {
@@ -21,38 +21,49 @@ export const googleAuth = async (req, res) => {
     if (!credential) {
       return res.status(400).json({ message: "Missing Google credential" });
     }
+
+    // Verify token
     const ticket = await client.verifyIdToken({
       idToken: credential,
       audience: CLIENT_ID,
     });
+
     const payload = ticket.getPayload();
     const { email, name, sub: googleId, picture } = payload;
+
     if (!email || !googleId) {
       return res
         .status(400)
         .json({ message: "Google account missing email or ID" });
     }
-    // Find or create user
+
+    // Check if user already exists by googleId or email
     let user = await User.findOne({ $or: [{ googleId }, { email }] });
+
     if (!user) {
-      user = await User.create({
+      // Only include phone if present and valid
+      const newUserData = {
         name: name || email,
         email,
         googleId,
-        // Optionally store avatar: picture,
-        role: "attendee", // default role
+        role: "attendee",
         isVerified: true,
-      });
+      };
+
+      user = await User.create(newUserData);
     } else {
-      // If user exists but googleId is missing, update it
+      // If user exists but no googleId, update it
       if (!user.googleId) {
         user.googleId = googleId;
         await user.save();
       }
     }
+
     user.lastLogin = new Date();
     await user.save();
+
     const token = generateToken(user);
+
     res.status(200).json({
       message: "Login successful",
       token,
@@ -69,8 +80,18 @@ export const googleAuth = async (req, res) => {
       },
     });
   } catch (err) {
-    return res
-      .status(401)
-      .json({ message: "Invalid Google token", error: err.message });
+    console.error("Google Auth Error:", err);
+
+    if (err.message.includes("E11000")) {
+      return res.status(409).json({
+        message: "Duplicate key error",
+        error: err.message,
+      });
+    }
+
+    return res.status(401).json({
+      message: "Invalid Google token or server error",
+      error: err.message,
+    });
   }
 };
