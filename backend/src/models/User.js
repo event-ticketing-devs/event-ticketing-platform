@@ -19,6 +19,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: false, // Made optional for OAuth users
       unique: false, // Not all OAuth users will have phone
+      sparse: true, // Allows multiple docs with null phone
       trim: true,
       match: [/^\d{10}$/, "Phone number must be 10 digits"],
     },
