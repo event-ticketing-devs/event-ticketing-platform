@@ -13,7 +13,7 @@ function generateTicketCode() {
 // @access Logged-in users
 export const createBooking = async (req, res) => {
   try {
-    const { eventId, noOfSeats } = req.body;
+    const { eventId, noOfSeats, paymentIntentId } = req.body;
     const userId = req.user._id;
 
     if (!eventId || noOfSeats == null) {
@@ -72,6 +72,7 @@ export const createBooking = async (req, res) => {
       priceAtBooking: event.price,
       ticketCode,
       verified: false,
+      paymentIntentId, // Save Stripe payment reference
     });
 
     // Send ticket email
