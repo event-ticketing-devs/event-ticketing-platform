@@ -2,7 +2,6 @@ import Event from "../models/Event.js";
 import User from "../models/User.js";
 import Booking from "../models/Booking.js";
 import Category from "../models/Category.js";
-import sendEmail from "../utils/sendEmail.js";
 
 // @desc    Create new event
 // @route   POST /api/events
@@ -238,38 +237,13 @@ export const updateEvent = async (req, res) => {
       req.body.date &&
       new Date(req.body.date).toString() !== new Date(prevDate).toString()
     ) {
-      // Notify users about date change via email
-      const bookings = await Booking.find({ eventId: event._id }).populate(
-        "userId",
-        "email name"
-      );
-      const emails = bookings.map((b) => b.userId?.email).filter(Boolean);
-      if (emails.length > 0) {
-        await sendEmail({
-          to: emails,
-          subject: `Event Date Changed: ${event.title}`,
-          text: `Dear attendee,\n\nThe date for the event "${
-            event.title
-          }" has been changed to ${formatDate(
-            event.date
-          )}.\nPlease check your dashboard for details.\n\nThank you.`,
-        });
-      }
+      // TODO: notify users about date change
+      console.log("Notify users about date change");
     }
 
     if (req.body.price && req.body.price !== prevPrice) {
-      // Notify organizer and admin via email about price update
-      const organizer = await User.findById(event.organizerId);
-      const admins = await User.find({ role: "admin" });
-      const adminEmails = admins.map((a) => a.email);
-      const notifyEmails = [organizer?.email, ...adminEmails].filter(Boolean);
-      if (notifyEmails.length > 0) {
-        await sendEmail({
-          to: notifyEmails,
-          subject: `Event Price Updated: ${event.title}`,
-          text: `The price for event "${event.title}" has been updated to ₹${event.price}. Existing bookings remain at their original price.`,
-        });
-      }
+      // TODO: maybe notify organizer or admin
+      console.log("Price updated — bookings remain at original price");
     }
 
     res.json(event);
@@ -345,11 +319,3 @@ export const getEventSeatInfo = async (req, res) => {
     return res.status(500).json({ message: "Server error" });
   }
 };
-
-// Helper function for formatting date
-function formatDate(date) {
-  return new Date(date).toLocaleString("en-IN", {
-    dateStyle: "full",
-    timeStyle: "short",
-  });
-}

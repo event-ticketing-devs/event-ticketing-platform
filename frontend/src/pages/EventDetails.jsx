@@ -1,5 +1,6 @@
 // src/pages/EventDetailsPage.jsx
 import { useEffect, useState } from "react";
+import ConfirmModal from "../components/ConfirmModal";
 import { useParams, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import apiClient from "../api/apiClient";
@@ -18,6 +19,7 @@ export default function EventDetailsPage() {
   const [userBookingId, setUserBookingId] = useState(null);
   const [availableSeats, setAvailableSeats] = useState(0);
   const [seatCount, setSeatCount] = useState(1);
+  const [showUnregisterModal, setShowUnregisterModal] = useState(false);
 
   const fetchEvent = async () => {
     setLoading(true);
@@ -77,9 +79,13 @@ export default function EventDetailsPage() {
       .then(fetchEvent);
   };
 
-  const handleUnregister = async () => {
-    // TODO: Add confirmation dialog before unregistering
+  const handleUnregister = () => {
     if (!userBookingId) return toast.error("No booking found");
+    setShowUnregisterModal(true);
+  };
+
+  const confirmUnregister = async () => {
+    setShowUnregisterModal(false);
     try {
       toast
         .promise(apiClient.delete(`/bookings/${userBookingId}`), {
@@ -218,6 +224,16 @@ export default function EventDetailsPage() {
             </>
           )}
         </div>
+        {/* Confirm Unregister Modal */}
+        <ConfirmModal
+          open={showUnregisterModal}
+          title="Cancel Booking?"
+          description="Are you sure you want to cancel your booking for this event? This action cannot be undone."
+          onClose={() => setShowUnregisterModal(false)}
+          onConfirm={confirmUnregister}
+          confirmText="Yes, Cancel"
+          cancelText="No, Keep Booking"
+        />
       </div>
     </div>
   );
