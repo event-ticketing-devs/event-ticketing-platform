@@ -2,6 +2,7 @@ import Booking from "../models/Booking.js";
 import Event from "../models/Event.js";
 import User from "../models/User.js";
 import crypto from "crypto";
+import transporter from "../utils/mailer.js";
 
 function generateTicketCode() {
   return crypto.randomBytes(4).toString("hex").toUpperCase();
@@ -73,7 +74,42 @@ export const createBooking = async (req, res) => {
       verified: false,
     });
 
-    // TODO: Send confirmation email with ticketCode
+    // Send ticket email
+    await transporter.sendMail({
+      from: '"Event Ticketing" <tickets@eventify.com>',
+      to: req.user.email,
+      subject: `Your Ticket for ${event.title}`,
+      text: `Thank you for booking!\n\nYour ticket code: ${booking.ticketCode}\nEvent: ${event.title}\nDate: ${event.date}\nVenue: ${event.venue}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; background: #f9f9f9; padding: 24px;">
+          <div style="max-width: 500px; margin: auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); padding: 24px;">
+            <h1 style="color: #2d7ff9; text-align: center;">🎟️ Your Event Ticket</h1>
+            <hr style="margin: 16px 0;">
+            <p style="font-size: 1.1em;">Thank you for booking <strong>${
+              event.title
+            }</strong>!</p>
+            <div style="background: #f0f4ff; border-radius: 6px; padding: 16px; margin: 16px 0;">
+              <p style="font-size: 1.2em; margin: 0;">
+                <strong>Ticket Code:</strong>
+                <span style="font-size: 1.5em; color: #2d7ff9; letter-spacing: 2px;">${
+                  booking.ticketCode
+                }</span>
+              </p>
+            </div>
+            <ul style="list-style: none; padding: 0; font-size: 1.1em;">
+              <li><strong>Event:</strong> ${event.title}</li>
+              <li><strong>Date:</strong> ${new Date(
+                event.date
+              ).toLocaleString()}</li>
+              <li><strong>Venue:</strong> ${event.venue}</li>
+              <li><strong>Seats Booked:</strong> ${booking.noOfSeats}</li>
+            </ul>
+            <hr style="margin: 16px 0;">
+            <p style="text-align: center; color: #888;">Please present this ticket code at the event entrance.</p>
+          </div>
+        </div>
+      `,
+    });
 
     res.status(201).json(booking);
   } catch (error) {
