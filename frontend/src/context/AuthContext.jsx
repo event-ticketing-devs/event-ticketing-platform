@@ -13,7 +13,6 @@ export const AuthProvider = ({ children }) => {
         setCurrentUser(JSON.parse(stored));
       }
     } catch (err) {
-      // TODO: Handle JSON parsing error
       console.error("Failed to parse user from localStorage:", err);
     }
     setLoading(false);
