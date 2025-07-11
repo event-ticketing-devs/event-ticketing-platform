@@ -64,8 +64,7 @@ export default function EventDetailsPage() {
       toast("Please log in to book", { icon: "🔒" });
       return navigate("/login");
     }
-    // Placeholder for payment gateway integration
-    // TODO: Integrate payment gateway here before booking confirmation
+
     toast
       .promise(
         apiClient.post("/bookings", { eventId: id, noOfSeats: seatCount }),
@@ -79,6 +78,7 @@ export default function EventDetailsPage() {
   };
 
   const handleUnregister = async () => {
+    // TODO: Add confirmation dialog before unregistering
     if (!userBookingId) return toast.error("No booking found");
     try {
       toast
