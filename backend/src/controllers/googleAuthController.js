@@ -1,6 +1,7 @@
 import { OAuth2Client } from "google-auth-library";
 import User from "../models/User.js";
 import jwt from "jsonwebtoken";
+import transporter from "../utils/mailer.js";
 
 const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const client = new OAuth2Client(CLIENT_ID);
@@ -60,34 +61,37 @@ export const googleAuth = async (req, res) => {
 
     // Send welcome email for new Google OAuth users
     if (isNewUser) {
-      const transporter = (await import("../utils/mailer.js")).default;
-      await transporter.sendMail({
-        from: '"Event Ticketing" <welcome@example.com>',
-        to: user.email,
-        subject: `Welcome to Event Ticketing Platform!`,
-        html: `
-          <div style="font-family: Arial, sans-serif; background: #f9f9f9; padding: 24px;">
-            <div style="max-width: 500px; margin: auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); padding: 24px;">
-              <h1 style="color: #2d7ff9; text-align: center;">👋 Welcome, ${
-                user.name || user.email
-              }!</h1>
-              <hr style="margin: 16px 0;">
-              <p style="font-size: 1.1em;">Thank you for registering at <strong>Event Ticketing Platform</strong>!</p>
-              <ul style="list-style: none; padding: 0; font-size: 1.1em;">
-                <li><strong>Name:</strong> ${user.name || user.email}</li>
-                <li><strong>Email:</strong> ${user.email}</li>
-                ${
-                  user.phone
-                    ? `<li><strong>Phone:</strong> ${user.phone}</li>`
-                    : ""
-                }
-              </ul>
-              <hr style="margin: 16px 0;">
-              <p style="text-align: center; color: #888;">We’re excited to have you join our events community!</p>
+      try {
+        await transporter.sendMail({
+          from: '"Event Ticketing" <welcome@example.com>',
+          to: user.email,
+          subject: `Welcome to Event Ticketing Platform!`,
+          html: `
+            <div style="font-family: Arial, sans-serif; background: #f9f9f9; padding: 24px;">
+              <div style="max-width: 500px; margin: auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); padding: 24px;">
+                <h1 style="color: #2d7ff9; text-align: center;">👋 Welcome, ${
+                  user.name || user.email
+                }!</h1>
+                <hr style="margin: 16px 0;">
+                <p style="font-size: 1.1em;">Thank you for registering at <strong>Event Ticketing Platform</strong>!</p>
+                <ul style="list-style: none; padding: 0; font-size: 1.1em;">
+                  <li><strong>Name:</strong> ${user.name || user.email}</li>
+                  <li><strong>Email:</strong> ${user.email}</li>
+                  ${
+                    user.phone
+                      ? `<li><strong>Phone:</strong> ${user.phone}</li>`
+                      : ""
+                  }
+                </ul>
+                <hr style="margin: 16px 0;">
+                <p style="text-align: center; color: #888;">We’re excited to have you join our events community!</p>
+              </div>
             </div>
-          </div>
-        `,
-      });
+          `,
+        });
+      } catch (emailErr) {
+        console.error("Welcome email failed to send:", emailErr);
+      }
     }
 
     user.lastLogin = new Date();
