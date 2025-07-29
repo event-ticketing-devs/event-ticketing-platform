@@ -214,19 +214,35 @@ export const updateEvent = async (req, res) => {
       "totalSeats",
       "photo",
     ];
+
     let isDifferent = false;
     for (const field of updatableFields) {
-      if (
-        Object.prototype.hasOwnProperty.call(req.body, field) &&
-        String(event[field]) !== String(req.body[field])
-      ) {
+      if (!Object.prototype.hasOwnProperty.call(req.body, field)) continue;
+      const oldVal = event[field];
+      const newVal = req.body[field];
+      let changed = false;
+      if (field === "date") {
+        // Compare as timestamps
+        changed = new Date(oldVal).getTime() !== new Date(newVal).getTime();
+      } else if (field === "price" || field === "totalSeats") {
+        changed = Number(oldVal) !== Number(newVal);
+      } else if (field === "categoryId" || field === "organizerId") {
+        changed = String(oldVal) !== String(newVal);
+      } else if (typeof oldVal === "string" && typeof newVal === "string") {
+        changed = oldVal.trim() !== newVal.trim();
+      } else if (Array.isArray(oldVal) && Array.isArray(newVal)) {
+        changed = JSON.stringify(oldVal) !== JSON.stringify(newVal);
+      } else {
+        changed = String(oldVal) !== String(newVal);
+      }
+      if (changed) {
         isDifferent = true;
         break;
       }
     }
     if (!isDifferent) {
       return res
-        .status(400)
+        .status(200)
         .json({ message: "No changes detected. Event not updated." });
     }
 
