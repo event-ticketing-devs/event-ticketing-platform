@@ -100,8 +100,16 @@ export default function EventFormPage() {
     try {
       const submitForm = { ...form, totalSeats };
       if (isEditing) {
-        await apiClient.patch(`/events/${id}`, submitForm);
-        toast.success("Event updated");
+        const res = await apiClient.patch(`/events/${id}`, submitForm);
+        if (
+          res.data &&
+          res.data.message &&
+          res.data.message.includes("No changes detected")
+        ) {
+          toast("No changes detected. Event not updated.", { icon: "ℹ️" });
+        } else {
+          toast.success("Event updated");
+        }
       } else {
         await apiClient.post("/events", submitForm);
         toast.success("Event created");
