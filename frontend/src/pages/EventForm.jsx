@@ -47,10 +47,21 @@ export default function EventFormPage() {
         totalSeats,
         photo,
       } = res.data;
+
+      const formatDateForInput = (dateString) => {
+        const eventDate = new Date(dateString);
+        const year = eventDate.getFullYear();
+        const month = String(eventDate.getMonth() + 1).padStart(2, "0");
+        const day = String(eventDate.getDate()).padStart(2, "0");
+        const hours = String(eventDate.getHours()).padStart(2, "0");
+        const minutes = String(eventDate.getMinutes()).padStart(2, "0");
+        return `${year}-${month}-${day}T${hours}:${minutes}`;
+      };
+
       setForm({
         title,
         description,
-        date: date.slice(0, 16),
+        date: formatDateForInput(date),
         categoryId:
           typeof categoryId === "object" && categoryId !== null
             ? categoryId._id
