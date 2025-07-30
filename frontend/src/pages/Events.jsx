@@ -36,7 +36,7 @@ const EventListPage = () => {
 
   // Get unique venues for filter dropdown
   const venues = Array.from(
-    new Set(events.map((e) => e.venue).filter(Boolean))
+    new Set(events.map((e) => e.venue?.name || e.venue).filter(Boolean))
   );
 
   const filteredEvents = events.filter((event) => {
@@ -50,7 +50,8 @@ const EventListPage = () => {
     const matchDate = filters.date
       ? format(new Date(event.date), "yyyy-MM-dd") === filters.date
       : true;
-    const matchVenue = filters.venue ? event.venue === filters.venue : true;
+    const venueToMatch = event.venue?.name || event.venue;
+    const matchVenue = filters.venue ? venueToMatch === filters.venue : true;
     const matchPrice = filters.price
       ? Number(event.price) <= Number(filters.price)
       : true;
@@ -160,7 +161,13 @@ const EventListPage = () => {
               </p>
               <div className="flex items-center gap-4 text-sm">
                 <span className="font-medium">Venue:</span>{" "}
-                <span>{event.venue}</span>
+                <span>{event.venue?.name || event.venue}</span>
+                {event.city && (
+                  <>
+                    <span className="font-medium">City:</span>{" "}
+                    <span>{event.city}</span>
+                  </>
+                )}
                 <span className="font-medium">Price:</span>{" "}
                 <span>₹{event.price}</span>
               </div>

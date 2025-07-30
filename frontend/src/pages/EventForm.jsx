@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import apiClient from "../api/apiClient";
 import toast from "react-hot-toast";
+import VenueSelector from "../components/VenueSelector";
 
 export default function EventFormPage() {
   const { id } = useParams();
@@ -13,7 +14,8 @@ export default function EventFormPage() {
     description: "",
     date: "",
     categoryId: "",
-    venue: "",
+    city: "",
+    venue: null, // Now an object with name, address, coordinates
     price: "",
     totalSeats: 0,
     photo: "",
@@ -42,6 +44,7 @@ export default function EventFormPage() {
         description,
         date,
         categoryId,
+        city,
         venue,
         price,
         totalSeats,
@@ -66,7 +69,8 @@ export default function EventFormPage() {
           typeof categoryId === "object" && categoryId !== null
             ? categoryId._id
             : categoryId,
-        venue,
+        city: city || "",
+        venue: venue || null,
         price,
         totalSeats,
         photo,
@@ -89,30 +93,43 @@ export default function EventFormPage() {
     }
   };
 
+  const handleVenueSelect = (venueData) => {
+    setForm((prev) => ({ ...prev, venue: venueData }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Validate required fields
+    if (!form.venue) {
+      toast.error("Please select a venue using the map");
+      return;
+    }
+
+    if (!form.city.trim()) {
+      toast.error("Please enter a city");
+      return;
+    }
+
     // Validate totalSeats is a positive integer
     const totalSeats = Number(form.totalSeats);
     if (!Number.isInteger(totalSeats) || totalSeats <= 0) {
       toast.error("Total seats must be a positive integer");
       return;
     }
+
     try {
       const submitForm = { ...form, totalSeats };
       if (isEditing) {
         const res = await apiClient.patch(`/events/${id}`, submitForm);
-        if (
-          res.data &&
-          res.data.message &&
-          res.data.message.includes("No changes detected")
-        ) {
-          toast("No changes detected. Event not updated.", { icon: "ℹ️" });
+        if (res.data?.message) {
+          toast.success(res.data.message);
         } else {
-          toast.success("Event updated");
+          toast.success("Event updated successfully");
         }
       } else {
         await apiClient.post("/events", submitForm);
-        toast.success("Event created");
+        toast.success("Event created successfully");
       }
       navigate("/organizer");
     } catch (err) {
@@ -178,15 +195,27 @@ export default function EventFormPage() {
               </option>
             ))}
           </select>
+
           <input
             type="text"
-            name="venue"
-            placeholder="Venue"
+            name="city"
+            placeholder="City *"
             className="block w-full border p-3 rounded focus:ring-2 focus:ring-blue-400 bg-slate-50"
-            value={form.venue}
+            value={form.city}
             onChange={handleChange}
             required
           />
+
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
+              Venue Location *
+            </label>
+            <VenueSelector
+              onVenueSelect={handleVenueSelect}
+              selectedVenue={form.venue}
+              city={form.city}
+            />
+          </div>
           <input
             type="number"
             name="price"

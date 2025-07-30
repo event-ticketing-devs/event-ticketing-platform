@@ -13,6 +13,7 @@ export const createEvent = async (req, res) => {
       description,
       date,
       categoryId,
+      city,
       venue,
       price,
       totalSeats,
@@ -24,7 +25,17 @@ export const createEvent = async (req, res) => {
     if (!title) missingFields.push("title");
     if (!date) missingFields.push("date");
     if (!categoryId) missingFields.push("categoryId");
-    if (!venue) missingFields.push("venue");
+    if (!city) missingFields.push("city");
+    if (
+      !venue ||
+      !venue.name ||
+      !venue.address ||
+      !venue.coordinates ||
+      !venue.coordinates.lat ||
+      !venue.coordinates.lng
+    ) {
+      missingFields.push("venue (with name, address, and coordinates)");
+    }
     if (price == null) missingFields.push("price");
     if (totalSeats == null) missingFields.push("totalSeats");
     if (missingFields.length > 0) {
@@ -73,6 +84,7 @@ export const createEvent = async (req, res) => {
       description,
       date,
       categoryId,
+      city,
       venue,
       price,
       totalSeats,
@@ -209,6 +221,7 @@ export const updateEvent = async (req, res) => {
       "description",
       "date",
       "categoryId",
+      "city",
       "venue",
       "price",
       "totalSeats",
