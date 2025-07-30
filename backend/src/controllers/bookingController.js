@@ -76,12 +76,13 @@ export const createBooking = async (req, res) => {
       paymentIntentId,
     });
 
-    await transporter.sendMail({
-      from: '"Event Ticketing" <tickets@eventify.com>',
-      to: req.user.email,
-      subject: `Your Ticket for ${event.title}`,
-      text: `Thank you for booking!\n\nYour ticket ID: ${booking.ticketId}\nEvent: ${event.title}\nDate: ${event.date}\nVenue: ${event.venue.name}\nAddress: ${event.venue.address}\nCity: ${event.city}\n\nPlease present the QR code at the event entrance.`,
-      html: `
+    try {
+      await transporter.sendMail({
+        from: '"Event Ticketing" <tickets@eventify.com>',
+        to: req.user.email,
+        subject: `Your Ticket for ${event.title}`,
+        text: `Thank you for booking!\n\nYour ticket ID: ${booking.ticketId}\nEvent: ${event.title}\nDate: ${event.date}\nVenue: ${event.venue}\n\nPlease present the QR code at the event entrance.`,
+        html: `
         <div style="font-family: Arial, sans-serif; background: #f9f9f9; padding: 24px;">
           <div style="max-width: 500px; margin: auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); padding: 24px;">
             <h1 style="color: #2d7ff9; text-align: center;">🎟️ Your Event Ticket</h1>
@@ -141,7 +142,10 @@ export const createBooking = async (req, res) => {
           </div>
         </div>
       `,
-    });
+      });
+    } catch (emailError) {
+      console.log("Failed to send ticket email:", emailError.message);
+    }
 
     res.status(201).json(booking);
   } catch (error) {
