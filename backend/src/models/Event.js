@@ -10,7 +10,16 @@ const eventSchema = new mongoose.Schema(
       ref: "Category",
       required: true,
     },
-    venue: { type: String, required: true },
+    city: { type: String, required: true, trim: true },
+    venue: {
+      name: { type: String, required: true },
+      address: { type: String, required: true },
+      coordinates: {
+        lat: { type: Number, required: true },
+        lng: { type: Number, required: true },
+      },
+      placeId: { type: String }, // Google Places ID for reference
+    },
     price: { type: Number, required: true },
     totalSeats: { type: Number, required: true },
     organizerId: {

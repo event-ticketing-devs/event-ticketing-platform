@@ -7,6 +7,7 @@ import apiClient from "../api/apiClient";
 import { useAuth } from "../context/AuthContext";
 import { format } from "date-fns";
 import StripeCheckout from "../components/StripeCheckout";
+import VenueMap from "../components/VenueMap";
 
 export default function EventDetailsPage() {
   const { id } = useParams();
@@ -159,12 +160,28 @@ export default function EventDetailsPage() {
         )}
         <p className="mb-4 text-slate-700">{event.description}</p>
         <div className="flex flex-wrap gap-4 mb-2 text-sm">
-          <span className="font-medium">Venue:</span> <span>{event.venue}</span>
+          <span className="font-medium">Venue:</span>
+          <span>{event.venue?.name || event.venue}</span>
+          <span className="font-medium">City:</span>
+          <span>{event.city}</span>
           <span className="font-medium">Total Seats:</span>{" "}
           <span>{event.totalSeats}</span>
           <span className="font-medium">Price:</span>{" "}
           <span>₹{event.price}</span>
         </div>
+
+        {/* Venue Location Section */}
+        {event.venue &&
+          typeof event.venue === "object" &&
+          event.venue.coordinates && (
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold mb-3 text-gray-800">
+                📍 Venue Location
+              </h3>
+              <VenueMap venue={event.venue} height="250px" />
+            </div>
+          )}
+
         <p className="mb-2">
           Available Seats:{" "}
           <span className="font-semibold">{availableSeats}</span>

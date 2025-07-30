@@ -80,7 +80,7 @@ export const createBooking = async (req, res) => {
       from: '"Event Ticketing" <tickets@eventify.com>',
       to: req.user.email,
       subject: `Your Ticket for ${event.title}`,
-      text: `Thank you for booking!\n\nYour ticket ID: ${booking.ticketId}\nEvent: ${event.title}\nDate: ${event.date}\nVenue: ${event.venue}\n\nPlease present the QR code at the event entrance.`,
+      text: `Thank you for booking!\n\nYour ticket ID: ${booking.ticketId}\nEvent: ${event.title}\nDate: ${event.date}\nVenue: ${event.venue.name}\nAddress: ${event.venue.address}\nCity: ${event.city}\n\nPlease present the QR code at the event entrance.`,
       html: `
         <div style="font-family: Arial, sans-serif; background: #f9f9f9; padding: 24px;">
           <div style="max-width: 500px; margin: auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); padding: 24px;">
@@ -108,9 +108,34 @@ export const createBooking = async (req, res) => {
               <li><strong>Date:</strong> ${new Date(
                 event.date
               ).toLocaleString()}</li>
-              <li><strong>Venue:</strong> ${event.venue}</li>
+              <li><strong>Venue:</strong> ${event.venue.name}</li>
+              <li><strong>Address:</strong> ${event.venue.address}</li>
+              <li><strong>City:</strong> ${event.city}</li>
               <li><strong>Seats Booked:</strong> ${booking.noOfSeats}</li>
             </ul>
+            
+            <!-- Venue Map Section -->
+            <div style="margin: 20px 0; padding: 16px; background: #f8f9fa; border-radius: 8px; text-align: center;">
+              <h3 style="color: #333; margin: 0 0 12px 0;">📍 Venue Location</h3>
+              <img src="https://maps.googleapis.com/maps/api/staticmap?center=${
+                event.venue.coordinates.lat
+              },${
+        event.venue.coordinates.lng
+      }&zoom=15&size=400x200&markers=color:red%7C${
+        event.venue.coordinates.lat
+      },${event.venue.coordinates.lng}&key=${process.env.GOOGLE_MAPS_API_KEY}" 
+                   alt="Venue Map" 
+                   style="max-width: 100%; border-radius: 6px; border: 1px solid #ddd;" />
+              <div style="margin-top: 10px;">
+                <a href="https://www.google.com/maps/search/?api=1&query=${
+                  event.venue.coordinates.lat
+                },${event.venue.coordinates.lng}" 
+                   style="background: #4285f4; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-size: 14px;">
+                  🗺️ Open in Google Maps
+                </a>
+              </div>
+            </div>
+            
             <hr style="margin: 16px 0;">
             <p style="text-align: center; color: #888;">Please present the QR code at the event entrance.</p>
           </div>
