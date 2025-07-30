@@ -1,12 +1,11 @@
 import Booking from "../models/Booking.js";
 import Event from "../models/Event.js";
 import User from "../models/User.js";
-import crypto from "crypto";
 import transporter from "../utils/mailer.js";
-
-function generateTicketCode() {
-  return crypto.randomBytes(4).toString("hex").toUpperCase();
-}
+import {
+  generateTicketId,
+  generateTicketQR,
+} from "../utils/qrCodeGenerator.js";
 
 // @desc Create a new booking
 // @route POST /api/bookings
@@ -57,30 +56,31 @@ export const createBooking = async (req, res) => {
       return res.status(400).json({ message: "Not enough seats available" });
     }
 
-    // Generate unique ticket code
-    let ticketCode;
-    let codeExists = true;
-    while (codeExists) {
-      ticketCode = generateTicketCode();
-      codeExists = await Booking.exists({ ticketCode });
+    let ticketId;
+    let idExists = true;
+    while (idExists) {
+      ticketId = generateTicketId();
+      idExists = await Booking.exists({ ticketId });
     }
+
+    const qrCode = await generateTicketQR(ticketId, eventId);
 
     const booking = await Booking.create({
       eventId,
       userId,
       noOfSeats,
       priceAtBooking: event.price,
-      ticketCode,
+      ticketId,
+      qrCode,
       verified: false,
-      paymentIntentId, // Save Stripe payment reference
+      paymentIntentId,
     });
 
-    // Send ticket email
     await transporter.sendMail({
       from: '"Event Ticketing" <tickets@eventify.com>',
       to: req.user.email,
       subject: `Your Ticket for ${event.title}`,
-      text: `Thank you for booking!\n\nYour ticket code: ${booking.ticketCode}\nEvent: ${event.title}\nDate: ${event.date}\nVenue: ${event.venue}`,
+      text: `Thank you for booking!\n\nYour ticket ID: ${booking.ticketId}\nEvent: ${event.title}\nDate: ${event.date}\nVenue: ${event.venue}\n\nPlease present the QR code at the event entrance.`,
       html: `
         <div style="font-family: Arial, sans-serif; background: #f9f9f9; padding: 24px;">
           <div style="max-width: 500px; margin: auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); padding: 24px;">
@@ -89,13 +89,19 @@ export const createBooking = async (req, res) => {
             <p style="font-size: 1.1em;">Thank you for booking <strong>${
               event.title
             }</strong>!</p>
-            <div style="background: #f0f4ff; border-radius: 6px; padding: 16px; margin: 16px 0;">
-              <p style="font-size: 1.2em; margin: 0;">
-                <strong>Ticket Code:</strong>
-                <span style="font-size: 1.5em; color: #2d7ff9; letter-spacing: 2px;">${
-                  booking.ticketCode
+            <div style="background: #f0f4ff; border-radius: 6px; padding: 16px; margin: 16px 0; text-align: center;">
+              <p style="font-size: 1.2em; margin: 0 0 16px 0;">
+                <strong>Ticket ID:</strong>
+                <span style="font-size: 1.2em; color: #2d7ff9; letter-spacing: 1px;">${
+                  booking.ticketId
                 }</span>
               </p>
+              <div style="margin: 16px 0;">
+                <img src="${
+                  booking.qrCode
+                }" alt="Ticket QR Code" style="max-width: 200px; border: 2px solid #e0e0e0; border-radius: 8px;" />
+              </div>
+              <p style="font-size: 0.9em; color: #666; margin: 8px 0 0 0;">Scan this QR code at the event entrance</p>
             </div>
             <ul style="list-style: none; padding: 0; font-size: 1.1em;">
               <li><strong>Event:</strong> ${event.title}</li>
@@ -106,7 +112,7 @@ export const createBooking = async (req, res) => {
               <li><strong>Seats Booked:</strong> ${booking.noOfSeats}</li>
             </ul>
             <hr style="margin: 16px 0;">
-            <p style="text-align: center; color: #888;">Please present this ticket code at the event entrance.</p>
+            <p style="text-align: center; color: #888;">Please present the QR code at the event entrance.</p>
           </div>
         </div>
       `,
@@ -153,7 +159,7 @@ export const getUserBookings = async (req, res) => {
   try {
     const bookings = await Booking.find({ userId: req.user._id })
       .populate("eventId")
-      .select("+ticketCode +verified"); // ensure ticketCode and verified are included
+      .select("+ticketId +qrCode +verified");
     res.json(bookings);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -187,31 +193,105 @@ export const getBookingsByEvent = async (req, res) => {
   }
 };
 
-// @desc Organizer verifies ticket code
+// @desc Organizer verifies ticket QR code
 // @route POST /api/bookings/verify
 // @access Organizer
 export const verifyBookingCode = async (req, res) => {
   try {
-    const { code, eventId } = req.body;
-    const booking = await Booking.findOne({ ticketCode: code });
-    if (!booking)
+    const { qrData, eventId } = req.body;
+
+    if (!qrData) {
+      return res.status(400).json({ message: "QR code data is required" });
+    }
+
+    let ticketInfo;
+    try {
+      // Parse QR code data
+      const { parseQRData } = await import("../utils/qrCodeGenerator.js");
+      ticketInfo = parseQRData(qrData);
+      console.log("Parsed QR ticket info:", ticketInfo);
+      console.log("Frontend provided eventId:", eventId);
+    } catch (error) {
+      console.log("QR parsing error:", error.message);
+      return res.status(400).json({ message: "Invalid QR code format" });
+    }
+
+    const booking = await Booking.findOne({ ticketId: ticketInfo.ticketId });
+    if (!booking) {
+      console.log("No booking found for ticketId:", ticketInfo.ticketId);
       return res
         .status(404)
-        .json({ message: "Invalid code or booking cancelled" });
+        .json({ message: "Invalid ticket or booking cancelled" });
+    }
+
+    console.log("Found booking:");
+    console.log("- Booking eventId:", booking.eventId.toString());
+    console.log("- QR code eventId:", ticketInfo.eventId);
+    console.log("- Frontend eventId:", eventId);
+    console.log(
+      "- Types:",
+      typeof booking.eventId.toString(),
+      typeof ticketInfo.eventId,
+      typeof eventId
+    );
 
     // Check if booking belongs to the selected event
     if (eventId && booking.eventId.toString() !== eventId) {
+      console.log("❌ Event ID mismatch - booking vs frontend");
       return res
         .status(400)
-        .json({ message: "Ticket code does not belong to this event" });
+        .json({ message: "Ticket does not belong to this event" });
     }
 
-    if (booking.verified)
-      return res.status(400).json({ message: "Already verified" });
+    // Also check if QR data event matches the booking event
+    if (booking.eventId.toString() !== ticketInfo.eventId) {
+      console.log("❌ Event ID mismatch - booking vs QR code");
+      return res.status(400).json({ message: "Ticket event mismatch" });
+    }
+
+    if (booking.verified) {
+      return res.status(400).json({ message: "Ticket already verified" });
+    }
 
     booking.verified = true;
     await booking.save();
-    res.json({ message: "Booking verified", booking });
+
+    res.json({
+      message: "Ticket verified successfully",
+      booking: {
+        _id: booking._id,
+        ticketId: booking.ticketId,
+        noOfSeats: booking.noOfSeats,
+        verified: booking.verified,
+        eventId: booking.eventId,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc Get ticket QR code by booking ID
+// @route GET /api/bookings/:id/qr
+// @access Booking owner only
+export const getTicketQR = async (req, res) => {
+  try {
+    const booking = await Booking.findById(req.params.id);
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+
+    if (booking.userId.toString() !== req.user._id.toString()) {
+      return res
+        .status(403)
+        .json({ message: "Not authorized to view this ticket" });
+    }
+
+    res.json({
+      ticketId: booking.ticketId,
+      qrCode: booking.qrCode,
+      verified: booking.verified,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

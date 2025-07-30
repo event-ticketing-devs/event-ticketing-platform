@@ -20,7 +20,8 @@ const bookingSchema = new mongoose.Schema(
       default: "none",
     },
     cancelledByEvent: { type: Boolean, default: false },
-    ticketCode: { type: String, unique: true, required: true },
+    ticketId: { type: String, unique: true, required: true },
+    qrCode: { type: String, required: true }, // Base64 data URL of QR code
     verified: { type: Boolean, default: false },
     paymentIntentId: { type: String },
   },

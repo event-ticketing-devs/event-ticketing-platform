@@ -86,7 +86,7 @@ export default function DashboardPage() {
           {tabData
             .find((t) => t.key === tab)
             .data.map(
-              ({ _id, eventId, noOfSeats, ticketCode, verified }) =>
+              ({ _id, eventId, noOfSeats, ticketId, qrCode, verified }) =>
                 eventId && (
                   <li
                     key={_id}
@@ -102,11 +102,34 @@ export default function DashboardPage() {
                       Seats Booked:{" "}
                       <span className="font-semibold">{noOfSeats}</span>
                     </p>
-                    <div>
-                      <strong>Ticket Code:</strong> {ticketCode || "N/A"}
-                      <br />
-                      <strong>Status:</strong>{" "}
-                      {verified ? "Verified" : "Not Verified"}
+                    <div className="flex flex-col sm:flex-row gap-4">
+                      <div className="flex-1">
+                        <strong>Ticket ID:</strong> {ticketId || "N/A"}
+                        <br />
+                        <strong>Status:</strong>{" "}
+                        {verified ? (
+                          <span className="text-green-600 font-semibold">
+                            Verified
+                          </span>
+                        ) : (
+                          <span className="text-orange-600 font-semibold">
+                            Not Verified
+                          </span>
+                        )}
+                      </div>
+                      {qrCode && (
+                        <div className="flex flex-col items-center">
+                          <strong className="mb-2 text-sm">QR Code:</strong>
+                          <img
+                            src={qrCode}
+                            alt="Ticket QR Code"
+                            className="w-24 h-24 border-2 border-gray-300 rounded-lg"
+                          />
+                          <p className="text-xs text-gray-500 mt-1 text-center">
+                            Present at event entrance
+                          </p>
+                        </div>
+                      )}
                     </div>
                     <div className="flex gap-2">
                       <Link
@@ -115,6 +138,14 @@ export default function DashboardPage() {
                       >
                         View Details
                       </Link>
+                      {qrCode && (
+                        <Link
+                          to={`/ticket/${_id}`}
+                          className="mt-2 px-4 py-2 bg-gray-600 text-white rounded-lg shadow hover:bg-gray-700 transition-all text-center font-semibold cursor-pointer w-fit"
+                        >
+                          View Ticket
+                        </Link>
+                      )}
                       {eventId.cancelled && (
                         <span className="mt-2 px-3 py-1 bg-red-100 text-red-700 rounded font-semibold">
                           Cancelled
