@@ -9,6 +9,45 @@ import { format } from "date-fns";
 import StripeCheckout from "../components/StripeCheckout";
 import VenueMap from "../components/VenueMap";
 
+/**
+ * Calculate refund policy based on time until event
+ * @param {Date} eventDate - Event date
+ * @returns {Object} Refund policy information
+ */
+const calculateRefundPolicy = (eventDate) => {
+  const currentDate = new Date();
+  const timeUntilEvent = eventDate - currentDate;
+  const daysUntilEvent = timeUntilEvent / (1000 * 60 * 60 * 24);
+
+  let refundPercentage = 0;
+  let refundPolicy = "";
+  let refundColor = "";
+
+  // Use small epsilon to handle floating point precision issues
+  const epsilon = 0.001; // About 1.4 minutes
+
+  if (daysUntilEvent >= 7 - epsilon) {
+    refundPercentage = 100;
+    refundPolicy = "Full refund (7+ days before event)";
+    refundColor = "text-green-600";
+  } else if (daysUntilEvent >= 1 - epsilon) {
+    refundPercentage = 50;
+    refundPolicy = "50% refund (1-7 days before event)";
+    refundColor = "text-yellow-600";
+  } else {
+    refundPercentage = 0;
+    refundPolicy = "No refund (less than 24 hours before event)";
+    refundColor = "text-red-600";
+  }
+
+  return {
+    daysUntilEvent: daysUntilEvent.toFixed(1),
+    refundPercentage,
+    refundPolicy,
+    refundColor,
+  };
+};
+
 export default function EventDetailsPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -23,6 +62,7 @@ export default function EventDetailsPage() {
   const [seatCount, setSeatCount] = useState(1);
   const [showPayment, setShowPayment] = useState(false);
   const [showUnregisterModal, setShowUnregisterModal] = useState(false);
+  const [refundPolicy, setRefundPolicy] = useState(null);
 
   const fetchEvent = async () => {
     setLoading(true);
@@ -43,14 +83,18 @@ export default function EventDetailsPage() {
       let alreadyBooked = false;
       let bookingId = null;
       if (currentUser) {
-        // For all users, check if they have a booking for this event
+        // For all users, check if they have an active booking for this event
         try {
           const userBookingsRes = await apiClient.get("/bookings/user");
-          const userBooking = userBookingsRes.data.find(
-            (b) => b.eventId && b.eventId._id === id
+          const activeBooking = userBookingsRes.data.find(
+            (b) =>
+              b.eventId &&
+              b.eventId._id === id &&
+              !b.cancelledByUser &&
+              !b.cancelledByEvent
           );
-          alreadyBooked = !!userBooking;
-          bookingId = userBooking ? userBooking._id : null;
+          alreadyBooked = !!activeBooking;
+          bookingId = activeBooking ? activeBooking._id : null;
         } catch {}
       }
 
@@ -90,21 +134,61 @@ export default function EventDetailsPage() {
 
   const handleUnregister = () => {
     if (!userBookingId) return toast.error("No booking found");
+
+    // Calculate refund policy before showing modal
+    const policy = calculateRefundPolicy(new Date(event.date));
+    setRefundPolicy(policy);
     setShowUnregisterModal(true);
   };
 
   const confirmUnregister = async () => {
     setShowUnregisterModal(false);
     try {
-      toast
-        .promise(apiClient.delete(`/bookings/${userBookingId}`), {
+      const response = await toast.promise(
+        apiClient.delete(`/bookings/${userBookingId}`),
+        {
           loading: "Cancelling booking...",
-          success: "Booking cancelled",
-          error: (err) => err.response?.data?.message || "Unregister failed",
-        })
-        .then(fetchEvent);
+          success: (res) => {
+            const refund = res.data.refund;
+            if (refund?.status === "processed") {
+              return `Booking cancelled! Refund of ₹${refund.amount} processed.`;
+            } else if (refund?.status === "none") {
+              return "Booking cancelled! No refund applicable.";
+            } else if (refund?.status === "failed") {
+              return "Booking cancelled! Refund failed - please contact support.";
+            }
+            return "Booking cancelled successfully!";
+          },
+          error: (err) => err.response?.data?.message || "Cancellation failed",
+        }
+      );
+
+      // Show additional refund information if available
+      if (response.data.refund) {
+        const { refund, cancellation } = response.data;
+        setTimeout(() => {
+          if (refund.status === "processed") {
+            toast.success(
+              `Refund Details: ₹${refund.amount} (${refund.percentage}% of original amount)`,
+              {
+                duration: 5000,
+              }
+            );
+          } else if (refund.status === "none") {
+            toast(
+              `Cancelled ${cancellation.daysBeforeEvent} days before event - ${cancellation.refundPolicy}`,
+              {
+                icon: "ℹ️",
+                duration: 4000,
+              }
+            );
+          }
+        }, 2000);
+      }
+
+      fetchEvent();
     } catch (err) {
-      toast.error(err.response?.data?.message || "Unregister failed");
+      toast.error(err.response?.data?.message || "Cancellation failed");
     }
   };
 
@@ -191,6 +275,38 @@ export default function EventDetailsPage() {
             Reason: {event.cancelledReason}
           </p>
         )}
+
+        {/* Refund Policy Information */}
+        {!isPastEvent && !event.cancelled && (
+          <div className="mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 border border-blue-200">
+            <h3 className="text-lg font-semibold mb-3 text-blue-800 flex items-center">
+              💰 Cancellation & Refund Policy
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
+              <div className="bg-green-100 rounded p-3 text-center">
+                <div className="font-semibold text-green-700">
+                  7+ Days Before
+                </div>
+                <div className="text-green-600">100% Refund</div>
+              </div>
+              <div className="bg-yellow-100 rounded p-3 text-center">
+                <div className="font-semibold text-yellow-700">
+                  1-7 Days Before
+                </div>
+                <div className="text-yellow-600">50% Refund</div>
+              </div>
+              <div className="bg-red-100 rounded p-3 text-center">
+                <div className="font-semibold text-red-700">&lt;24 Hours</div>
+                <div className="text-red-600">No Refund</div>
+              </div>
+            </div>
+            <p className="text-xs text-gray-600 mt-3 text-center">
+              Refunds are processed automatically and will appear in your
+              account within 5-10 business days.
+            </p>
+          </div>
+        )}
+
         {/* Hide booking controls if event is past */}
         {!isPastEvent && currentUser && !alreadyBooked && !showPayment && (
           <div className="mb-4 flex items-center gap-4">
@@ -273,10 +389,61 @@ export default function EventDetailsPage() {
         <ConfirmModal
           open={showUnregisterModal}
           title="Cancel Booking?"
-          description="Are you sure you want to cancel your booking for this event? This action cannot be undone."
-          onClose={() => setShowUnregisterModal(false)}
+          description={
+            <div className="space-y-3">
+              <p>
+                Are you sure you want to cancel your booking for this event?
+                This action cannot be undone.
+              </p>
+
+              {refundPolicy && (
+                <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                  <h4 className="font-semibold text-blue-800 mb-2">
+                    Refund Policy
+                  </h4>
+                  <div className="text-sm space-y-1">
+                    <p>
+                      <span className="font-medium">Time until event:</span>{" "}
+                      {refundPolicy.daysUntilEvent} days
+                    </p>
+                    <p className={`font-semibold ${refundPolicy.refundColor}`}>
+                      {refundPolicy.refundPolicy}
+                    </p>
+                    {refundPolicy.refundPercentage > 0 && (
+                      <p className="text-green-700">
+                        You will receive {refundPolicy.refundPercentage}% refund
+                        (₹
+                        {(
+                          ((event?.price || 0) *
+                            seatCount *
+                            refundPolicy.refundPercentage) /
+                          100
+                        ).toFixed(2)}
+                        )
+                      </p>
+                    )}
+                    {refundPolicy.refundPercentage === 0 && (
+                      <p className="text-red-600 font-medium">
+                        No refund will be processed due to cancellation timing.
+                      </p>
+                    )}
+                  </div>
+                  <div className="mt-2 text-xs text-gray-600 border-t border-blue-200 pt-2">
+                    <p>
+                      Policy: 7+ days = 100% | 1-7 days = 50% | &lt;24 hours =
+                      0%
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+          }
+          onClose={() => {
+            setShowUnregisterModal(false);
+            setRefundPolicy(null);
+          }}
           onConfirm={confirmUnregister}
-          confirmText="Yes, Cancel"
+          confirmText="Yes, Cancel Booking"
           cancelText="No, Keep Booking"
         />
       </div>

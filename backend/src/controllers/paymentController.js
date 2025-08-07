@@ -1,6 +1,13 @@
 import Stripe from "stripe";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+// Initialize Stripe lazily to ensure environment variables are loaded
+let stripe;
+const getStripe = () => {
+  if (!stripe) {
+    stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+  }
+  return stripe;
+};
 
 // @desc    Create a Stripe PaymentIntent
 // @route   POST /api/payments/create-payment-intent
@@ -12,7 +19,7 @@ export const createPaymentIntent = async (req, res) => {
       return res.status(400).json({ message: "Amount is required" });
     }
     // Stripe expects amount in cents
-    const paymentIntent = await stripe.paymentIntents.create({
+    const paymentIntent = await getStripe().paymentIntents.create({
       amount: Math.round(amount * 100),
       currency,
       metadata,

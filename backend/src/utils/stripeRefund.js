@@ -1,6 +1,13 @@
 import Stripe from "stripe";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+// Initialize Stripe lazily to ensure environment variables are loaded
+let stripe;
+const getStripe = () => {
+  if (!stripe) {
+    stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+  }
+  return stripe;
+};
 
 /**
  * Process a refund for a booking
@@ -33,7 +40,7 @@ export const processRefund = async (
     console.log("Processing refund with params:", refundParams);
 
     // Create the refund
-    const refund = await stripe.refunds.create(refundParams);
+    const refund = await getStripe().refunds.create(refundParams);
 
     console.log("Refund processed successfully:", refund.id);
 
@@ -62,7 +69,7 @@ export const processRefund = async (
  */
 export const getRefundStatus = async (refundId) => {
   try {
-    const refund = await stripe.refunds.retrieve(refundId);
+    const refund = await getStripe().refunds.retrieve(refundId);
 
     return {
       success: true,

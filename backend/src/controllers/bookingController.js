@@ -7,47 +7,7 @@ import {
   generateTicketQR,
 } from "../utils/qrCodeGenerator.js";
 import { processRefund, getRefundStatus } from "../utils/stripeRefund.js";
-
-/**
- * Calculate refund amount and policy based on time until event
- * @param {Date} eventDate - Event date
- * @param {number} fullAmount - Original booking amount
- * @returns {Object} Refund calculation result
- */
-const calculateRefundPolicy = (eventDate, fullAmount) => {
-  const currentDate = new Date();
-  const timeUntilEvent = eventDate - currentDate;
-  const daysUntilEvent = timeUntilEvent / (1000 * 60 * 60 * 24);
-
-  let refundAmount = 0;
-  let refundPolicy = "";
-  let refundPercentage = 0;
-
-  if (daysUntilEvent >= 7) {
-    // Full refund if cancelled 7+ days before event
-    refundAmount = fullAmount;
-    refundPolicy = "Full refund (7+ days before event)";
-    refundPercentage = 100;
-  } else if (daysUntilEvent >= 1) {
-    // 50% refund if cancelled 1-7 days before event
-    refundAmount = fullAmount * 0.5;
-    refundPolicy = "50% refund (1-7 days before event)";
-    refundPercentage = 50;
-  } else {
-    // No refund if cancelled within 24 hours
-    refundAmount = 0;
-    refundPolicy = "No refund (less than 24 hours before event)";
-    refundPercentage = 0;
-  }
-
-  return {
-    daysUntilEvent: daysUntilEvent.toFixed(1),
-    refundAmount,
-    refundPolicy,
-    refundPercentage,
-    fullAmount,
-  };
-};
+import { calculateRefundPolicy } from "../utils/refundPolicy.js";
 
 // @desc Create a new booking
 // @route POST /api/bookings
@@ -84,7 +44,12 @@ export const createBooking = async (req, res) => {
       return res.status(400).json({ message: "Cannot book past events" });
     }
 
-    const existing = await Booking.findOne({ eventId, userId });
+    const existing = await Booking.findOne({
+      eventId,
+      userId,
+      cancelledByUser: { $ne: true },
+      cancelledByEvent: { $ne: true },
+    });
     if (existing)
       return res.status(400).json({ message: "You already booked this event" });
 
@@ -217,7 +182,11 @@ export const cancelBooking = async (req, res) => {
     }
 
     const event = await Event.findById(booking.eventId);
-    if (event && new Date(event.date) < new Date()) {
+    if (!event) {
+      return res.status(404).json({ message: "Associated event not found" });
+    }
+
+    if (new Date(event.date) < new Date()) {
       return res
         .status(400)
         .json({ message: "Cannot cancel booking for past events" });
@@ -231,14 +200,14 @@ export const cancelBooking = async (req, res) => {
       );
 
       // Calculate refund amount based on time until event
-      const fullAmount = booking.priceAtBooking * booking.noOfSeats;
       const refundCalc = calculateRefundPolicy(
         new Date(event.date),
-        fullAmount
+        booking.priceAtBooking,
+        booking.noOfSeats
       );
 
       console.log(
-        `Refund policy: ${refundCalc.refundPolicy}, Amount: ₹${refundCalc.refundAmount}, Days until event: ${refundCalc.daysUntilEvent}`
+        `Refund policy: ${refundCalc.policy}, Amount: ₹${refundCalc.refundAmount}, Days until event: ${refundCalc.daysDifference}`
       );
 
       if (refundCalc.refundAmount > 0) {
@@ -267,11 +236,11 @@ export const cancelBooking = async (req, res) => {
 
       // Store the refund policy for reference
       booking.cancellationReason = `${
-        req.body.reason || "Cancelled by user"
-      } - ${refundCalc.refundPolicy}`;
+        req.body?.reason || "Cancelled by user"
+      } - ${refundCalc.policy}`;
     } else {
       // No payment was made, just set basic cancellation reason
-      booking.cancellationReason = req.body.reason || "Cancelled by user";
+      booking.cancellationReason = req.body?.reason || "Cancelled by user";
     }
 
     // Mark booking as cancelled by user (don't delete, keep for history)
@@ -283,10 +252,10 @@ export const cancelBooking = async (req, res) => {
     // Send cancellation confirmation email
     try {
       // Calculate email message based on refund policy
-      const fullAmount = booking.priceAtBooking * booking.noOfSeats;
       const refundCalc = calculateRefundPolicy(
         new Date(event.date),
-        fullAmount
+        booking.priceAtBooking,
+        booking.noOfSeats
       );
 
       await transporter.sendMail({
@@ -296,7 +265,7 @@ export const cancelBooking = async (req, res) => {
         text: `Your booking for ${
           event.title
         } has been cancelled successfully.\n\nRefund Policy: ${
-          refundCalc.refundPolicy
+          refundCalc.policy
         }${
           refundResult?.success
             ? `\nA refund of ₹${refundResult.amount} has been processed and will appear in your account within 5-10 business days.`
@@ -316,9 +285,7 @@ export const cancelBooking = async (req, res) => {
               <!-- Cancellation Policy Info -->
               <div style="background: #e3f2fd; border-left: 4px solid #2196f3; padding: 12px; margin: 16px 0;">
                 <h4 style="margin: 0 0 8px 0; color: #1976d2;">Refund Policy</h4>
-                <p style="margin: 0; font-size: 0.9em;">${
-                  refundCalc.refundPolicy
-                }</p>
+                <p style="margin: 0; font-size: 0.9em;">${refundCalc.policy}</p>
                 <p style="margin: 4px 0 0 0; font-size: 0.8em; color: #666;">
                   • 7+ days: 100% refund | 1-7 days: 50% refund | <24 hours: No refund
                 </p>
@@ -380,15 +347,19 @@ export const cancelBooking = async (req, res) => {
     }
 
     // Calculate response data for refund policy
+    const refundCalc = calculateRefundPolicy(
+      new Date(event.date),
+      booking.priceAtBooking,
+      booking.noOfSeats
+    );
     const fullAmount = booking.priceAtBooking * booking.noOfSeats;
-    const refundCalc = calculateRefundPolicy(new Date(event.date), fullAmount);
 
     res.json({
       message: "Booking cancelled successfully",
       cancellation: {
-        daysBeforeEvent: refundCalc.daysUntilEvent,
-        originalAmount: refundCalc.fullAmount,
-        refundPolicy: refundCalc.refundPolicy,
+        daysBeforeEvent: refundCalc.daysDifference,
+        originalAmount: fullAmount,
+        refundPolicy: refundCalc.policy,
       },
       refund: refundResult?.success
         ? {
