@@ -16,10 +16,15 @@ const bookingSchema = new mongoose.Schema(
     priceAtBooking: { type: Number, required: true },
     refundStatus: {
       type: String,
-      enum: ["none", "pending", "processed"],
+      enum: ["none", "pending", "processed", "failed"],
       default: "none",
     },
     cancelledByEvent: { type: Boolean, default: false },
+    cancelledByUser: { type: Boolean, default: false },
+    cancellationDate: { type: Date },
+    cancellationReason: { type: String },
+    refundAmount: { type: Number },
+    refundId: { type: String }, // Stripe refund ID
     ticketId: { type: String, unique: true, required: true },
     qrCode: { type: String, required: true }, // Base64 data URL of QR code
     verified: { type: Boolean, default: false },
