@@ -18,6 +18,7 @@ import Footer from "./components/Footer";
 import NotFound from "./pages/NotFound";
 import OrganizerVerify from "./pages/OrganizerVerify";
 import TicketView from "./pages/TicketView";
+import CancelledBookings from "./pages/CancelledBookings";
 
 function App() {
   return (
@@ -69,6 +70,14 @@ function App() {
                 element={
                   <PrivateRoute>
                     <Dashboard />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/cancelled-bookings"
+                element={
+                  <PrivateRoute>
+                    <CancelledBookings />
                   </PrivateRoute>
                 }
               />

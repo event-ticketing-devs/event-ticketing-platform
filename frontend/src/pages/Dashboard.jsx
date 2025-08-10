@@ -34,7 +34,8 @@ export default function DashboardPage() {
     const cancelled = [];
     bookings.forEach((b) => {
       if (!b.eventId) return;
-      if (b.eventId.cancelled) {
+      // Check if booking was cancelled by user or event was cancelled
+      if (b.cancelledByUser || b.cancelledByEvent || b.eventId.cancelled) {
         cancelled.push(b);
       } else if (new Date(b.eventId.date) < now) {
         past.push(b);
@@ -53,9 +54,17 @@ export default function DashboardPage() {
 
   return (
     <div className="p-4 max-w-4xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4 text-blue-700">
-        Your Booked Events
-      </h1>
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold text-blue-700">Your Booked Events</h1>
+        {cancelled.length > 0 && (
+          <Link
+            to="/cancelled-bookings"
+            className="px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-all text-sm font-medium"
+          >
+            View All Cancelled ({cancelled.length})
+          </Link>
+        )}
+      </div>
       <div className="flex gap-2 mb-4">
         {tabData.map((t) => (
           <button
@@ -85,23 +94,113 @@ export default function DashboardPage() {
         <ul className="space-y-4">
           {tabData
             .find((t) => t.key === tab)
-            .data.map(
-              ({ _id, eventId, noOfSeats, ticketId, qrCode, verified }) =>
-                eventId && (
-                  <li
-                    key={_id}
-                    className="bg-white p-4 border rounded-xl shadow-md flex flex-col gap-2 hover:shadow-lg transition-all"
-                  >
+            .data.map((booking) => {
+              const {
+                _id,
+                eventId,
+                noOfSeats,
+                ticketId,
+                qrCode,
+                verified,
+                cancelledByUser,
+                cancelledByEvent,
+                cancellationDate,
+                cancellationReason,
+                refundStatus,
+                refundAmount,
+              } = booking;
+
+              if (!eventId) return null;
+
+              const isCancelled =
+                cancelledByUser || cancelledByEvent || eventId.cancelled;
+              const isPastEvent = new Date(eventId.date) < new Date();
+
+              return (
+                <li
+                  key={_id}
+                  className={`bg-white p-4 border rounded-xl shadow-md flex flex-col gap-2 hover:shadow-lg transition-all ${
+                    isCancelled ? "opacity-75 border-red-200" : ""
+                  }`}
+                >
+                  <div className="flex justify-between items-start">
                     <h2 className="text-xl font-semibold text-blue-700">
                       {eventId.title}
                     </h2>
-                    <p className="text-slate-600 text-sm mb-1">
-                      Date: {new Date(eventId.date).toLocaleString()}
+                    {isCancelled && (
+                      <span className="px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm font-semibold">
+                        {cancelledByUser
+                          ? "Cancelled by You"
+                          : cancelledByEvent
+                          ? "Event Cancelled"
+                          : "Cancelled"}
+                      </span>
+                    )}
+                  </div>
+
+                  <p className="text-slate-600 text-sm mb-1">
+                    Date: {new Date(eventId.date).toLocaleString()}
+                  </p>
+
+                  {isCancelled && cancellationDate && (
+                    <p className="text-red-600 text-sm mb-1">
+                      Cancelled: {new Date(cancellationDate).toLocaleString()}
                     </p>
-                    <p className="mb-1">
-                      Seats Booked:{" "}
-                      <span className="font-semibold">{noOfSeats}</span>
-                    </p>
+                  )}
+
+                  <p className="mb-1">
+                    Seats Booked:{" "}
+                    <span className="font-semibold">{noOfSeats}</span>
+                  </p>
+
+                  {/* Refund Information for Cancelled Bookings */}
+                  {isCancelled && (
+                    <div className="bg-gray-50 rounded-lg p-3 mb-2">
+                      <h4 className="font-semibold text-gray-800 mb-2">
+                        Cancellation Details
+                      </h4>
+                      {cancellationReason && (
+                        <p className="text-sm text-gray-600 mb-1">
+                          <strong>Reason:</strong> {cancellationReason}
+                        </p>
+                      )}
+                      {refundStatus && (
+                        <div className="text-sm">
+                          <p className="mb-1">
+                            <strong>Refund Status:</strong>{" "}
+                            <span
+                              className={`font-semibold ${
+                                refundStatus === "processed"
+                                  ? "text-green-600"
+                                  : refundStatus === "failed"
+                                  ? "text-red-600"
+                                  : refundStatus === "none"
+                                  ? "text-gray-600"
+                                  : "text-yellow-600"
+                              }`}
+                            >
+                              {refundStatus === "processed"
+                                ? "Refund Processed"
+                                : refundStatus === "failed"
+                                ? "Refund Failed"
+                                : refundStatus === "none"
+                                ? "No Refund"
+                                : "Processing"}
+                            </span>
+                          </p>
+                          {refundAmount !== undefined && (
+                            <p>
+                              <strong>Refund Amount:</strong> ₹
+                              {refundAmount || 0}
+                            </p>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Regular booking information */}
+                  {!isCancelled && (
                     <div className="flex flex-col sm:flex-row gap-4">
                       <div className="flex-1">
                         <strong>Ticket ID:</strong> {ticketId || "N/A"}
@@ -131,36 +230,32 @@ export default function DashboardPage() {
                         </div>
                       )}
                     </div>
-                    <div className="flex gap-2">
+                  )}
+
+                  <div className="flex gap-2">
+                    <Link
+                      to={`/events/${eventId._id}`}
+                      className="mt-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-teal-400 text-white rounded-lg shadow hover:from-blue-700 hover:to-teal-500 transition-all text-center font-semibold cursor-pointer w-fit"
+                    >
+                      View Details
+                    </Link>
+                    {qrCode && !isCancelled && (
                       <Link
-                        to={`/events/${eventId._id}`}
-                        className="mt-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-teal-400 text-white rounded-lg shadow hover:from-blue-700 hover:to-teal-500 transition-all text-center font-semibold cursor-pointer w-fit"
+                        to={`/ticket/${_id}`}
+                        className="mt-2 px-4 py-2 bg-gray-600 text-white rounded-lg shadow hover:bg-gray-700 transition-all text-center font-semibold cursor-pointer w-fit"
                       >
-                        View Details
+                        View Ticket
                       </Link>
-                      {qrCode && (
-                        <Link
-                          to={`/ticket/${_id}`}
-                          className="mt-2 px-4 py-2 bg-gray-600 text-white rounded-lg shadow hover:bg-gray-700 transition-all text-center font-semibold cursor-pointer w-fit"
-                        >
-                          View Ticket
-                        </Link>
-                      )}
-                      {eventId.cancelled && (
-                        <span className="mt-2 px-3 py-1 bg-red-100 text-red-700 rounded font-semibold">
-                          Cancelled
-                        </span>
-                      )}
-                      {new Date(eventId.date) < new Date() &&
-                        !eventId.cancelled && (
-                          <span className="mt-2 px-3 py-1 bg-gray-100 text-gray-700 rounded font-semibold">
-                            Past Event
-                          </span>
-                        )}
-                    </div>
-                  </li>
-                )
-            )}
+                    )}
+                    {isPastEvent && !isCancelled && (
+                      <span className="mt-2 px-3 py-1 bg-gray-100 text-gray-700 rounded font-semibold">
+                        Past Event
+                      </span>
+                    )}
+                  </div>
+                </li>
+              );
+            })}
         </ul>
       )}
     </div>
