@@ -550,7 +550,7 @@ export default function EventDetailsPage() {
                         />
                       </svg>
                     </div>
-                    📍 Venue Location
+                    Venue Location
                   </h2>
                   <div className="rounded-xl overflow-hidden border border-slate-200">
                     <VenueMap venue={event.venue} height="250px" />
@@ -607,8 +607,8 @@ export default function EventDetailsPage() {
                     </div>
                   </div>
                   <p className="text-sm text-slate-600 text-center bg-white rounded-lg p-3">
-                    💳 Refunds are processed automatically and will appear in
-                    your account within 5-10 business days.
+                    Refunds are processed automatically and will appear in your
+                    account within 5-10 business days.
                   </p>
                 </div>
               </div>
@@ -896,19 +896,11 @@ export default function EventDetailsPage() {
                         </span>
                       </div>
                       <div className="flex items-center gap-3">
-                        <svg
-                          className="w-5 h-5 text-green-600"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
-                          />
-                        </svg>
+                        <div className="w-5 h-5 flex items-center justify-center">
+                          <span className="text-xs font-bold text-green-600">
+                            ₹
+                          </span>
+                        </div>
                         <span className="text-sm text-slate-700">
                           Flexible refund policy
                         </span>

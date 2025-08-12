@@ -106,20 +106,20 @@ export default function Navbar() {
               onClick={handleMenuToggle}
               aria-label="Toggle menu"
             >
-              <div className="w-6 h-5 relative flex flex-col justify-between">
+              <div className="w-6 h-6 relative flex items-center justify-center">
                 <span
-                  className={`block h-0.5 w-6 bg-slate-700 rounded transition-all duration-300 origin-center ${
-                    menuOpen ? "rotate-45 translate-y-2" : ""
+                  className={`absolute h-0.5 w-6 bg-slate-700 rounded transition-all duration-300 ${
+                    menuOpen ? "rotate-45" : "-translate-y-2"
                   }`}
                 ></span>
                 <span
-                  className={`block h-0.5 w-6 bg-slate-700 rounded transition-all duration-300 origin-center ${
+                  className={`absolute h-0.5 w-6 bg-slate-700 rounded transition-all duration-300 ${
                     menuOpen ? "opacity-0" : ""
                   }`}
                 ></span>
                 <span
-                  className={`block h-0.5 w-6 bg-slate-700 rounded transition-all duration-300 origin-center ${
-                    menuOpen ? "-rotate-45 -translate-y-2" : ""
+                  className={`absolute h-0.5 w-6 bg-slate-700 rounded transition-all duration-300 ${
+                    menuOpen ? "-rotate-45" : "translate-y-2"
                   }`}
                 ></span>
               </div>

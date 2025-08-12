@@ -8,6 +8,7 @@ export default function EventFormPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const isEditing = Boolean(id);
+  const [submitting, setSubmitting] = useState(false);
 
   const [form, setForm] = useState({
     title: "",
@@ -99,15 +100,18 @@ export default function EventFormPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitting(true);
 
     // Validate required fields
     if (!form.venue) {
       toast.error("Please select a venue using the map");
+      setSubmitting(false);
       return;
     }
 
     if (!form.city.trim()) {
       toast.error("Please enter a city");
+      setSubmitting(false);
       return;
     }
 
@@ -115,6 +119,7 @@ export default function EventFormPage() {
     const totalSeats = Number(form.totalSeats);
     if (!Number.isInteger(totalSeats) || totalSeats <= 0) {
       toast.error("Total seats must be a positive integer");
+      setSubmitting(false);
       return;
     }
 
@@ -134,6 +139,8 @@ export default function EventFormPage() {
       navigate("/organizer");
     } catch (err) {
       toast.error(err.response?.data?.message || "Submission failed");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -142,115 +149,465 @@ export default function EventFormPage() {
     if (isEditing) fetchEvent();
   }, [id]);
 
-  if (loading)
+  if (loading) {
     return (
-      <div className="text-center py-10 text-blue-600 font-semibold">
-        Loading event form...
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
+        <div className="bg-white rounded-2xl shadow-lg border border-slate-200/50 p-8">
+          <div className="flex items-center gap-4">
+            <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-teal-500 rounded-full animate-spin">
+              <svg
+                className="w-8 h-8 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                />
+              </svg>
+            </div>
+            <div>
+              <h2 className="text-xl font-semibold text-slate-800">
+                Loading event form...
+              </h2>
+              <p className="text-slate-600">
+                Please wait while we fetch the event data
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     );
+  }
 
   return (
-    <div className="p-4 max-w-2xl mx-auto">
-      <div className="bg-white rounded-xl shadow-lg border p-8 mt-6">
-        <h1 className="text-2xl font-bold mb-6 text-blue-700">
-          {isEditing ? "Edit Event" : "Create Event"}
-        </h1>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <input
-            type="text"
-            name="title"
-            placeholder="Title"
-            className="block w-full border p-3 rounded focus:ring-2 focus:ring-blue-400 bg-slate-50"
-            value={form.title}
-            onChange={handleChange}
-            required
-          />
-          <textarea
-            name="description"
-            placeholder="Description"
-            className="block w-full border p-3 rounded focus:ring-2 focus:ring-blue-400 bg-slate-50"
-            value={form.description}
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="datetime-local"
-            name="date"
-            className="block w-full border p-3 rounded focus:ring-2 focus:ring-blue-400 bg-slate-50"
-            value={form.date}
-            onChange={handleChange}
-            required
-          />
-          <select
-            name="categoryId"
-            className="block w-full border p-3 rounded focus:ring-2 focus:ring-blue-400 bg-slate-50"
-            value={form.categoryId}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Select Category</option>
-            {categories.map((cat) => (
-              <option key={cat._id} value={cat._id}>
-                {cat.name}
-              </option>
-            ))}
-          </select>
-
-          <input
-            type="text"
-            name="city"
-            placeholder="City *"
-            className="block w-full border p-3 rounded focus:ring-2 focus:ring-blue-400 bg-slate-50"
-            value={form.city}
-            onChange={handleChange}
-            required
-          />
-
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
-              Venue Location *
-            </label>
-            <VenueSelector
-              onVenueSelect={handleVenueSelect}
-              selectedVenue={form.venue}
-              city={form.city}
-            />
-          </div>
-          <input
-            type="number"
-            name="price"
-            placeholder="Price"
-            className="block w-full border p-3 rounded focus:ring-2 focus:ring-blue-400 bg-slate-50"
-            value={form.price}
-            onChange={handleChange}
-            min={0}
-            required
-          />
-          <input
-            type="number"
-            name="totalSeats"
-            placeholder="Total Seats"
-            className="block w-full border p-3 rounded focus:ring-2 focus:ring-blue-400 bg-slate-50"
-            value={form.totalSeats}
-            onChange={handleChange}
-            min={1}
-            required
-          />
-          <input
-            type="text"
-            name="photo"
-            placeholder="Image URL"
-            className="block w-full border p-3 rounded focus:ring-2 focus:ring-blue-400 bg-slate-50"
-            value={form.photo}
-            onChange={handleChange}
-          />
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-8">
+      <div className="max-w-4xl mx-auto px-6">
+        {/* Header */}
+        <div className="mb-8">
           <button
-            type="submit"
-            className="bg-gradient-to-r from-blue-600 to-teal-400 text-white px-6 py-2 rounded-lg shadow hover:from-blue-700 hover:to-teal-500 transition-all font-semibold cursor-pointer"
+            onClick={() => navigate("/organizer")}
+            className="inline-flex items-center gap-2 text-slate-600 hover:text-slate-800 transition-colors mb-6"
           >
-            {isEditing ? "Update Event" : "Create Event"}
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+            Back to Organizer Dashboard
           </button>
-        </form>
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-teal-500 rounded-xl flex items-center justify-center">
+              <svg
+                className="w-6 h-6 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                />
+              </svg>
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold text-slate-800">
+                {isEditing ? "Edit Event" : "Create New Event"}
+              </h1>
+              <p className="text-slate-600">
+                {isEditing
+                  ? "Update your event details and venue information"
+                  : "Fill in the details to create your event"}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Form Card */}
+        <div className="bg-white rounded-2xl shadow-lg border border-slate-200/50 overflow-hidden">
+          <form onSubmit={handleSubmit}>
+            {/* Form Content */}
+            <div className="p-8">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Left Column */}
+                <div className="space-y-6">
+                  {/* Event Title */}
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-800 mb-2">
+                      Event Title
+                    </label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg
+                          className="w-5 h-5 text-slate-400"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2m-9 0h10m-10 0a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V6a2 2 0 00-2-2z"
+                          />
+                        </svg>
+                      </div>
+                      <input
+                        type="text"
+                        name="title"
+                        placeholder="Enter event title"
+                        className="block w-full pl-10 pr-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-slate-50 transition-all duration-200"
+                        value={form.title}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {/* Event Description */}
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-800 mb-2">
+                      Description
+                    </label>
+                    <div className="relative">
+                      <div className="absolute top-3 left-3 pointer-events-none">
+                        <svg
+                          className="w-5 h-5 text-slate-400"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                          />
+                        </svg>
+                      </div>
+                      <textarea
+                        name="description"
+                        placeholder="Describe your event..."
+                        rows={4}
+                        className="block w-full pl-10 pr-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-slate-50 transition-all duration-200 resize-none"
+                        value={form.description}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {/* Date and Time */}
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-800 mb-2">
+                      Event Date & Time
+                    </label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg
+                          className="w-5 h-5 text-slate-400"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                          />
+                        </svg>
+                      </div>
+                      <input
+                        type="datetime-local"
+                        name="date"
+                        className="block w-full pl-10 pr-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-slate-50 transition-all duration-200"
+                        value={form.date}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {/* Category */}
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-800 mb-2">
+                      Category
+                    </label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg
+                          className="w-5 h-5 text-slate-400"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
+                          />
+                        </svg>
+                      </div>
+                      <select
+                        name="categoryId"
+                        className="block w-full pl-10 pr-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-slate-50 transition-all duration-200 appearance-none"
+                        value={form.categoryId}
+                        onChange={handleChange}
+                        required
+                      >
+                        <option value="">Select a category</option>
+                        {categories.map((cat) => (
+                          <option key={cat._id} value={cat._id}>
+                            {cat.name}
+                          </option>
+                        ))}
+                      </select>
+                      <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                        <svg
+                          className="w-4 h-4 text-slate-400"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M19 9l-7 7-7-7"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right Column */}
+                <div className="space-y-6">
+                  {/* City */}
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-800 mb-2">
+                      City
+                    </label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg
+                          className="w-5 h-5 text-slate-400"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                          />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                          />
+                        </svg>
+                      </div>
+                      <input
+                        type="text"
+                        name="city"
+                        placeholder="Enter city name"
+                        className="block w-full pl-10 pr-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-slate-50 transition-all duration-200"
+                        value={form.city}
+                        onChange={handleChange}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {/* Price */}
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-800 mb-2">
+                      Ticket Price (₹)
+                    </label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <span className="text-slate-400 font-bold">₹</span>
+                      </div>
+                      <input
+                        type="number"
+                        name="price"
+                        placeholder="0.00"
+                        className="block w-full pl-10 pr-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-slate-50 transition-all duration-200"
+                        value={form.price}
+                        onChange={handleChange}
+                        min={0}
+                        step="0.01"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {/* Total Seats */}
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-800 mb-2">
+                      Total Seats
+                    </label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg
+                          className="w-5 h-5 text-slate-400"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                          />
+                        </svg>
+                      </div>
+                      <input
+                        type="number"
+                        name="totalSeats"
+                        placeholder="Enter number of seats"
+                        className="block w-full pl-10 pr-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-slate-50 transition-all duration-200"
+                        value={form.totalSeats}
+                        onChange={handleChange}
+                        min={1}
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {/* Image URL */}
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-800 mb-2">
+                      Event Image URL
+                    </label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg
+                          className="w-5 h-5 text-slate-400"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                          />
+                        </svg>
+                      </div>
+                      <input
+                        type="url"
+                        name="photo"
+                        placeholder="https://example.com/image.jpg"
+                        className="block w-full pl-10 pr-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-slate-50 transition-all duration-200"
+                        value={form.photo}
+                        onChange={handleChange}
+                      />
+                    </div>
+                    <p className="text-sm text-slate-500 mt-1">
+                      Optional: Add an image URL for your event
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Venue Selector - Full Width */}
+              <div className="mt-8">
+                <label className="block text-sm font-semibold text-slate-800 mb-2">
+                  Venue Location
+                </label>
+                <div className="bg-slate-50 border border-slate-300 rounded-xl p-4">
+                  <VenueSelector
+                    onVenueSelect={handleVenueSelect}
+                    selectedVenue={form.venue}
+                    city={form.city}
+                  />
+                </div>
+                <p className="text-sm text-slate-500 mt-2">
+                  Click on the map to select your event venue location
+                </p>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="px-8 py-6 bg-slate-50 border-t border-slate-200">
+              <div className="flex flex-col sm:flex-row gap-3">
+                <button
+                  type="button"
+                  onClick={() => navigate("/organizer")}
+                  className="flex-1 bg-slate-100 text-slate-700 py-3 px-6 rounded-xl font-semibold hover:bg-slate-200 transition-all duration-300"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="flex-1 bg-gradient-to-r from-blue-600 to-teal-500 text-white py-3 px-6 rounded-xl font-semibold shadow-lg hover:from-blue-700 hover:to-teal-600 hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  {submitting ? (
+                    <>
+                      <svg
+                        className="w-4 h-4 animate-spin"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                        />
+                      </svg>
+                      {isEditing ? "Updating..." : "Creating..."}
+                    </>
+                  ) : (
+                    <>
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d={
+                            isEditing
+                              ? "M5 13l4 4L19 7"
+                              : "M12 6v6m0 0v6m0-6h6m-6 0H6"
+                          }
+                        />
+                      </svg>
+                      {isEditing ? "Update Event" : "Create Event"}
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );
