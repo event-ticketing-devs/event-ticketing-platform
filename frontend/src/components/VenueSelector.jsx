@@ -172,54 +172,227 @@ const VenueSelector = ({ onVenueSelect, selectedVenue, city }) => {
 
   if (error) {
     return (
-      <div className="p-4 bg-red-50 border border-red-200 rounded-md">
+      <div className="bg-gradient-to-r from-red-50 to-red-100 border border-red-200 rounded-2xl p-8 text-center">
+        <div className="w-16 h-16 bg-red-200 rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <svg
+            className="w-8 h-8 text-red-500"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.664-.833-2.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"
+            />
+          </svg>
+        </div>
+        <h3 className="text-lg font-semibold text-red-700 mb-2">
+          Map Loading Error
+        </h3>
         <p className="text-red-600">{error}</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
+      {/* Search Input Section */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Search for Venue *
-        </label>
-        <input
-          ref={inputRef}
-          type="text"
-          placeholder="Search for venues, restaurants, halls, or click on the map..."
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-        />
-        <p className="text-xs text-gray-500 mt-1">
-          You can also click directly on the map to select a location
-        </p>
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-teal-500 rounded-xl flex items-center justify-center">
+            <svg
+              className="w-5 h-5 text-white"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold text-slate-800">
+              Search for Venue
+            </h3>
+            <p className="text-slate-600 text-sm">
+              Find venues, restaurants, halls, or click on the map
+            </p>
+          </div>
+        </div>
+
+        <div className="relative">
+          <input
+            ref={inputRef}
+            type="text"
+            placeholder="Search for venues, restaurants, halls..."
+            className="w-full pl-12 pr-4 py-4 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-slate-700 font-medium placeholder-slate-400"
+          />
+          <div className="absolute left-4 top-1/2 -translate-y-1/2">
+            <svg
+              className="w-5 h-5 text-slate-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+              />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+              />
+            </svg>
+          </div>
+        </div>
+
+        <div className="mt-3 bg-blue-50 border border-blue-200 rounded-xl p-4">
+          <div className="flex items-start gap-3">
+            <div className="w-8 h-8 bg-blue-200 rounded-lg flex items-center justify-center flex-shrink-0">
+              <svg
+                className="w-4 h-4 text-blue-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </div>
+            <div>
+              <p className="text-blue-800 font-medium text-sm">Pro Tip</p>
+              <p className="text-blue-700 text-sm">
+                You can also click directly on the map to select any location
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div className="relative">
+      {/* Map Container */}
+      <div className="relative rounded-2xl overflow-hidden shadow-lg border border-slate-200">
         {loading && (
-          <div className="absolute inset-0 bg-gray-100 flex items-center justify-center rounded-md z-10">
-            <div className="text-blue-600">Loading map...</div>
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-teal-50 flex items-center justify-center z-10">
+            <div className="bg-white rounded-2xl p-6 shadow-lg text-center">
+              <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-teal-500 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <svg
+                  className="w-6 h-6 text-white animate-spin"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                  />
+                </svg>
+              </div>
+              <p className="text-slate-700 font-medium">
+                Loading interactive map...
+              </p>
+              <p className="text-slate-500 text-sm mt-1">
+                Setting up venue selection
+              </p>
+            </div>
           </div>
         )}
-        <div
-          ref={mapRef}
-          className="w-full h-80 border border-gray-300 rounded-md"
-        />
+        <div ref={mapRef} className="w-full h-80" />
       </div>
 
+      {/* Selected Venue Card */}
       {selectedVenue && (
-        <div className="bg-green-50 border border-green-200 p-4 rounded-md">
-          <div className="flex items-start gap-2">
-            <span className="text-green-600 mt-1">📍</span>
-            <div>
-              <h4 className="font-semibold text-green-900">
-                {selectedVenue.name}
-              </h4>
-              <p className="text-green-700 text-sm">{selectedVenue.address}</p>
-              <p className="text-xs text-green-600 mt-1">
-                Coordinates: {selectedVenue.coordinates.lat.toFixed(6)},{" "}
-                {selectedVenue.coordinates.lng.toFixed(6)}
-              </p>
+        <div className="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-2xl p-6">
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center flex-shrink-0">
+              <svg
+                className="w-6 h-6 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-2">
+                <h4 className="text-xl font-bold text-emerald-800">
+                  {selectedVenue.name}
+                </h4>
+                <span className="bg-emerald-200 text-emerald-700 px-2 py-1 rounded-lg text-xs font-medium">
+                  Selected
+                </span>
+              </div>
+
+              <div className="flex items-start gap-2 mb-3">
+                <svg
+                  className="w-5 h-5 text-emerald-600 mt-0.5 flex-shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                </svg>
+                <p className="text-emerald-700 leading-relaxed">
+                  {selectedVenue.address}
+                </p>
+              </div>
+
+              <div className="bg-white/60 backdrop-blur-sm rounded-xl p-3">
+                <div className="flex items-center gap-2">
+                  <svg
+                    className="w-4 h-4 text-emerald-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"
+                    />
+                  </svg>
+                  <span className="text-emerald-700 font-medium text-sm">
+                    Coordinates:
+                  </span>
+                  <span className="text-emerald-600 text-sm font-mono">
+                    {selectedVenue.coordinates.lat.toFixed(6)},{" "}
+                    {selectedVenue.coordinates.lng.toFixed(6)}
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
         </div>

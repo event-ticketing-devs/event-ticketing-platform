@@ -3,16 +3,7 @@ import { Link } from "react-router-dom";
 
 export default function NotFound() {
   return (
-    <div
-      style={{
-        minHeight: "80vh",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        background: "#f8fafc",
-      }}
-    >
+    <div className="min-h-[80vh] flex flex-col items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-teal-50 px-4">
       {/* Sad/Broken Robot SVG illustration */}
       <svg
         width="120"
@@ -20,7 +11,7 @@ export default function NotFound() {
         viewBox="0 0 120 120"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        style={{ marginBottom: "1.5rem" }}
+        className="mb-6"
       >
         {/* Robot body */}
         <rect
@@ -29,7 +20,7 @@ export default function NotFound() {
           width="60"
           height="40"
           rx="10"
-          fill="#e0e7ef"
+          fill="#e2e8f0"
           stroke="#64748b"
           strokeWidth="2"
         />
@@ -40,7 +31,7 @@ export default function NotFound() {
           width="40"
           height="30"
           rx="8"
-          fill="#e0e7ef"
+          fill="#e2e8f0"
           stroke="#64748b"
           strokeWidth="2"
         />
@@ -114,23 +105,16 @@ export default function NotFound() {
         {/* Ground shadow */}
         <ellipse cx="60" cy="110" rx="28" ry="5" fill="#cbd5e1" />
       </svg>
-      <h1 style={{ fontSize: "4rem", color: "#1e293b", marginBottom: "1rem" }}>
-        404
-      </h1>
-      <p style={{ fontSize: "1.5rem", color: "#64748b", marginBottom: "2rem" }}>
-        Oops! The page you’re looking for doesn’t exist.
+
+      <h1 className="text-6xl font-black text-slate-800 mb-4">404</h1>
+
+      <p className="text-xl text-slate-600 mb-8 text-center max-w-md">
+        Oops! The page you're looking for doesn't exist.
       </p>
+
       <Link
         to="/"
-        style={{
-          padding: "0.75rem 2rem",
-          background: "#2563eb",
-          color: "#fff",
-          borderRadius: "0.5rem",
-          textDecoration: "none",
-          fontWeight: "bold",
-          fontSize: "1rem",
-        }}
+        className="bg-gradient-to-r from-blue-600 to-teal-500 hover:from-blue-700 hover:to-teal-600 text-white px-8 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl"
       >
         Back to Home
       </Link>
