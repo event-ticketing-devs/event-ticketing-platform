@@ -72,23 +72,22 @@ npm install
 
 Create `.env` in the **backend** directory:
 ```env
-PORT=5000
-MONGODB_URI=mongodb://localhost:27017/event-ticketing
+PORT=8000
+CORS_ORIGIN=*
+MONGODB_URI=your-mongodb-uri
 JWT_SECRET=your-jwt-secret
 JWT_EXPIRES_IN=7d
-CORS_ORIGIN=http://localhost:5173
-GOOGLE_CLIENT_ID=your-google-client-id
+NODE_ENV=development
+GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
 STRIPE_SECRET_KEY=your-stripe-secret-key
-EMAIL_HOST=smtp.gmail.com
-EMAIL_PORT=587
-EMAIL_USER=your-email@gmail.com
-EMAIL_PASS=your-app-password
+GOOGLE_MAPS_API_KEY=your-google-maps-api-key
 ```
 
 Create `.env` in the **frontend** directory:
 ```env
-VITE_GOOGLE_CLIENT_ID=your-google-client-id
+VITE_GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
 VITE_STRIPE_PUBLISHABLE_KEY=your-stripe-publishable-key
+VITE_GOOGLE_MAPS_API_KEY=your-google-maps-api-key
 ```
 
 4. **Start the application**
