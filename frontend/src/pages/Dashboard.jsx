@@ -247,8 +247,28 @@ export default function DashboardPage() {
           <div className="bg-slate-50 rounded-xl p-4 mb-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-sm text-slate-600">Seats Booked</p>
-                <p className="font-bold text-slate-800">{noOfSeats}</p>
+                <p className="text-sm text-slate-600">
+                  {booking.hasTicketCategories
+                    ? "Tickets Booked"
+                    : "Seats Booked"}
+                </p>
+                {booking.hasTicketCategories && booking.ticketItems ? (
+                  <div className="space-y-1">
+                    {booking.ticketItems.map((item, index) => (
+                      <p
+                        key={index}
+                        className="text-sm font-medium text-slate-800"
+                      >
+                        {item.quantity}x {item.categoryName}
+                      </p>
+                    ))}
+                    <p className="text-xs text-slate-600 font-semibold">
+                      Total: {booking.totalQuantity} tickets
+                    </p>
+                  </div>
+                ) : (
+                  <p className="font-bold text-slate-800">{noOfSeats}</p>
+                )}
               </div>
               <div>
                 <p className="text-sm text-slate-600">Ticket ID</p>

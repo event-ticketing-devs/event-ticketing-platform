@@ -20,6 +20,10 @@ export default function EventFormPage() {
     price: "",
     totalSeats: 0,
     photo: "",
+    hasTicketCategories: false,
+    ticketCategories: [
+      { name: "", price: "", totalSeats: "", description: "" },
+    ],
   });
 
   const [categories, setCategories] = useState([]);
@@ -137,6 +141,50 @@ export default function EventFormPage() {
     setForm((prev) => ({ ...prev, photo: "" }));
   };
 
+  const toggleTicketCategories = () => {
+    setForm((prev) => ({
+      ...prev,
+      hasTicketCategories: !prev.hasTicketCategories,
+      ticketCategories: !prev.hasTicketCategories
+        ? [{ name: "", price: "", totalSeats: "", description: "" }]
+        : prev.ticketCategories,
+    }));
+  };
+
+  const addTicketCategory = () => {
+    if (form.ticketCategories.length < 5) {
+      setForm((prev) => ({
+        ...prev,
+        ticketCategories: [
+          ...prev.ticketCategories,
+          { name: "", price: "", totalSeats: "", description: "" },
+        ],
+      }));
+    } else {
+      toast.error("Maximum 5 ticket categories allowed");
+    }
+  };
+
+  const removeTicketCategory = (index) => {
+    if (form.ticketCategories.length > 1) {
+      setForm((prev) => ({
+        ...prev,
+        ticketCategories: prev.ticketCategories.filter((_, i) => i !== index),
+      }));
+    } else {
+      toast.error("At least one ticket category is required");
+    }
+  };
+
+  const handleTicketCategoryChange = (index, field, value) => {
+    setForm((prev) => ({
+      ...prev,
+      ticketCategories: prev.ticketCategories.map((category, i) =>
+        i === index ? { ...category, [field]: value } : category
+      ),
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
@@ -154,12 +202,67 @@ export default function EventFormPage() {
       return;
     }
 
-    // Validate totalSeats is a positive integer
-    const totalSeats = Number(form.totalSeats);
-    if (!Number.isInteger(totalSeats) || totalSeats <= 0) {
-      toast.error("Total seats must be a positive integer");
-      setSubmitting(false);
-      return;
+    // Validate pricing structure
+    if (form.hasTicketCategories) {
+      // Validate ticket categories
+      const validCategories = form.ticketCategories.filter(
+        (cat) => cat.name.trim() && cat.price && cat.totalSeats
+      );
+
+      if (validCategories.length === 0) {
+        toast.error("At least one complete ticket category is required");
+        setSubmitting(false);
+        return;
+      }
+
+      // Check for duplicate category names
+      const categoryNames = validCategories.map((cat) =>
+        cat.name.trim().toLowerCase()
+      );
+      const uniqueNames = new Set(categoryNames);
+      if (categoryNames.length !== uniqueNames.size) {
+        toast.error("Ticket category names must be unique");
+        setSubmitting(false);
+        return;
+      }
+
+      // Validate each category
+      for (const category of validCategories) {
+        const price = Number(category.price);
+        const totalSeats = Number(category.totalSeats);
+
+        if (isNaN(price) || price < 0) {
+          toast.error(
+            `Price for "${category.name}" must be a non-negative number`
+          );
+          setSubmitting(false);
+          return;
+        }
+
+        if (!Number.isInteger(totalSeats) || totalSeats <= 0) {
+          toast.error(
+            `Total seats for "${category.name}" must be a positive integer`
+          );
+          setSubmitting(false);
+          return;
+        }
+      }
+    } else {
+      // Validate legacy pricing
+      const totalSeats = Number(form.totalSeats);
+      const price = Number(form.price);
+
+      if (!Number.isInteger(totalSeats) || totalSeats <= 0) {
+        toast.error("Total seats must be a positive integer");
+        setSubmitting(false);
+        return;
+      }
+
+      if (isNaN(price) || price < 0) {
+        toast.error("Price must be a non-negative number");
+        setSubmitting(false);
+        return;
+      }
     }
 
     try {
@@ -173,8 +276,17 @@ export default function EventFormPage() {
       formData.append("categoryId", form.categoryId);
       formData.append("city", form.city);
       formData.append("venue", JSON.stringify(form.venue));
-      formData.append("price", form.price);
-      formData.append("totalSeats", totalSeats);
+      formData.append("hasTicketCategories", form.hasTicketCategories);
+
+      if (form.hasTicketCategories) {
+        const validCategories = form.ticketCategories.filter(
+          (cat) => cat.name.trim() && cat.price && cat.totalSeats
+        );
+        formData.append("ticketCategories", JSON.stringify(validCategories));
+      } else {
+        formData.append("price", form.price);
+        formData.append("totalSeats", form.totalSeats);
+      }
 
       // Add file if selected
       if (selectedFile) {
@@ -501,62 +613,258 @@ export default function EventFormPage() {
                     </div>
                   </div>
 
-                  {/* Price */}
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-800 mb-2">
-                      Ticket Price (₹)
-                    </label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <span className="text-slate-400 font-bold">₹</span>
+                  {/* Pricing Type Toggle */}
+                  <div className="col-span-2">
+                    <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
+                      <div className="flex items-center space-x-4">
+                        <label className="flex items-center cursor-pointer">
+                          <input
+                            type="radio"
+                            checked={!form.hasTicketCategories}
+                            onChange={() =>
+                              setForm((prev) => ({
+                                ...prev,
+                                hasTicketCategories: false,
+                              }))
+                            }
+                            className="mr-2 text-blue-600"
+                          />
+                          <span className="text-sm font-medium text-slate-700">
+                            Simple Pricing (One price for all tickets)
+                          </span>
+                        </label>
+                        <label className="flex items-center cursor-pointer">
+                          <input
+                            type="radio"
+                            checked={form.hasTicketCategories}
+                            onChange={toggleTicketCategories}
+                            className="mr-2 text-blue-600"
+                          />
+                          <span className="text-sm font-medium text-slate-700">
+                            Multiple Ticket Categories
+                          </span>
+                        </label>
                       </div>
-                      <input
-                        type="number"
-                        name="price"
-                        placeholder="0.00"
-                        className="block w-full pl-10 pr-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-slate-50 transition-all duration-200"
-                        value={form.price}
-                        onChange={handleChange}
-                        min={0}
-                        step="0.01"
-                        required
-                      />
                     </div>
                   </div>
 
-                  {/* Total Seats */}
-                  <div>
-                    <label className="block text-sm font-semibold text-slate-800 mb-2">
-                      Total Seats
-                    </label>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg
-                          className="w-5 h-5 text-slate-400"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                  {!form.hasTicketCategories ? (
+                    <>
+                      {/* Price */}
+                      <div>
+                        <label className="block text-sm font-semibold text-slate-800 mb-2">
+                          Ticket Price (₹)
+                        </label>
+                        <div className="relative">
+                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <span className="text-slate-400 font-bold">₹</span>
+                          </div>
+                          <input
+                            type="number"
+                            name="price"
+                            placeholder="0.00"
+                            className="block w-full pl-10 pr-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-slate-50 transition-all duration-200"
+                            value={form.price}
+                            onChange={handleChange}
+                            min={0}
+                            step="0.01"
+                            required={!form.hasTicketCategories}
                           />
-                        </svg>
+                        </div>
                       </div>
-                      <input
-                        type="number"
-                        name="totalSeats"
-                        placeholder="Enter number of seats"
-                        className="block w-full pl-10 pr-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-slate-50 transition-all duration-200"
-                        value={form.totalSeats}
-                        onChange={handleChange}
-                        min={1}
-                        required
-                      />
-                    </div>
-                  </div>
+
+                      {/* Total Seats */}
+                      <div>
+                        <label className="block text-sm font-semibold text-slate-800 mb-2">
+                          Total Seats
+                        </label>
+                        <div className="relative">
+                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg
+                              className="w-5 h-5 text-slate-400"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                              />
+                            </svg>
+                          </div>
+                          <input
+                            type="number"
+                            name="totalSeats"
+                            placeholder="Enter number of seats"
+                            className="block w-full pl-10 pr-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-slate-50 transition-all duration-200"
+                            value={form.totalSeats}
+                            onChange={handleChange}
+                            min={1}
+                            required={!form.hasTicketCategories}
+                          />
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      {/* Ticket Categories */}
+                      <div className="col-span-2">
+                        <div className="flex items-center justify-between mb-4">
+                          <label className="block text-sm font-semibold text-slate-800">
+                            Ticket Categories
+                          </label>
+                          <button
+                            type="button"
+                            onClick={addTicketCategory}
+                            disabled={form.ticketCategories.length >= 5}
+                            className="inline-flex items-center px-3 py-1 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                          >
+                            <svg
+                              className="w-4 h-4 mr-1"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                              />
+                            </svg>
+                            Add Category
+                          </button>
+                        </div>
+
+                        <div className="space-y-4">
+                          {form.ticketCategories.map((category, index) => (
+                            <div
+                              key={index}
+                              className="bg-slate-50 rounded-xl p-4 border border-slate-200"
+                            >
+                              <div className="flex items-center justify-between mb-3">
+                                <h4 className="text-sm font-medium text-slate-700">
+                                  Category {index + 1}
+                                </h4>
+                                {form.ticketCategories.length > 1 && (
+                                  <button
+                                    type="button"
+                                    onClick={() => removeTicketCategory(index)}
+                                    className="text-red-500 hover:text-red-700 transition-colors duration-200"
+                                  >
+                                    <svg
+                                      className="w-4 h-4"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                      />
+                                    </svg>
+                                  </button>
+                                )}
+                              </div>
+
+                              <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                  <label className="block text-xs font-medium text-slate-600 mb-1">
+                                    Category Name *
+                                  </label>
+                                  <input
+                                    type="text"
+                                    placeholder="e.g., VIP, Regular, Student"
+                                    value={category.name}
+                                    onChange={(e) =>
+                                      handleTicketCategoryChange(
+                                        index,
+                                        "name",
+                                        e.target.value
+                                      )
+                                    }
+                                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                    required
+                                  />
+                                </div>
+
+                                <div>
+                                  <label className="block text-xs font-medium text-slate-600 mb-1">
+                                    Price (₹) *
+                                  </label>
+                                  <input
+                                    type="number"
+                                    placeholder="0.00"
+                                    value={category.price}
+                                    onChange={(e) =>
+                                      handleTicketCategoryChange(
+                                        index,
+                                        "price",
+                                        e.target.value
+                                      )
+                                    }
+                                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                    min={0}
+                                    step="0.01"
+                                    required
+                                  />
+                                </div>
+
+                                <div>
+                                  <label className="block text-xs font-medium text-slate-600 mb-1">
+                                    Available Seats *
+                                  </label>
+                                  <input
+                                    type="number"
+                                    placeholder="0"
+                                    value={category.totalSeats}
+                                    onChange={(e) =>
+                                      handleTicketCategoryChange(
+                                        index,
+                                        "totalSeats",
+                                        e.target.value
+                                      )
+                                    }
+                                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                    min={1}
+                                    required
+                                  />
+                                </div>
+
+                                <div>
+                                  <label className="block text-xs font-medium text-slate-600 mb-1">
+                                    Description
+                                  </label>
+                                  <input
+                                    type="text"
+                                    placeholder="Optional description"
+                                    value={category.description}
+                                    onChange={(e) =>
+                                      handleTicketCategoryChange(
+                                        index,
+                                        "description",
+                                        e.target.value
+                                      )
+                                    }
+                                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+
+                        <p className="text-xs text-slate-500 mt-2">
+                          You can create up to 5 different ticket categories
+                          with different prices and seat allocations.
+                        </p>
+                      </div>
+                    </>
+                  )}
 
                   {/* Image Upload */}
                   <div>

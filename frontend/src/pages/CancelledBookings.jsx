@@ -219,11 +219,20 @@ export default function CancelledBookings() {
                 refundAmount,
                 refundId,
                 priceAtBooking,
+                hasTicketCategories,
+                ticketItems,
+                totalQuantity,
+                totalAmount: bookingTotalAmount,
               } = booking;
 
               if (!eventId) return null;
 
-              const totalAmount = priceAtBooking * noOfSeats;
+              // Calculate total amount based on booking type
+              const totalAmount =
+                hasTicketCategories && bookingTotalAmount
+                  ? bookingTotalAmount
+                  : priceAtBooking * noOfSeats;
+
               const refundPercentage =
                 refundAmount && totalAmount > 0
                   ? Math.round((refundAmount / totalAmount) * 100)
@@ -352,11 +361,41 @@ export default function CancelledBookings() {
                         </div>
                         <div>
                           <p className="text-sm text-slate-600">
-                            Number of Seats
+                            {hasTicketCategories
+                              ? "Tickets Booked"
+                              : "Number of Seats"}
                           </p>
-                          <p className="font-semibold text-slate-800">
-                            {noOfSeats}
-                          </p>
+                          {hasTicketCategories && ticketItems ? (
+                            <div className="space-y-2">
+                              {ticketItems.map((item, index) => (
+                                <div
+                                  key={index}
+                                  className="flex justify-between items-center bg-slate-100 px-3 py-2 rounded-lg"
+                                >
+                                  <span className="text-slate-700 font-medium">
+                                    {item.categoryName}
+                                  </span>
+                                  <span className="text-slate-800 font-semibold">
+                                    {item.quantity} ticket
+                                    {item.quantity !== 1 ? "s" : ""}
+                                  </span>
+                                </div>
+                              ))}
+                              <div className="flex justify-between items-center bg-blue-100 px-3 py-2 rounded-lg">
+                                <span className="text-blue-700 font-semibold">
+                                  Total
+                                </span>
+                                <span className="text-blue-800 font-bold">
+                                  {totalQuantity} ticket
+                                  {totalQuantity !== 1 ? "s" : ""}
+                                </span>
+                              </div>
+                            </div>
+                          ) : (
+                            <p className="font-semibold text-slate-800">
+                              {noOfSeats}
+                            </p>
+                          )}
                         </div>
                         <div>
                           <p className="text-sm text-slate-600">

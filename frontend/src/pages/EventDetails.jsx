@@ -58,11 +58,45 @@ export default function EventDetailsPage() {
   const [error, setError] = useState("");
   const [alreadyBooked, setAlreadyBooked] = useState(false);
   const [userBookingId, setUserBookingId] = useState(null);
+  const [userBooking, setUserBooking] = useState(null);
   const [availableSeats, setAvailableSeats] = useState(0);
   const [seatCount, setSeatCount] = useState(1);
   const [showPayment, setShowPayment] = useState(false);
   const [showUnregisterModal, setShowUnregisterModal] = useState(false);
   const [refundPolicy, setRefundPolicy] = useState(null);
+
+  // Ticket category selection state
+  const [ticketSelections, setTicketSelections] = useState([]);
+
+  // Computed values for ticket categories
+  const totalTickets = ticketSelections.reduce(
+    (sum, selection) => sum + selection.quantity,
+    0
+  );
+  const totalPrice = ticketSelections.reduce((sum, selection) => {
+    const category = event?.ticketCategories?.find(
+      (c) => c._id === selection.categoryId
+    );
+    return sum + (category ? category.price * selection.quantity : 0);
+  }, 0);
+
+  // Handler for ticket category selection
+  const handleTicketSelectionChange = (categoryId, quantity) => {
+    setTicketSelections((prev) => {
+      const existing = prev.find((s) => s.categoryId === categoryId);
+      if (existing) {
+        if (quantity === 0) {
+          return prev.filter((s) => s.categoryId !== categoryId);
+        }
+        return prev.map((s) =>
+          s.categoryId === categoryId ? { ...s, quantity } : s
+        );
+      } else if (quantity > 0) {
+        return [...prev, { categoryId, quantity }];
+      }
+      return prev;
+    });
+  };
 
   const fetchEvent = async () => {
     setLoading(true);
@@ -82,6 +116,7 @@ export default function EventDetailsPage() {
 
       let alreadyBooked = false;
       let bookingId = null;
+      let bookingDetails = null;
       if (currentUser) {
         // For all users, check if they have an active booking for this event
         try {
@@ -95,12 +130,14 @@ export default function EventDetailsPage() {
           );
           alreadyBooked = !!activeBooking;
           bookingId = activeBooking ? activeBooking._id : null;
+          bookingDetails = activeBooking || null;
         } catch {}
       }
 
       setAvailableSeats(remainingSeats);
       setAlreadyBooked(alreadyBooked);
       setUserBookingId(bookingId);
+      setUserBooking(bookingDetails);
       setLoading(false);
     } catch (err) {
       setError(err.response?.data?.message || "Failed to fetch event");
@@ -280,7 +317,11 @@ export default function EventDetailsPage() {
               {/* Price Badge */}
               <div className="absolute top-6 right-6">
                 <span className="inline-flex items-center px-4 py-2 rounded-full text-lg font-bold bg-gradient-to-r from-teal-500 to-blue-600 text-white shadow-lg">
-                  ₹{event.price}
+                  {event.hasTicketCategories && event.ticketCategories
+                    ? `₹${Math.min(
+                        ...event.ticketCategories.map((c) => c.price)
+                      ).toLocaleString()} onwards`
+                    : `₹${event.price || 0}`}
                 </span>
               </div>
 
@@ -504,7 +545,12 @@ export default function EventDetailsPage() {
               <div className="grid sm:grid-cols-3 gap-6">
                 <div className="text-center p-4 bg-slate-50 rounded-xl">
                   <div className="text-2xl font-bold text-slate-800 mb-1">
-                    {event.totalSeats}
+                    {event.hasTicketCategories && event.ticketCategories
+                      ? event.ticketCategories.reduce(
+                          (sum, cat) => sum + (cat.totalSeats || 0),
+                          0
+                        )
+                      : event.totalSeats || 0}
                   </div>
                   <div className="text-slate-600 text-sm font-medium">
                     Total Seats
@@ -512,7 +558,13 @@ export default function EventDetailsPage() {
                 </div>
                 <div className="text-center p-4 bg-slate-50 rounded-xl">
                   <div className="text-2xl font-bold text-green-600 mb-1">
-                    {availableSeats}
+                    {event.hasTicketCategories && event.ticketCategories
+                      ? event.ticketCategories.reduce(
+                          (sum, cat) =>
+                            sum + (cat.availableSeats || cat.totalSeats || 0),
+                          0
+                        )
+                      : availableSeats}
                   </div>
                   <div className="text-slate-600 text-sm font-medium">
                     Available
@@ -520,10 +572,14 @@ export default function EventDetailsPage() {
                 </div>
                 <div className="text-center p-4 bg-slate-50 rounded-xl">
                   <div className="text-2xl font-bold text-blue-600 mb-1">
-                    ₹{event.price}
+                    {event.hasTicketCategories && event.ticketCategories
+                      ? `₹${Math.min(
+                          ...event.ticketCategories.map((c) => c.price)
+                        ).toLocaleString()}`
+                      : `₹${event.price || 0}`}
                   </div>
                   <div className="text-slate-600 text-sm font-medium">
-                    Per Ticket
+                    {event.hasTicketCategories ? "Onwards" : "Per Ticket"}
                   </div>
                 </div>
               </div>
@@ -744,20 +800,63 @@ export default function EventDetailsPage() {
                           Confirmed
                         </span>
                       </div>
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm font-medium text-slate-600">
-                          Seats Booked
-                        </span>
-                        <span className="text-sm font-bold text-slate-800">
-                          {seatCount}
-                        </span>
-                      </div>
+
+                      {userBooking &&
+                      userBooking.ticketItems &&
+                      userBooking.ticketItems.length > 0 ? (
+                        // Categorized booking display
+                        <>
+                          <div className="space-y-2 mb-3">
+                            {userBooking.ticketItems.map((item, index) => (
+                              <div
+                                key={index}
+                                className="flex justify-between items-center text-sm"
+                              >
+                                <span className="text-slate-600">
+                                  {item.categoryName} × {item.quantity}
+                                </span>
+                                <span className="font-medium text-slate-800">
+                                  ₹
+                                  {(
+                                    item.pricePerTicket * item.quantity
+                                  ).toLocaleString()}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                          <div className="flex justify-between items-center pt-2 border-t border-slate-200">
+                            <span className="text-sm font-medium text-slate-600">
+                              Total Tickets
+                            </span>
+                            <span className="text-sm font-bold text-slate-800">
+                              {userBooking.ticketItems.reduce(
+                                (sum, item) => sum + item.quantity,
+                                0
+                              )}
+                            </span>
+                          </div>
+                        </>
+                      ) : (
+                        // Legacy booking display
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="text-sm font-medium text-slate-600">
+                            Seats Booked
+                          </span>
+                          <span className="text-sm font-bold text-slate-800">
+                            {userBooking?.noOfSeats || seatCount}
+                          </span>
+                        </div>
+                      )}
+
                       <div className="flex justify-between items-center">
                         <span className="text-sm font-medium text-slate-600">
                           Total Paid
                         </span>
                         <span className="text-lg font-bold text-slate-800">
-                          ₹{event.price * seatCount}
+                          ₹
+                          {userBooking
+                            ? userBooking.totalAmount.toLocaleString()
+                            : ((event.price || 0) * seatCount).toLocaleString()}
                         </span>
                       </div>
                     </div>
@@ -809,13 +908,162 @@ export default function EventDetailsPage() {
                 <div className="bg-white rounded-2xl shadow-lg border border-slate-100 p-8">
                   <div className="text-center mb-6">
                     <div className="text-3xl font-bold text-slate-800 mb-1">
-                      ₹{event.price}
+                      {event.hasTicketCategories && event.ticketCategories
+                        ? `₹${Math.min(
+                            ...event.ticketCategories.map((c) => c.price)
+                          ).toLocaleString()}`
+                        : `₹${event.price || 0}`}
                     </div>
-                    <p className="text-slate-600">per ticket</p>
+                    <p className="text-slate-600">
+                      {event.hasTicketCategories ? "Onwards" : "Per Ticket"}
+                    </p>
                   </div>
 
-                  {/* Seat Selection */}
-                  {currentUser && !showPayment && (
+                  {/* Ticket Category Selection for categorized events */}
+                  {event.hasTicketCategories &&
+                  event.ticketCategories &&
+                  currentUser &&
+                  !showPayment ? (
+                    <div className="mb-6 space-y-4">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-lg font-semibold text-slate-800">
+                          Select Ticket Categories
+                        </h3>
+                        <div
+                          className={`text-sm ${
+                            totalTickets >= 8
+                              ? "text-amber-600 font-medium"
+                              : "text-slate-600"
+                          }`}
+                        >
+                          {totalTickets}/10 tickets selected
+                          {totalTickets < 10 && totalTickets >= 7 && (
+                            <span className="ml-1 text-amber-600">
+                              ({10 - totalTickets} remaining)
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      {totalTickets >= 10 && (
+                        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                          <p className="text-amber-800 text-sm font-medium">
+                            Maximum of 10 tickets per booking reached. Remove
+                            some tickets to select different categories.
+                          </p>
+                        </div>
+                      )}
+                      {event.ticketCategories.map((category, index) => {
+                        const categorySelection = ticketSelections.find(
+                          (s) => s.categoryId === category._id
+                        ) || { quantity: 0 };
+                        // Use totalSeats as fallback if availableSeats is not provided
+                        const categoryAvailableSeats = Math.max(
+                          0,
+                          category.availableSeats ?? category.totalSeats ?? 0
+                        );
+
+                        return (
+                          <div
+                            key={category._id || index}
+                            className="border border-slate-200 rounded-xl p-4"
+                          >
+                            <div className="flex justify-between items-start mb-3">
+                              <div>
+                                <h4 className="font-semibold text-slate-800">
+                                  {category.name}
+                                </h4>
+                                {category.description && (
+                                  <p className="text-sm text-slate-600 mt-1">
+                                    {category.description}
+                                  </p>
+                                )}
+                              </div>
+                              <div className="text-right">
+                                <div className="text-lg font-bold text-slate-800">
+                                  ₹{category.price.toLocaleString()}
+                                </div>
+                                <div className="text-xs text-slate-500">
+                                  {categoryAvailableSeats} available
+                                </div>
+                              </div>
+                            </div>
+
+                            {categoryAvailableSeats > 0 ? (
+                              <div className="flex items-center gap-3">
+                                <label className="text-sm font-medium text-slate-700">
+                                  Quantity:
+                                </label>
+                                <select
+                                  value={categorySelection.quantity}
+                                  onChange={(e) =>
+                                    handleTicketSelectionChange(
+                                      category._id,
+                                      parseInt(e.target.value)
+                                    )
+                                  }
+                                  className="border border-slate-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                >
+                                  {Array.from(
+                                    {
+                                      length: Math.min(
+                                        categoryAvailableSeats + 1,
+                                        // Allow current quantity + remaining tickets up to 10 total
+                                        10 -
+                                          totalTickets +
+                                          categorySelection.quantity +
+                                          1
+                                      ),
+                                    },
+                                    (_, i) => (
+                                      <option key={i} value={i}>
+                                        {i === 0
+                                          ? "None"
+                                          : `${i} ${
+                                              i === 1 ? "ticket" : "tickets"
+                                            }`}
+                                      </option>
+                                    )
+                                  )}
+                                </select>
+                                {categorySelection.quantity > 0 && (
+                                  <span className="text-sm font-medium text-slate-600">
+                                    = ₹
+                                    {(
+                                      category.price *
+                                      categorySelection.quantity
+                                    ).toLocaleString()}
+                                  </span>
+                                )}
+                              </div>
+                            ) : (
+                              <div className="text-sm text-red-600 font-medium">
+                                Sold Out
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+
+                      {/* Total Summary */}
+                      {totalTickets > 0 && (
+                        <div className="mt-4 p-4 bg-slate-50 rounded-xl">
+                          <div className="flex justify-between items-center text-lg font-bold text-slate-800">
+                            <span>
+                              Total ({totalTickets}{" "}
+                              {totalTickets === 1 ? "ticket" : "tickets"})
+                            </span>
+                            <span>₹{totalPrice.toLocaleString()}</span>
+                          </div>
+                          <div className="mt-2 text-xs text-slate-500">
+                            Maximum 10 tickets per booking
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ) : !event.hasTicketCategories &&
+                    currentUser &&
+                    !showPayment ? (
+                    /* Legacy seat selection for non-categorized events */
                     <div className="mb-6">
                       <label
                         htmlFor="seatCount"
@@ -850,12 +1098,12 @@ export default function EventDetailsPage() {
                             Total Price:
                           </span>
                           <span className="text-xl font-bold text-slate-800">
-                            ₹{event.price * seatCount}
+                            ₹{((event.price || 0) * seatCount).toLocaleString()}
                           </span>
                         </div>
                       </div>
                     </div>
-                  )}
+                  ) : null}
 
                   <div className="space-y-4 mb-6">
                     <div className="bg-slate-50 rounded-xl p-4 space-y-3">
@@ -933,13 +1181,47 @@ export default function EventDetailsPage() {
                   ) : showPayment ? (
                     <div className="space-y-4">
                       <StripeCheckout
-                        amount={event.price * seatCount}
+                        amount={
+                          event.hasTicketCategories
+                            ? totalPrice
+                            : (event.price || 0) * seatCount
+                        }
                         onSuccess={async (paymentIntent) => {
-                          await apiClient.post("/bookings", {
-                            eventId: event._id,
-                            noOfSeats: seatCount,
-                            paymentIntentId: paymentIntent.id,
-                          });
+                          if (event.hasTicketCategories) {
+                            // Convert ticketSelections to the format expected by backend
+                            const ticketItems = ticketSelections.map(
+                              (selection) => {
+                                const category = event.ticketCategories.find(
+                                  (c) => c._id === selection.categoryId
+                                );
+                                const subtotal =
+                                  category.price * selection.quantity;
+                                return {
+                                  categoryName: category.name,
+                                  quantity: selection.quantity,
+                                  pricePerTicket: category.price,
+                                  subtotal: subtotal,
+                                };
+                              }
+                            );
+
+                            // Categorized booking
+                            await apiClient.post("/bookings", {
+                              eventId: event._id,
+                              hasTicketCategories: true,
+                              ticketItems: ticketItems,
+                              totalQuantity: totalTickets,
+                              totalAmount: totalPrice,
+                              paymentIntentId: paymentIntent.id,
+                            });
+                          } else {
+                            // Legacy booking
+                            await apiClient.post("/bookings", {
+                              eventId: event._id,
+                              noOfSeats: seatCount,
+                              paymentIntentId: paymentIntent.id,
+                            });
+                          }
                           handleBookingSuccess();
                         }}
                         buttonClassName="w-full bg-gradient-to-r from-green-600 to-emerald-500 text-white py-4 px-6 rounded-xl font-bold text-lg hover:from-green-700 hover:to-emerald-600 transition-all duration-300 shadow-lg"
@@ -955,9 +1237,21 @@ export default function EventDetailsPage() {
                     <button
                       onClick={() => setShowPayment(true)}
                       className="w-full bg-gradient-to-r from-blue-600 to-teal-500 text-white py-4 px-6 rounded-xl font-bold text-lg hover:from-blue-700 hover:to-teal-600 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-                      disabled={availableSeats === 0}
+                      disabled={
+                        event.hasTicketCategories
+                          ? totalTickets === 0
+                          : availableSeats === 0
+                      }
                     >
-                      {availableSeats === 0 ? "Sold Out" : "Book Now"}
+                      {event.hasTicketCategories
+                        ? totalTickets === 0
+                          ? "Select Tickets"
+                          : `Book ${totalTickets} ${
+                              totalTickets === 1 ? "Ticket" : "Tickets"
+                            } - ₹${totalPrice.toLocaleString()}`
+                        : availableSeats === 0
+                        ? "Sold Out"
+                        : "Book Now"}
                     </button>
                   )}
                 </div>

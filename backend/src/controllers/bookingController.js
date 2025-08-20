@@ -14,18 +14,19 @@ import { calculateRefundPolicy } from "../utils/refundPolicy.js";
 // @access Logged-in users
 export const createBooking = async (req, res) => {
   try {
-    const { eventId, noOfSeats, paymentIntentId } = req.body;
+    const {
+      eventId,
+      noOfSeats,
+      ticketItems,
+      totalAmount,
+      totalQuantity,
+      hasTicketCategories,
+      paymentIntentId,
+    } = req.body;
     const userId = req.user._id;
 
-    if (!eventId || noOfSeats == null) {
-      return res
-        .status(400)
-        .json({ message: "Event ID and seat count are required" });
-    }
-    if (!Number.isInteger(noOfSeats) || noOfSeats <= 0 || noOfSeats > 10) {
-      return res
-        .status(400)
-        .json({ message: "Seat count must be between 1 and 10" });
+    if (!eventId) {
+      return res.status(400).json({ message: "Event ID is required" });
     }
 
     // Validate eventId exists
@@ -53,16 +54,198 @@ export const createBooking = async (req, res) => {
     if (existing)
       return res.status(400).json({ message: "You already booked this event" });
 
-    const totalBooked = await Booking.aggregate([
-      { $match: { eventId: event._id } },
-      { $group: { _id: null, total: { $sum: "$noOfSeats" } } },
-    ]);
-    const bookedSeats = totalBooked[0]?.total || 0;
+    let bookingData = {
+      eventId,
+      userId,
+      paymentIntentId,
+      verified: false,
+    };
 
-    if (bookedSeats + noOfSeats > event.totalSeats) {
-      return res.status(400).json({ message: "Not enough seats available" });
+    // Handle ticket categories vs legacy booking
+    if (hasTicketCategories && event.hasTicketCategories) {
+      // Validate ticket items
+      if (
+        !ticketItems ||
+        !Array.isArray(ticketItems) ||
+        ticketItems.length === 0
+      ) {
+        return res
+          .status(400)
+          .json({
+            message: "Ticket items are required for categorized events",
+          });
+      }
+
+      if (
+        !Number.isInteger(totalQuantity) ||
+        totalQuantity <= 0 ||
+        totalQuantity > 10
+      ) {
+        return res
+          .status(400)
+          .json({ message: "Total quantity must be between 1 and 10" });
+      }
+
+      // Validate ticket items against event categories
+      const validCategories = event.ticketCategories;
+      for (const item of ticketItems) {
+        if (
+          !item.categoryName ||
+          !Number.isInteger(item.quantity) ||
+          item.quantity <= 0
+        ) {
+          return res
+            .status(400)
+            .json({ message: "Invalid ticket item format" });
+        }
+
+        const category = validCategories.find(
+          (cat) => cat.name === item.categoryName
+        );
+        if (!category) {
+          return res
+            .status(400)
+            .json({ message: `Invalid ticket category: ${item.categoryName}` });
+        }
+
+        if (item.pricePerTicket !== category.price) {
+          return res
+            .status(400)
+            .json({
+              message: `Price mismatch for category: ${item.categoryName}`,
+            });
+        }
+      }
+
+      // Check seat availability for each category
+      const categoryBookings = await Booking.aggregate([
+        {
+          $match: {
+            eventId: event._id,
+            cancelledByUser: { $ne: true },
+            cancelledByEvent: { $ne: true },
+            hasTicketCategories: true,
+          },
+        },
+        { $unwind: "$ticketItems" },
+        {
+          $group: {
+            _id: "$ticketItems.categoryName",
+            totalBooked: { $sum: "$ticketItems.quantity" },
+          },
+        },
+      ]);
+
+      for (const item of ticketItems) {
+        const category = event.ticketCategories.find(
+          (cat) => cat.name === item.categoryName
+        );
+        const booked = categoryBookings.find(
+          (booking) => booking._id === item.categoryName
+        );
+        const bookedCount = booked ? booked.totalBooked : 0;
+
+        if (bookedCount + item.quantity > category.totalSeats) {
+          return res.status(400).json({
+            message: `Not enough seats available for ${
+              item.categoryName
+            }. Available: ${category.totalSeats - bookedCount}, Requested: ${
+              item.quantity
+            }`,
+          });
+        }
+      }
+
+      // Calculate total amount
+      const calculatedTotal = ticketItems.reduce(
+        (sum, item) => sum + item.pricePerTicket * item.quantity,
+        0
+      );
+      if (Math.abs(calculatedTotal - totalAmount) > 0.01) {
+        return res
+          .status(400)
+          .json({ message: "Total amount calculation mismatch" });
+      }
+
+      bookingData = {
+        ...bookingData,
+        ticketItems,
+        totalAmount,
+        totalQuantity,
+        hasTicketCategories: true,
+      };
+    } else {
+      // Legacy booking validation
+      if (noOfSeats == null) {
+        return res.status(400).json({ message: "Seat count is required" });
+      }
+      if (!Number.isInteger(noOfSeats) || noOfSeats <= 0 || noOfSeats > 10) {
+        return res
+          .status(400)
+          .json({ message: "Seat count must be between 1 and 10" });
+      }
+
+      // Check total seat availability
+      const totalBooked = await Booking.aggregate([
+        {
+          $match: {
+            eventId: event._id,
+            cancelledByUser: { $ne: true },
+            cancelledByEvent: { $ne: true },
+          },
+        },
+        {
+          $group: {
+            _id: null,
+            legacySeats: {
+              $sum: {
+                $cond: [
+                  { $eq: ["$hasTicketCategories", true] },
+                  0,
+                  "$noOfSeats",
+                ],
+              },
+            },
+            categorySeats: {
+              $sum: {
+                $cond: [
+                  { $eq: ["$hasTicketCategories", true] },
+                  "$totalQuantity",
+                  0,
+                ],
+              },
+            },
+          },
+        },
+      ]);
+
+      const bookedSeats = totalBooked[0]
+        ? totalBooked[0].legacySeats + totalBooked[0].categorySeats
+        : 0;
+      const totalSeats = event.hasTicketCategories
+        ? event.ticketCategories.reduce((sum, cat) => sum + cat.totalSeats, 0)
+        : event.totalSeats;
+
+      if (bookedSeats + noOfSeats > totalSeats) {
+        return res.status(400).json({ message: "Not enough seats available" });
+      }
+
+      const calculatedTotal = event.price * noOfSeats;
+      if (totalAmount && Math.abs(calculatedTotal - totalAmount) > 0.01) {
+        return res
+          .status(400)
+          .json({ message: "Total amount calculation mismatch" });
+      }
+
+      bookingData = {
+        ...bookingData,
+        noOfSeats,
+        priceAtBooking: event.price,
+        hasTicketCategories: false,
+      };
     }
 
+    // Generate unique ticket ID
     let ticketId;
     let idExists = true;
     while (idExists) {
@@ -71,17 +254,17 @@ export const createBooking = async (req, res) => {
     }
 
     const qrCode = await generateTicketQR(ticketId, eventId);
+    bookingData.ticketId = ticketId;
+    bookingData.qrCode = qrCode;
 
-    const booking = await Booking.create({
-      eventId,
-      userId,
-      noOfSeats,
-      priceAtBooking: event.price,
-      ticketId,
-      qrCode,
-      verified: false,
-      paymentIntentId,
-    });
+    const booking = await Booking.create(bookingData);
+
+    // Send confirmation email
+    const seatsText = hasTicketCategories
+      ? ticketItems
+          .map((item) => `${item.quantity}x ${item.categoryName}`)
+          .join(", ")
+      : `${noOfSeats} seat${noOfSeats > 1 ? "s" : ""}`;
 
     try {
       await transporter.sendMail({
@@ -116,35 +299,41 @@ export const createBooking = async (req, res) => {
               <li><strong>Date:</strong> ${new Date(
                 event.date
               ).toLocaleString()}</li>
-              <li><strong>Venue:</strong> ${event.venue.name}</li>
-              <li><strong>Address:</strong> ${event.venue.address}</li>
-              <li><strong>City:</strong> ${event.city}</li>
-              <li><strong>Seats Booked:</strong> ${booking.noOfSeats}</li>
+              <li><strong>Venue:</strong> ${
+                event.venue.name || event.venue
+              }</li>
+              ${
+                event.venue.address
+                  ? `<li><strong>Address:</strong> ${event.venue.address}</li>`
+                  : ""
+              }
+              ${
+                event.city
+                  ? `<li><strong>City:</strong> ${event.city}</li>`
+                  : ""
+              }
+              <li><strong>Tickets:</strong> ${seatsText}</li>
             </ul>
             
+            ${
+              event.venue.coordinates
+                ? `
             <!-- Venue Map Section -->
             <div style="margin: 20px 0; padding: 16px; background: #f8f9fa; border-radius: 8px; text-align: center;">
               <h3 style="color: #333; margin: 0 0 12px 0;">📍 Venue Location</h3>
-              <img src="https://maps.googleapis.com/maps/api/staticmap?center=${
-                event.venue.coordinates.lat
-              },${
-          event.venue.coordinates.lng
-        }&zoom=15&size=400x200&markers=color:red%7C${
-          event.venue.coordinates.lat
-        },${event.venue.coordinates.lng}&key=${
-          process.env.GOOGLE_MAPS_API_KEY
-        }" 
+              <img src="https://maps.googleapis.com/maps/api/staticmap?center=${event.venue.coordinates.lat},${event.venue.coordinates.lng}&zoom=15&size=400x200&markers=color:red%7C${event.venue.coordinates.lat},${event.venue.coordinates.lng}&key=${process.env.GOOGLE_MAPS_API_KEY}" 
                    alt="Venue Map" 
                    style="max-width: 100%; border-radius: 6px; border: 1px solid #ddd;" />
               <div style="margin-top: 10px;">
-                <a href="https://www.google.com/maps/search/?api=1&query=${
-                  event.venue.coordinates.lat
-                },${event.venue.coordinates.lng}" 
+                <a href="https://www.google.com/maps/search/?api=1&query=${event.venue.coordinates.lat},${event.venue.coordinates.lng}" 
                    style="background: #4285f4; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-size: 14px;">
                   🗺️ Open in Google Maps
                 </a>
               </div>
             </div>
+            `
+                : ""
+            }
             
             <hr style="margin: 16px 0;">
             <p style="text-align: center; color: #888;">Please present the QR code at the event entrance.</p>
@@ -199,11 +388,21 @@ export const cancelBooking = async (req, res) => {
         `Processing refund for booking ${booking._id}, payment: ${booking.paymentIntentId}`
       );
 
-      // Calculate refund amount based on time until event
+      // Calculate refund amount based on time until event and booking type
+      let originalAmount, seatCount;
+
+      if (booking.hasTicketCategories) {
+        originalAmount = booking.totalAmount;
+        seatCount = booking.totalQuantity;
+      } else {
+        originalAmount = booking.priceAtBooking * booking.noOfSeats;
+        seatCount = booking.noOfSeats;
+      }
+
       const refundCalc = calculateRefundPolicy(
         new Date(event.date),
-        booking.priceAtBooking,
-        booking.noOfSeats
+        originalAmount / seatCount, // price per seat/ticket
+        seatCount
       );
 
       console.log(
@@ -252,10 +451,20 @@ export const cancelBooking = async (req, res) => {
     // Send cancellation confirmation email
     try {
       // Calculate email message based on refund policy
+      let originalAmount, seatCount;
+
+      if (booking.hasTicketCategories) {
+        originalAmount = booking.totalAmount;
+        seatCount = booking.totalQuantity;
+      } else {
+        originalAmount = booking.priceAtBooking * booking.noOfSeats;
+        seatCount = booking.noOfSeats;
+      }
+
       const refundCalc = calculateRefundPolicy(
         new Date(event.date),
-        booking.priceAtBooking,
-        booking.noOfSeats
+        originalAmount / seatCount, // price per seat/ticket
+        seatCount
       );
 
       await transporter.sendMail({
@@ -293,7 +502,15 @@ export const cancelBooking = async (req, res) => {
 
               <div style="background: #f8f9fa; border-radius: 6px; padding: 16px; margin: 16px 0;">
                 <p><strong>Ticket ID:</strong> ${booking.ticketId}</p>
-                <p><strong>Seats Cancelled:</strong> ${booking.noOfSeats}</p>
+                <p><strong>Tickets Cancelled:</strong> ${
+                  booking.hasTicketCategories && booking.ticketItems
+                    ? booking.ticketItems
+                        .map((item) => `${item.quantity}x ${item.categoryName}`)
+                        .join(", ") + ` (Total: ${booking.totalQuantity})`
+                    : `${booking.noOfSeats} seat${
+                        booking.noOfSeats !== 1 ? "s" : ""
+                      }`
+                }</p>
                 <p><strong>Original Amount:</strong> ₹${
                   refundCalc.fullAmount
                 }</p>
@@ -347,10 +564,20 @@ export const cancelBooking = async (req, res) => {
     }
 
     // Calculate response data for refund policy
+    let originalAmount, seatCount;
+
+    if (booking.hasTicketCategories) {
+      originalAmount = booking.totalAmount;
+      seatCount = booking.totalQuantity;
+    } else {
+      originalAmount = booking.priceAtBooking * booking.noOfSeats;
+      seatCount = booking.noOfSeats;
+    }
+
     const refundCalc = calculateRefundPolicy(
       new Date(event.date),
-      booking.priceAtBooking,
-      booking.noOfSeats
+      originalAmount / seatCount, // price per seat/ticket
+      seatCount
     );
     const fullAmount = booking.priceAtBooking * booking.noOfSeats;
 
@@ -580,6 +807,9 @@ export const verifyBookingCode = async (req, res) => {
         _id: booking._id,
         ticketId: booking.ticketId,
         noOfSeats: booking.noOfSeats,
+        ticketItems: booking.ticketItems,
+        totalQuantity: booking.totalQuantity,
+        hasTicketCategories: booking.hasTicketCategories,
         verified: booking.verified,
         eventId: booking.eventId,
       },
@@ -594,7 +824,7 @@ export const verifyBookingCode = async (req, res) => {
 // @access Booking owner only
 export const getTicketQR = async (req, res) => {
   try {
-    const booking = await Booking.findById(req.params.id);
+    const booking = await Booking.findById(req.params.id).populate("eventId");
     if (!booking) {
       return res.status(404).json({ message: "Booking not found" });
     }
@@ -605,11 +835,29 @@ export const getTicketQR = async (req, res) => {
         .json({ message: "Not authorized to view this ticket" });
     }
 
-    res.json({
+    // Build response based on booking type
+    const response = {
       ticketId: booking.ticketId,
       qrCode: booking.qrCode,
       verified: booking.verified,
-    });
+      hasTicketCategories: booking.hasTicketCategories || false,
+      event: booking.eventId
+        ? {
+            title: booking.eventId.title,
+            date: booking.eventId.date,
+            location: booking.eventId.venue?.name || booking.eventId.venue,
+          }
+        : null,
+    };
+
+    if (booking.hasTicketCategories && booking.ticketItems) {
+      response.ticketItems = booking.ticketItems;
+      response.totalQuantity = booking.totalQuantity;
+    } else {
+      response.seats = booking.noOfSeats;
+    }
+
+    res.json(response);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

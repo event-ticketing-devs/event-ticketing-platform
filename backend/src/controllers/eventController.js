@@ -18,6 +18,8 @@ export const createEvent = async (req, res) => {
       venue,
       price,
       totalSeats,
+      ticketCategories,
+      hasTicketCategories,
     } = req.body;
 
     // Parse venue if it's a JSON string (from FormData)
@@ -29,9 +31,21 @@ export const createEvent = async (req, res) => {
       }
     }
 
-    // Convert numeric fields from strings (FormData sends everything as strings)
-    const numericPrice = Number(price);
-    const numericTotalSeats = Number(totalSeats);
+    // Parse ticketCategories if it's a JSON string (from FormData)
+    if (typeof ticketCategories === "string") {
+      try {
+        ticketCategories = JSON.parse(ticketCategories);
+      } catch (error) {
+        return res
+          .status(400)
+          .json({ message: "Invalid ticket categories format" });
+      }
+    }
+
+    // Convert boolean fields from strings (FormData)
+    if (typeof hasTicketCategories === "string") {
+      hasTicketCategories = hasTicketCategories === "true";
+    }
 
     // Get photo URL from uploaded file
     const photo = req.file ? req.file.path : null;
@@ -52,8 +66,75 @@ export const createEvent = async (req, res) => {
     ) {
       missingFields.push("venue (with name, address, and coordinates)");
     }
-    if (price == null) missingFields.push("price");
-    if (totalSeats == null) missingFields.push("totalSeats");
+
+    // Validate ticket categories or legacy pricing
+    if (hasTicketCategories) {
+      if (
+        !ticketCategories ||
+        !Array.isArray(ticketCategories) ||
+        ticketCategories.length === 0
+      ) {
+        missingFields.push("ticketCategories");
+      } else if (ticketCategories.length > 5) {
+        return res.status(400).json({
+          message: "Maximum 5 ticket categories allowed",
+        });
+      } else {
+        // Validate each ticket category
+        for (let i = 0; i < ticketCategories.length; i++) {
+          const category = ticketCategories[i];
+          if (!category.name || !category.price || !category.totalSeats) {
+            return res.status(400).json({
+              message: `Ticket category ${
+                i + 1
+              } must have name, price, and totalSeats`,
+            });
+          }
+          // Convert numeric fields
+          category.price = Number(category.price);
+          category.totalSeats = Number(category.totalSeats);
+
+          if (isNaN(category.price) || category.price < 0) {
+            return res.status(400).json({
+              message: `Ticket category "${category.name}" price must be a non-negative number`,
+            });
+          }
+          if (
+            !Number.isInteger(category.totalSeats) ||
+            category.totalSeats <= 0
+          ) {
+            return res.status(400).json({
+              message: `Ticket category "${category.name}" total seats must be a positive integer`,
+            });
+          }
+        }
+      }
+    } else {
+      // Legacy pricing validation
+      if (price == null) missingFields.push("price");
+      if (totalSeats == null) missingFields.push("totalSeats");
+
+      if (price != null) {
+        const numericPrice = Number(price);
+        if (isNaN(numericPrice) || numericPrice < 0) {
+          return res
+            .status(400)
+            .json({ message: "Price must be a non-negative number" });
+        }
+        price = numericPrice;
+      }
+
+      if (totalSeats != null) {
+        const numericTotalSeats = Number(totalSeats);
+        if (!Number.isInteger(numericTotalSeats) || numericTotalSeats <= 0) {
+          return res
+            .status(400)
+            .json({ message: "Total seats must be a positive integer" });
+        }
+        totalSeats = numericTotalSeats;
+      }
+    }
+
     if (missingFields.length > 0) {
       return res.status(400).json({
         message: `Missing required field(s): ${missingFields.join(", ")}`,
@@ -76,18 +157,6 @@ export const createEvent = async (req, res) => {
         .json({ message: "Event with same title already exists" });
     }
 
-    // Validate price and totalSeats
-    if (isNaN(numericPrice) || numericPrice < 0) {
-      return res
-        .status(400)
-        .json({ message: "Price must be a non-negative number" });
-    }
-    if (!Number.isInteger(numericTotalSeats) || numericTotalSeats <= 0) {
-      return res
-        .status(400)
-        .json({ message: "Total seats must be a positive integer" });
-    }
-
     // Prevent creating events with past dates
     if (new Date(date) < new Date()) {
       return res
@@ -95,18 +164,28 @@ export const createEvent = async (req, res) => {
         .json({ message: "Event date must be in the future" });
     }
 
-    const event = await Event.create({
+    // Create event object
+    const eventData = {
       title,
       description,
       date,
       categoryId,
       city,
       venue,
-      price: numericPrice,
-      totalSeats: numericTotalSeats,
       photo,
       organizerId: req.user._id,
-    });
+      hasTicketCategories: hasTicketCategories || false,
+    };
+
+    // Add pricing data based on event type
+    if (hasTicketCategories) {
+      eventData.ticketCategories = ticketCategories;
+    } else {
+      eventData.price = price;
+      eventData.totalSeats = totalSeats;
+    }
+
+    const event = await Event.create(eventData);
 
     if (req.user.role === "attendee") {
       await User.findByIdAndUpdate(req.user._id, { role: "organizer" });
@@ -124,7 +203,47 @@ export const createEvent = async (req, res) => {
 export const getAllEvents = async (req, res) => {
   try {
     const events = await Event.find().populate("categoryId", "name");
-    res.json(events);
+
+    // Enrich events with availability data
+    const enrichedEvents = await Promise.all(
+      events.map(async (event) => {
+        if (event.hasTicketCategories && event.ticketCategories) {
+          const bookings = await Booking.find({ eventId: event._id });
+
+          // Calculate availability for each ticket category
+          const enrichedCategories = event.ticketCategories.map((category) => {
+            let bookedSeats = 0;
+
+            // Sum booked seats for this category
+            bookings.forEach((booking) => {
+              if (booking.hasTicketCategories && booking.ticketItems) {
+                const categoryBooking = booking.ticketItems.find(
+                  (item) => item.categoryName === category.name
+                );
+                if (categoryBooking) {
+                  bookedSeats += categoryBooking.quantity;
+                }
+              }
+            });
+
+            return {
+              ...category.toObject(),
+              bookedSeats,
+              availableSeats: category.totalSeats - bookedSeats,
+            };
+          });
+
+          // Return event with enriched ticket categories
+          const eventData = event.toObject();
+          eventData.ticketCategories = enrichedCategories;
+          return eventData;
+        } else {
+          return event.toObject();
+        }
+      })
+    );
+
+    res.json(enrichedEvents);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -142,7 +261,41 @@ export const getEventById = async (req, res) => {
     if (!event) {
       return res.status(404).json({ message: "Event not found" });
     }
-    res.json(event);
+
+    // If the event has ticket categories, enrich with availability data
+    if (event.hasTicketCategories && event.ticketCategories) {
+      const bookings = await Booking.find({ eventId: req.params.id });
+
+      // Calculate availability for each ticket category
+      const enrichedCategories = event.ticketCategories.map((category) => {
+        let bookedSeats = 0;
+
+        // Sum booked seats for this category
+        bookings.forEach((booking) => {
+          if (booking.hasTicketCategories && booking.ticketItems) {
+            const categoryBooking = booking.ticketItems.find(
+              (item) => item.categoryName === category.name
+            );
+            if (categoryBooking) {
+              bookedSeats += categoryBooking.quantity;
+            }
+          }
+        });
+
+        return {
+          ...category.toObject(),
+          bookedSeats,
+          availableSeats: category.totalSeats - bookedSeats,
+        };
+      });
+
+      // Return event with enriched ticket categories
+      const eventData = event.toObject();
+      eventData.ticketCategories = enrichedCategories;
+      res.json(eventData);
+    } else {
+      res.json(event);
+    }
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -226,12 +379,44 @@ export const updateEvent = async (req, res) => {
           .status(400)
           .json({ message: "Total seats must be a positive integer" });
       }
+
       // Check if reducing totalSeats below already booked seats
       const totalBooked = await Booking.aggregate([
-        { $match: { eventId: event._id } },
-        { $group: { _id: null, total: { $sum: "$noOfSeats" } } },
+        {
+          $match: {
+            eventId: event._id,
+            cancelledByUser: { $ne: true },
+            cancelledByEvent: { $ne: true },
+          },
+        },
+        {
+          $group: {
+            _id: null,
+            legacySeats: {
+              $sum: {
+                $cond: [
+                  { $eq: ["$hasTicketCategories", true] },
+                  0,
+                  "$noOfSeats",
+                ],
+              },
+            },
+            categorySeats: {
+              $sum: {
+                $cond: [
+                  { $eq: ["$hasTicketCategories", true] },
+                  "$totalQuantity",
+                  0,
+                ],
+              },
+            },
+          },
+        },
       ]);
-      const bookedSeats = totalBooked[0]?.total || 0;
+
+      const bookedSeats = totalBooked[0]
+        ? totalBooked[0].legacySeats + totalBooked[0].categorySeats
+        : 0;
       if (req.body.totalSeats < bookedSeats) {
         return res.status(400).json({
           message: `Cannot set totalSeats below already booked seats (${bookedSeats})`,
@@ -390,16 +575,71 @@ export const getEventSeatInfo = async (req, res) => {
     const event = await Event.findById(id);
     if (!event) return res.status(404).json({ message: "Event not found" });
 
-    // FIX: Use eventId field to find bookings for this event
     const bookings = await Booking.find({ eventId: id });
-    const bookedSeats = bookings.reduce((sum, b) => sum + b.noOfSeats, 0);
 
-    return res.status(200).json({
-      id: event._id,
-      totalSeats: event.totalSeats,
-      bookedSeats,
-      remainingSeats: event.totalSeats - bookedSeats,
-    });
+    if (event.hasTicketCategories) {
+      // Calculate availability for each ticket category
+      const categoryAvailability = event.ticketCategories.map((category) => {
+        let bookedSeats = 0;
+
+        // Sum booked seats for this category
+        bookings.forEach((booking) => {
+          if (booking.hasTicketCategories && booking.ticketItems) {
+            const categoryBooking = booking.ticketItems.find(
+              (item) => item.categoryName === category.name
+            );
+            if (categoryBooking) {
+              bookedSeats += categoryBooking.quantity;
+            }
+          }
+        });
+
+        return {
+          name: category.name,
+          price: category.price,
+          description: category.description,
+          totalSeats: category.totalSeats,
+          bookedSeats,
+          remainingSeats: category.totalSeats - bookedSeats,
+        };
+      });
+
+      // Calculate total availability
+      const totalSeats = event.ticketCategories.reduce(
+        (sum, cat) => sum + cat.totalSeats,
+        0
+      );
+      const totalBookedSeats = categoryAvailability.reduce(
+        (sum, cat) => sum + cat.bookedSeats,
+        0
+      );
+
+      return res.status(200).json({
+        id: event._id,
+        hasTicketCategories: true,
+        ticketCategories: categoryAvailability,
+        totalSeats,
+        bookedSeats: totalBookedSeats,
+        remainingSeats: totalSeats - totalBookedSeats,
+      });
+    } else {
+      // Legacy seat calculation
+      const bookedSeats = bookings.reduce((sum, b) => {
+        if (b.hasTicketCategories) {
+          return sum + (b.totalQuantity || 0);
+        }
+        return sum + (b.noOfSeats || 0);
+      }, 0);
+
+      return res.status(200).json({
+        id: event._id,
+        hasTicketCategories: false,
+        totalSeats: event.totalSeats,
+        bookedSeats,
+        remainingSeats: event.totalSeats - bookedSeats,
+        price: event.price,
+      });
+    }
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Server error" });

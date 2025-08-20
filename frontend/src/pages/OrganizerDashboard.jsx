@@ -58,17 +58,47 @@ export default function OrganizerDashboard() {
   const viewDetails = async (event) => {
     try {
       const res = await apiClient.get(`/bookings/event/${event._id}`);
-      // Sum up all booked seats
-      const totalBooked = res.data.reduce(
-        (sum, booking) => sum + (booking.noOfSeats || 0),
-        0
-      );
+
+      // Calculate total booked seats for both legacy and categorized events
+      let totalBooked = 0;
+      if (event.hasTicketCategories) {
+        // For categorized events, sum up totalQuantity from categorized bookings
+        totalBooked = res.data.reduce((sum, booking) => {
+          if (booking.hasTicketCategories && booking.totalQuantity) {
+            return sum + booking.totalQuantity;
+          } else if (!booking.hasTicketCategories && booking.noOfSeats) {
+            return sum + booking.noOfSeats;
+          }
+          return sum;
+        }, 0);
+      } else {
+        // For legacy events, sum up noOfSeats
+        totalBooked = res.data.reduce(
+          (sum, booking) => sum + (booking.noOfSeats || 0),
+          0
+        );
+      }
+
+      // Calculate total seats and available seats
+      let totalSeats, availableSeats;
+      if (event.hasTicketCategories && event.ticketCategories) {
+        totalSeats = event.ticketCategories.reduce(
+          (sum, cat) => sum + cat.totalSeats,
+          0
+        );
+        availableSeats = totalSeats - totalBooked;
+      } else {
+        totalSeats = event.totalSeats;
+        availableSeats =
+          typeof totalSeats === "number"
+            ? Math.max(0, totalSeats - totalBooked)
+            : undefined;
+      }
+
       setSelectedEvent({
         ...event,
-        availableSeats:
-          typeof event.totalSeats === "number"
-            ? Math.max(0, event.totalSeats - totalBooked)
-            : undefined,
+        totalSeats,
+        availableSeats,
       });
       setAttendees(res.data);
       setShowDetailsModal(true);
@@ -353,7 +383,16 @@ export default function OrganizerDashboard() {
                           <div className="bg-white rounded-lg p-3">
                             <p className="text-xs text-slate-500 mb-1">Price</p>
                             <p className="font-semibold text-slate-800">
-                              {formatCurrency(event.price)}
+                              {event.hasTicketCategories &&
+                              event.ticketCategories
+                                ? `${formatCurrency(
+                                    Math.min(
+                                      ...event.ticketCategories.map(
+                                        (c) => c.price
+                                      )
+                                    )
+                                  )} onwards`
+                                : formatCurrency(event.price || 0)}
                             </p>
                           </div>
                           <div className="bg-white rounded-lg p-3">
@@ -566,17 +605,46 @@ export default function OrganizerDashboard() {
                       {/* Event Details */}
                       <div className="grid grid-cols-2 gap-4 mb-6">
                         <div className="bg-white rounded-lg p-3">
-                          <p className="text-xs text-slate-500 mb-1">Price</p>
-                          <p className="font-semibold text-slate-800">
-                            {formatCurrency(event.price)}
+                          <p className="text-xs text-slate-500 mb-1">
+                            {event.hasTicketCategories ? "Pricing" : "Price"}
                           </p>
+                          {event.hasTicketCategories &&
+                          event.ticketCategories ? (
+                            <div className="space-y-1">
+                              {event.ticketCategories
+                                .slice(0, 2)
+                                .map((category, index) => (
+                                  <p
+                                    key={index}
+                                    className="text-xs font-medium text-slate-700"
+                                  >
+                                    {category.name}:{" "}
+                                    {formatCurrency(category.price)}
+                                  </p>
+                                ))}
+                              {event.ticketCategories.length > 2 && (
+                                <p className="text-xs text-slate-500">
+                                  +{event.ticketCategories.length - 2} more
+                                </p>
+                              )}
+                            </div>
+                          ) : (
+                            <p className="font-semibold text-slate-800">
+                              {formatCurrency(event.price || 0)}
+                            </p>
+                          )}
                         </div>
                         <div className="bg-white rounded-lg p-3">
                           <p className="text-xs text-slate-500 mb-1">
                             Total Seats
                           </p>
                           <p className="font-semibold text-slate-800">
-                            {event.totalSeats}
+                            {event.hasTicketCategories && event.ticketCategories
+                              ? event.ticketCategories.reduce(
+                                  (sum, cat) => sum + cat.totalSeats,
+                                  0
+                                )
+                              : event.totalSeats}
                           </p>
                         </div>
                       </div>

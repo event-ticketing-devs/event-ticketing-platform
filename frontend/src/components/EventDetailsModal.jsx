@@ -4,16 +4,40 @@ import { format } from "date-fns";
 export default function EventDetailsModal({ open, event, attendees, onClose }) {
   if (!open || !event) return null;
 
-  // Calculate values for the donut chart - accounting for cancelled bookings
-  const totalSeats =
-    typeof event.totalSeats === "number" ? event.totalSeats : 0;
+  // Calculate values for the donut chart - accounting for cancelled bookings and ticket categories
+  let totalSeats, actualBookedSeats;
 
-  // Calculate actual booked seats from non-cancelled attendees
-  const actualBookedSeats = attendees
-    ? attendees
-        .filter((booking) => !booking.cancelled) // Only count non-cancelled bookings
-        .reduce((sum, booking) => sum + (booking.noOfSeats || 0), 0)
-    : 0;
+  if (event.hasTicketCategories && event.ticketCategories) {
+    // For categorized events
+    totalSeats = event.ticketCategories.reduce(
+      (sum, cat) => sum + cat.totalSeats,
+      0
+    );
+
+    // Calculate actual booked seats from non-cancelled attendees
+    actualBookedSeats = attendees
+      ? attendees
+          .filter((booking) => !booking.cancelled) // Only count non-cancelled bookings
+          .reduce((sum, booking) => {
+            if (booking.hasTicketCategories && booking.totalQuantity) {
+              return sum + booking.totalQuantity;
+            } else if (!booking.hasTicketCategories && booking.noOfSeats) {
+              return sum + booking.noOfSeats;
+            }
+            return sum;
+          }, 0)
+      : 0;
+  } else {
+    // For legacy events
+    totalSeats = typeof event.totalSeats === "number" ? event.totalSeats : 0;
+
+    // Calculate actual booked seats from non-cancelled attendees
+    actualBookedSeats = attendees
+      ? attendees
+          .filter((booking) => !booking.cancelled) // Only count non-cancelled bookings
+          .reduce((sum, booking) => sum + (booking.noOfSeats || 0), 0)
+      : 0;
+  }
 
   const availableSeats = totalSeats - actualBookedSeats;
   const bookedSeats = actualBookedSeats;
@@ -25,10 +49,13 @@ export default function EventDetailsModal({ open, event, attendees, onClose }) {
   const cancelledBookings = attendees
     ? attendees.filter((booking) => booking.cancelled)
     : [];
-  const cancelledSeats = cancelledBookings.reduce(
-    (sum, booking) => sum + (booking.noOfSeats || 0),
-    0
-  );
+  const cancelledSeats = cancelledBookings.reduce((sum, booking) => {
+    if (booking.hasTicketCategories && booking.totalQuantity) {
+      return sum + booking.totalQuantity;
+    } else {
+      return sum + (booking.noOfSeats || 0);
+    }
+  }, 0);
 
   // Donut chart parameters
   const radius = 40;
@@ -153,11 +180,28 @@ export default function EventDetailsModal({ open, event, attendees, onClose }) {
                   <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
                     <span className="text-green-600 font-bold text-lg">₹</span>
                   </div>
-                  <div>
-                    <p className="text-sm text-slate-600">Ticket Price</p>
-                    <p className="font-semibold text-slate-800">
-                      {formatCurrency(event.price)}
+                  <div className="flex-1">
+                    <p className="text-sm text-slate-600">
+                      {event.hasTicketCategories
+                        ? "Ticket Pricing"
+                        : "Ticket Price"}
                     </p>
+                    {event.hasTicketCategories && event.ticketCategories ? (
+                      <div className="space-y-1">
+                        {event.ticketCategories.map((category, index) => (
+                          <p
+                            key={index}
+                            className="text-sm font-medium text-slate-800"
+                          >
+                            {category.name}: {formatCurrency(category.price)}
+                          </p>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="font-semibold text-slate-800">
+                        {formatCurrency(event.price)}
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -182,7 +226,7 @@ export default function EventDetailsModal({ open, event, attendees, onClose }) {
                   <div>
                     <p className="text-sm text-slate-600">Total Capacity</p>
                     <p className="font-semibold text-slate-800">
-                      {event.totalSeats} seats
+                      {totalSeats} seats
                     </p>
                   </div>
                 </div>
@@ -476,82 +520,102 @@ export default function EventDetailsModal({ open, event, attendees, onClose }) {
               ) : (
                 <div className="max-h-64 overflow-y-auto">
                   <div className="divide-y divide-slate-200">
-                    {attendees?.map(({ _id, userId, noOfSeats, cancelled }) => (
-                      <div
-                        key={_id}
-                        className={`p-4 hover:bg-white transition-colors ${
-                          cancelled ? "opacity-60" : ""
-                        }`}
-                      >
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <div
-                              className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                                cancelled
-                                  ? "bg-red-100 border-2 border-red-300"
-                                  : "bg-gradient-to-r from-blue-600 to-teal-500"
-                              }`}
-                            >
-                              {cancelled ? (
-                                <svg
-                                  className="w-5 h-5 text-red-600"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  viewBox="0 0 24 24"
+                    {attendees?.map((booking) => {
+                      const { _id, userId, noOfSeats, cancelled } = booking;
+                      return (
+                        <div
+                          key={_id}
+                          className={`p-4 hover:bg-white transition-colors ${
+                            cancelled ? "opacity-60" : ""
+                          }`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <div
+                                className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                                  cancelled
+                                    ? "bg-red-100 border-2 border-red-300"
+                                    : "bg-gradient-to-r from-blue-600 to-teal-500"
+                                }`}
+                              >
+                                {cancelled ? (
+                                  <svg
+                                    className="w-5 h-5 text-red-600"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M6 18L18 6M6 6l12 12"
+                                    />
+                                  </svg>
+                                ) : (
+                                  <span className="text-white font-semibold text-sm">
+                                    {userId.name?.charAt(0)?.toUpperCase() ||
+                                      "U"}
+                                  </span>
+                                )}
+                              </div>
+                              <div>
+                                <p
+                                  className={`font-semibold ${
+                                    cancelled
+                                      ? "text-slate-600 line-through"
+                                      : "text-slate-800"
+                                  }`}
                                 >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M6 18L18 6M6 6l12 12"
-                                  />
-                                </svg>
-                              ) : (
-                                <span className="text-white font-semibold text-sm">
-                                  {userId.name?.charAt(0)?.toUpperCase() || "U"}
+                                  {userId.name}
+                                </p>
+                                <p
+                                  className={`text-sm ${
+                                    cancelled
+                                      ? "text-slate-500"
+                                      : "text-slate-600"
+                                  }`}
+                                >
+                                  {userId.email}
+                                </p>
+                              </div>
+                            </div>
+                            <div className="text-right flex items-center gap-2">
+                              <div
+                                className={`px-3 py-1 rounded-full text-sm font-semibold ${
+                                  cancelled
+                                    ? "bg-red-100 text-red-800"
+                                    : "bg-blue-100 text-blue-800"
+                                }`}
+                              >
+                                {booking.hasTicketCategories &&
+                                booking.ticketItems ? (
+                                  <div className="text-xs space-y-1">
+                                    {booking.ticketItems.map((item, index) => (
+                                      <div key={index}>
+                                        {item.quantity}x {item.categoryName}
+                                      </div>
+                                    ))}
+                                    <div className="font-semibold">
+                                      Total: {booking.totalQuantity} tickets
+                                    </div>
+                                  </div>
+                                ) : (
+                                  `${noOfSeats} seat${
+                                    noOfSeats !== 1 ? "s" : ""
+                                  }`
+                                )}
+                              </div>
+                              {cancelled && (
+                                <span className="px-2 py-1 bg-red-100 text-red-700 rounded text-xs font-semibold">
+                                  Cancelled
                                 </span>
                               )}
                             </div>
-                            <div>
-                              <p
-                                className={`font-semibold ${
-                                  cancelled
-                                    ? "text-slate-600 line-through"
-                                    : "text-slate-800"
-                                }`}
-                              >
-                                {userId.name}
-                              </p>
-                              <p
-                                className={`text-sm ${
-                                  cancelled
-                                    ? "text-slate-500"
-                                    : "text-slate-600"
-                                }`}
-                              >
-                                {userId.email}
-                              </p>
-                            </div>
-                          </div>
-                          <div className="text-right flex items-center gap-2">
-                            <div
-                              className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                                cancelled
-                                  ? "bg-red-100 text-red-800"
-                                  : "bg-blue-100 text-blue-800"
-                              }`}
-                            >
-                              {noOfSeats} seat{noOfSeats !== 1 ? "s" : ""}
-                            </div>
-                            {cancelled && (
-                              <span className="px-2 py-1 bg-red-100 text-red-700 rounded text-xs font-semibold">
-                                Cancelled
-                              </span>
-                            )}
                           </div>
                         </div>
-                      </div>
-                    )) || []}
+                      );
+                    }) || []}
                   </div>
                 </div>
               )}
