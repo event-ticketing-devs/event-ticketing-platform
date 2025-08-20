@@ -1,5 +1,12 @@
 import mongoose from "mongoose";
 
+const ticketCategorySchema = new mongoose.Schema({
+  name: { type: String, required: true, trim: true },
+  price: { type: Number, required: true, min: 0 },
+  totalSeats: { type: Number, required: true, min: 1 },
+  description: { type: String, trim: true },
+});
+
 const eventSchema = new mongoose.Schema(
   {
     title: { type: String, required: true, unique: true, trim: true },
@@ -20,8 +27,20 @@ const eventSchema = new mongoose.Schema(
       },
       placeId: { type: String }, // Google Places ID for reference
     },
-    price: { type: Number, required: true },
-    totalSeats: { type: Number, required: true },
+    // Legacy fields for backward compatibility
+    price: { type: Number },
+    totalSeats: { type: Number },
+    // New ticket category system
+    ticketCategories: {
+      type: [ticketCategorySchema],
+      validate: {
+        validator: function (categories) {
+          return categories.length >= 1 && categories.length <= 5;
+        },
+        message: "Event must have between 1 and 5 ticket categories",
+      },
+    },
+    hasTicketCategories: { type: Boolean, default: false },
     organizerId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

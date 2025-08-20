@@ -1,5 +1,12 @@
 import mongoose from "mongoose";
 
+const ticketItemSchema = new mongoose.Schema({
+  categoryName: { type: String, required: true },
+  quantity: { type: Number, required: true, min: 1 },
+  pricePerTicket: { type: Number, required: true, min: 0 },
+  subtotal: { type: Number, required: true, min: 0 },
+});
+
 const bookingSchema = new mongoose.Schema(
   {
     eventId: {
@@ -12,8 +19,14 @@ const bookingSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    noOfSeats: { type: Number, required: true },
-    priceAtBooking: { type: Number, required: true },
+    // Legacy fields for backward compatibility
+    noOfSeats: { type: Number },
+    priceAtBooking: { type: Number },
+    // New ticket category system
+    ticketItems: [ticketItemSchema],
+    totalAmount: { type: Number, required: true, min: 0 },
+    totalQuantity: { type: Number, required: true, min: 1 },
+    hasTicketCategories: { type: Boolean, default: false },
     refundStatus: {
       type: String,
       enum: ["none", "pending", "processed", "failed"],

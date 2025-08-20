@@ -251,7 +251,11 @@ const Home = () => {
                     {/* Price Badge */}
                     <div className="absolute top-4 right-4">
                       <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-gradient-to-r from-teal-500 to-blue-600 text-white shadow-lg">
-                        ₹{event.price}
+                        {event.hasTicketCategories && event.ticketCategories
+                          ? `₹${Math.min(
+                              ...event.ticketCategories.map((c) => c.price)
+                            ).toLocaleString()} onwards`
+                          : `₹${event.price || 0}`}
                       </span>
                     </div>
                   </div>
