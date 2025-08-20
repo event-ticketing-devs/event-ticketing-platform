@@ -24,6 +24,8 @@ export default function EventFormPage() {
 
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(isEditing);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState("");
 
   const fetchCategories = async () => {
     setLoading(true);
@@ -76,6 +78,11 @@ export default function EventFormPage() {
         totalSeats,
         photo,
       });
+
+      // Set image preview for existing event
+      if (photo) {
+        setImagePreview(photo);
+      }
     } catch {
       toast.error("Failed to fetch event");
     }
@@ -96,6 +103,38 @@ export default function EventFormPage() {
 
   const handleVenueSelect = (venueData) => {
     setForm((prev) => ({ ...prev, venue: venueData }));
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith("image/")) {
+        toast.error("Please select an image file");
+        return;
+      }
+
+      // Validate file size (5MB limit)
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("Image size should be less than 5MB");
+        return;
+      }
+
+      setSelectedFile(file);
+
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImagePreview(e.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeImage = () => {
+    setSelectedFile(null);
+    setImagePreview("");
+    setForm((prev) => ({ ...prev, photo: "" }));
   };
 
   const handleSubmit = async (e) => {
@@ -124,16 +163,41 @@ export default function EventFormPage() {
     }
 
     try {
-      const submitForm = { ...form, totalSeats };
+      // Create FormData for file upload
+      const formData = new FormData();
+
+      // Add all form fields
+      formData.append("title", form.title);
+      formData.append("description", form.description);
+      formData.append("date", form.date);
+      formData.append("categoryId", form.categoryId);
+      formData.append("city", form.city);
+      formData.append("venue", JSON.stringify(form.venue));
+      formData.append("price", form.price);
+      formData.append("totalSeats", totalSeats);
+
+      // Add file if selected
+      if (selectedFile) {
+        formData.append("photo", selectedFile);
+      }
+
       if (isEditing) {
-        const res = await apiClient.patch(`/events/${id}`, submitForm);
+        const res = await apiClient.patch(`/events/${id}`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
         if (res.data?.message) {
           toast.success(res.data.message);
         } else {
           toast.success("Event updated successfully");
         }
       } else {
-        await apiClient.post("/events", submitForm);
+        await apiClient.post("/events", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
         toast.success("Event created successfully");
       }
       navigate("/organizer");
@@ -494,38 +558,88 @@ export default function EventFormPage() {
                     </div>
                   </div>
 
-                  {/* Image URL */}
+                  {/* Image Upload */}
                   <div>
                     <label className="block text-sm font-semibold text-slate-800 mb-2">
-                      Event Image URL
+                      Event Image
                     </label>
+
+                    {/* File Input */}
                     <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg
-                          className="w-5 h-5 text-slate-400"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                          />
-                        </svg>
-                      </div>
                       <input
-                        type="url"
-                        name="photo"
-                        placeholder="https://example.com/image.jpg"
-                        className="block w-full pl-10 pr-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-slate-50 transition-all duration-200"
-                        value={form.photo}
-                        onChange={handleChange}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                        className="hidden"
+                        id="photo-upload"
                       />
+                      <label
+                        htmlFor="photo-upload"
+                        className="flex items-center justify-center w-full h-32 border-2 border-dashed border-slate-300 rounded-xl cursor-pointer hover:border-blue-400 transition-colors duration-200 bg-slate-50 hover:bg-blue-50"
+                      >
+                        <div className="text-center">
+                          <svg
+                            className="w-8 h-8 text-slate-400 mx-auto mb-2"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                            />
+                          </svg>
+                          <p className="text-sm text-slate-600">
+                            Click to upload an image
+                          </p>
+                          <p className="text-xs text-slate-400 mt-1">
+                            PNG, JPG, JPEG up to 5MB
+                          </p>
+                        </div>
+                      </label>
                     </div>
-                    <p className="text-sm text-slate-500 mt-1">
-                      Optional: Add an image URL for your event
+
+                    {/* Image Preview */}
+                    {imagePreview && (
+                      <div className="mt-4 relative">
+                        <div className="relative w-full h-48 rounded-xl overflow-hidden bg-slate-100">
+                          <img
+                            src={imagePreview}
+                            alt="Event preview"
+                            className="w-full h-full object-cover"
+                          />
+                          <button
+                            type="button"
+                            onClick={removeImage}
+                            className="absolute top-2 right-2 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors duration-200"
+                          >
+                            <svg
+                              className="w-4 h-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M6 18L18 6M6 6l12 12"
+                              />
+                            </svg>
+                          </button>
+                        </div>
+                        <p className="text-sm text-slate-500 mt-2">
+                          {selectedFile
+                            ? `Selected: ${selectedFile.name}`
+                            : "Current event image"}
+                        </p>
+                      </div>
+                    )}
+
+                    <p className="text-sm text-slate-500 mt-2">
+                      Optional: Add an image for your event
                     </p>
                   </div>
                 </div>

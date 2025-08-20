@@ -81,6 +81,11 @@ NODE_ENV=development
 GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
 STRIPE_SECRET_KEY=your-stripe-secret-key
 GOOGLE_MAPS_API_KEY=your-google-maps-api-key
+
+# Cloudinary Configuration (for image uploads)
+CLOUDINARY_CLOUD_NAME=your-cloudinary-cloud-name
+CLOUDINARY_API_KEY=your-cloudinary-api-key
+CLOUDINARY_API_SECRET=your-cloudinary-api-secret
 ```
 
 Create `.env` in the **frontend** directory:

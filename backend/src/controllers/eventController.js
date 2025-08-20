@@ -2,13 +2,14 @@ import Event from "../models/Event.js";
 import User from "../models/User.js";
 import Booking from "../models/Booking.js";
 import Category from "../models/Category.js";
+import { deleteImage } from "../utils/cloudinary.js";
 
 // @desc    Create new event
 // @route   POST /api/events
 // @access  Logged-in users (attendee/organizer/admin)
 export const createEvent = async (req, res) => {
   try {
-    const {
+    let {
       title,
       description,
       date,
@@ -17,8 +18,23 @@ export const createEvent = async (req, res) => {
       venue,
       price,
       totalSeats,
-      photo,
     } = req.body;
+
+    // Parse venue if it's a JSON string (from FormData)
+    if (typeof venue === "string") {
+      try {
+        venue = JSON.parse(venue);
+      } catch (error) {
+        return res.status(400).json({ message: "Invalid venue format" });
+      }
+    }
+
+    // Convert numeric fields from strings (FormData sends everything as strings)
+    const numericPrice = Number(price);
+    const numericTotalSeats = Number(totalSeats);
+
+    // Get photo URL from uploaded file
+    const photo = req.file ? req.file.path : null;
 
     // Validate required fields
     const missingFields = [];
@@ -61,12 +77,12 @@ export const createEvent = async (req, res) => {
     }
 
     // Validate price and totalSeats
-    if (isNaN(price) || price < 0) {
+    if (isNaN(numericPrice) || numericPrice < 0) {
       return res
         .status(400)
         .json({ message: "Price must be a non-negative number" });
     }
-    if (!Number.isInteger(totalSeats) || totalSeats <= 0) {
+    if (!Number.isInteger(numericTotalSeats) || numericTotalSeats <= 0) {
       return res
         .status(400)
         .json({ message: "Total seats must be a positive integer" });
@@ -86,8 +102,8 @@ export const createEvent = async (req, res) => {
       categoryId,
       city,
       venue,
-      price,
-      totalSeats,
+      price: numericPrice,
+      totalSeats: numericTotalSeats,
       photo,
       organizerId: req.user._id,
     });
@@ -140,7 +156,23 @@ export const updateEvent = async (req, res) => {
     const event = await Event.findById(req.params.id);
     if (!event) return res.status(404).json({ message: "Event not found" });
 
-    // Validate categoryId if being updated
+    if (req.body.venue && typeof req.body.venue === "string") {
+      try {
+        req.body.venue = JSON.parse(req.body.venue);
+      } catch (error) {
+        return res.status(400).json({ message: "Invalid venue format" });
+      }
+    }
+
+    if (req.body.price !== undefined) {
+      req.body.price = Number(req.body.price);
+    }
+    if (req.body.totalSeats !== undefined) {
+      req.body.totalSeats = Number(req.body.totalSeats);
+    }
+
+    const newPhoto = req.file ? req.file.path : null;
+
     if (
       Object.prototype.hasOwnProperty.call(req.body, "categoryId") &&
       req.body.categoryId &&
@@ -152,7 +184,6 @@ export const updateEvent = async (req, res) => {
       }
     }
 
-    // Check for duplicate event title (case-insensitive) if title is being updated
     if (
       Object.prototype.hasOwnProperty.call(req.body, "title") &&
       req.body.title &&
@@ -215,6 +246,7 @@ export const updateEvent = async (req, res) => {
 
     const prevDate = event.date;
     const prevPrice = event.price;
+    const oldPhotoUrl = event.photo;
 
     const updatableFields = [
       "title",
@@ -225,8 +257,13 @@ export const updateEvent = async (req, res) => {
       "venue",
       "price",
       "totalSeats",
-      "photo",
     ];
+
+    // Handle photo update separately
+    if (newPhoto) {
+      req.body.photo = newPhoto;
+      updatableFields.push("photo");
+    }
 
     let isDifferent = false;
     for (const field of updatableFields) {
@@ -261,6 +298,16 @@ export const updateEvent = async (req, res) => {
 
     Object.assign(event, req.body);
     await event.save();
+
+    // Delete old image from Cloudinary if a new one was uploaded
+    if (newPhoto && oldPhotoUrl) {
+      try {
+        await deleteImage(oldPhotoUrl);
+      } catch (error) {
+        console.error("Failed to delete old image:", error);
+        // Don't fail the request if image deletion fails
+      }
+    }
 
     if (
       req.body.date &&
@@ -314,6 +361,16 @@ export const deleteEvent = async (req, res) => {
       return res.json({
         message: "Event cancelled and refunds marked as pending",
       });
+    }
+
+    // Clean up image from Cloudinary before deletion
+    if (event.photo) {
+      try {
+        await deleteImage(event.photo);
+      } catch (error) {
+        console.error("Failed to delete event image:", error);
+        // Don't fail the deletion if image cleanup fails
+      }
     }
 
     await event.deleteOne();
