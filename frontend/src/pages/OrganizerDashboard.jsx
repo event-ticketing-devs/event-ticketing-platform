@@ -25,7 +25,11 @@ export default function OrganizerDashboard() {
     try {
       const res = await apiClient.get("/events");
       const myEvents = res.data.filter(
-        (event) => event.organizerId === (currentUser && currentUser._id)
+        (event) => {
+          // Handle both populated and non-populated organizerId
+          const organizerId = event.organizerId?._id || event.organizerId;
+          return organizerId === currentUser?._id;
+        }
       );
       setEvents(myEvents);
     } catch (err) {
@@ -99,6 +103,7 @@ export default function OrganizerDashboard() {
         ...event,
         totalSeats,
         availableSeats,
+        totalBooked,
       });
       setAttendees(res.data);
       setShowDetailsModal(true);

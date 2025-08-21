@@ -4,39 +4,48 @@ import { format } from "date-fns";
 export default function EventDetailsModal({ open, event, attendees, onClose }) {
   if (!open || !event) return null;
 
-  // Calculate values for the donut chart - accounting for cancelled bookings and ticket categories
+  // Use pre-calculated values from organizer dashboard if available, otherwise calculate
   let totalSeats, actualBookedSeats;
 
-  if (event.hasTicketCategories && event.ticketCategories) {
-    // For categorized events
-    totalSeats = event.ticketCategories.reduce(
-      (sum, cat) => sum + cat.totalSeats,
-      0
-    );
+  // Use totalSeats from event object (pre-calculated in organizer dashboard)
+  totalSeats = event.totalSeats || 0;
 
-    // Calculate actual booked seats from non-cancelled attendees
-    actualBookedSeats = attendees
-      ? attendees
-          .filter((booking) => !booking.cancelled) // Only count non-cancelled bookings
-          .reduce((sum, booking) => {
-            if (booking.hasTicketCategories && booking.totalQuantity) {
-              return sum + booking.totalQuantity;
-            } else if (!booking.hasTicketCategories && booking.noOfSeats) {
-              return sum + booking.noOfSeats;
-            }
-            return sum;
-          }, 0)
-      : 0;
+  // Use totalBooked from event object if available (pre-calculated in organizer dashboard)
+  if (event.totalBooked !== undefined) {
+    actualBookedSeats = event.totalBooked;
   } else {
-    // For legacy events
-    totalSeats = typeof event.totalSeats === "number" ? event.totalSeats : 0;
+    // Fallback: Calculate from attendees if not pre-calculated
+    if (event.hasTicketCategories && event.ticketCategories) {
+      // For categorized events
+      totalSeats = event.ticketCategories.reduce(
+        (sum, cat) => sum + cat.totalSeats,
+        0
+      );
 
-    // Calculate actual booked seats from non-cancelled attendees
-    actualBookedSeats = attendees
-      ? attendees
-          .filter((booking) => !booking.cancelled) // Only count non-cancelled bookings
-          .reduce((sum, booking) => sum + (booking.noOfSeats || 0), 0)
-      : 0;
+      // Calculate actual booked seats from non-cancelled attendees
+      actualBookedSeats = attendees
+        ? attendees
+            .filter((booking) => !booking.cancelled) // Only count non-cancelled bookings
+            .reduce((sum, booking) => {
+              if (booking.hasTicketCategories && booking.totalQuantity) {
+                return sum + booking.totalQuantity;
+              } else if (!booking.hasTicketCategories && booking.noOfSeats) {
+                return sum + booking.noOfSeats;
+              }
+              return sum;
+            }, 0)
+        : 0;
+    } else {
+      // For legacy events
+      totalSeats = typeof event.totalSeats === "number" ? event.totalSeats : 0;
+
+      // Calculate actual booked seats from non-cancelled attendees
+      actualBookedSeats = attendees
+        ? attendees
+            .filter((booking) => !booking.cancelled) // Only count non-cancelled bookings
+            .reduce((sum, booking) => sum + (booking.noOfSeats || 0), 0)
+        : 0;
+    }
   }
 
   const availableSeats = totalSeats - actualBookedSeats;
@@ -486,10 +495,10 @@ export default function EventDetailsModal({ open, event, attendees, onClose }) {
               Event Attendees
               <span className="text-sm font-normal text-slate-600">
                 (
-                {attendees?.filter((booking) => !booking.cancelled).length || 0}{" "}
+                {bookedSeats || 0}{" "}
                 active
-                {cancelledBookings.length > 0 &&
-                  `, ${cancelledBookings.length} cancelled`}
+                {cancelledSeats > 0 &&
+                  `, ${cancelledSeats} cancelled`}
                 )
               </span>
             </h3>

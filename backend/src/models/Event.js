@@ -49,6 +49,7 @@ const eventSchema = new mongoose.Schema(
     photo: { type: String },
     cancelled: { type: Boolean, default: false },
     cancelledReason: { type: String },
+    reportCount: { type: Number, default: 0 },
   },
   { timestamps: true }
 );

@@ -9,9 +9,12 @@ import Profile from "./pages/Profile";
 import ProfileUpdate from "./pages/ProfileUpdate";
 import PrivateRoute from "./components/PrivateRoute";
 import PublicRoute from "./components/PublicRoute";
+import AdminRoute from "./components/AdminRoute";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import OrganizerDashboard from "./pages/OrganizerDashboard";
+import AdminDashboard from "./pages/AdminDashboard";
+import FlaggedEvents from "./pages/FlaggedEvents";
 import EventForm from "./pages/EventForm";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -19,6 +22,7 @@ import NotFound from "./pages/NotFound";
 import OrganizerVerify from "./pages/OrganizerVerify";
 import TicketView from "./pages/TicketView";
 import CancelledBookings from "./pages/CancelledBookings";
+import OrganizerDetailsPage from "./pages/OrganizerDetailsPage";
 
 function App() {
   return (
@@ -95,6 +99,30 @@ function App() {
                   <PrivateRoute>
                     <OrganizerDashboard />
                   </PrivateRoute>
+                }
+              />
+              <Route
+                path="/admin"
+                element={
+                  <AdminRoute>
+                    <AdminDashboard />
+                  </AdminRoute>
+                }
+              />
+              <Route
+                path="/admin/flagged-events"
+                element={
+                  <AdminRoute>
+                    <FlaggedEvents />
+                  </AdminRoute>
+                }
+              />
+              <Route
+                path="/admin/organizer/:id"
+                element={
+                  <AdminRoute>
+                    <OrganizerDetailsPage />
+                  </AdminRoute>
                 }
               />
               <Route

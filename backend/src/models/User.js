@@ -45,6 +45,21 @@ const userSchema = new mongoose.Schema(
       unique: true,
       sparse: true, // Allows multiple docs with null googleId
     },
+    isBanned: {
+      type: Boolean,
+      default: false,
+    },
+    bannedAt: {
+      type: Date,
+    },
+    bannedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    banReason: {
+      type: String,
+      trim: true,
+    },
   },
   { timestamps: true }
 );

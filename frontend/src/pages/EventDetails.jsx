@@ -1,6 +1,7 @@
 // src/pages/EventDetailsPage.jsx
 import { useEffect, useState } from "react";
 import ConfirmModal from "../components/ConfirmModal";
+import ReportEventModal from "../components/ReportEventModal";
 import { useParams, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import apiClient from "../api/apiClient";
@@ -63,6 +64,7 @@ export default function EventDetailsPage() {
   const [seatCount, setSeatCount] = useState(1);
   const [showPayment, setShowPayment] = useState(false);
   const [showUnregisterModal, setShowUnregisterModal] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
   const [refundPolicy, setRefundPolicy] = useState(null);
 
   // Ticket category selection state
@@ -1256,9 +1258,32 @@ export default function EventDetailsPage() {
                   )}
                 </div>
               )}
+
+              {/* Report Event Button */}
+              {currentUser && !isPastEvent && (
+                <div className="mt-6 pt-6 border-t border-slate-200">
+                  <button
+                    onClick={() => setShowReportModal(true)}
+                    className="w-full flex items-center justify-center gap-2 text-red-600 hover:text-red-700 py-3 px-4 rounded-xl border border-red-200 hover:border-red-300 hover:bg-red-50 transition-all duration-300 text-sm font-medium"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.268 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                    </svg>
+                    Report Event
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
+
+        {/* Report Event Modal */}
+        <ReportEventModal
+          open={showReportModal}
+          eventId={event._id}
+          eventTitle={event.title}
+          onClose={() => setShowReportModal(false)}
+        />
 
         {/* Confirm Unregister Modal */}
         <ConfirmModal
