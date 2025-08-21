@@ -118,9 +118,23 @@ export const login = async (req, res) => {
 
     if (!user) return res.status(401).json({ message: "Invalid credentials" });
 
+    // Check if user has a password (not OAuth user)
+    if (!user.password) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+
     const isMatch = await user.comparePassword(password);
     if (!isMatch)
       return res.status(401).json({ message: "Invalid credentials" });
+
+    // Check if user is banned
+    if (user.isBanned) {
+      return res.status(403).json({ 
+        message: "Your account has been banned and you cannot log in.",
+        banReason: user.banReason,
+        bannedAt: user.bannedAt
+      });
+    }
 
     user.lastLogin = new Date();
     await user.save();
