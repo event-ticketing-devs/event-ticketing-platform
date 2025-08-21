@@ -45,6 +45,21 @@ const userSchema = new mongoose.Schema(
       unique: true,
       sparse: true, // Allows multiple docs with null googleId
     },
+    isBanned: {
+      type: Boolean,
+      default: false,
+    },
+    bannedAt: {
+      type: Date,
+    },
+    bannedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    banReason: {
+      type: String,
+      trim: true,
+    },
   },
   { timestamps: true }
 );
@@ -63,6 +78,10 @@ userSchema.pre("save", async function (next) {
 
 // Compare password method
 userSchema.methods.comparePassword = async function (candidatePassword) {
+  // Return false if no password is set (OAuth users)
+  if (!this.password) {
+    return false;
+  }
   return await bcrypt.compare(candidatePassword, this.password);
 };
 

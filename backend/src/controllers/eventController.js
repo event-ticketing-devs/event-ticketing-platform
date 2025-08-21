@@ -202,7 +202,9 @@ export const createEvent = async (req, res) => {
 // @access  Public
 export const getAllEvents = async (req, res) => {
   try {
-    const events = await Event.find().populate("categoryId", "name");
+    const events = await Event.find()
+      .populate("categoryId", "name")
+      .populate("organizerId", "name email phone role isVerified isBanned");
 
     // Enrich events with availability data
     const enrichedEvents = await Promise.all(
@@ -249,15 +251,67 @@ export const getAllEvents = async (req, res) => {
   }
 };
 
+// @desc    Get admin statistics
+// @route   GET /api/events/admin/stats
+// @access  Admin Only
+export const getAdminStats = async (req, res) => {
+  try {
+    const totalEvents = await Event.countDocuments();
+    const activeEvents = await Event.countDocuments({ cancelled: { $ne: true } });
+    const cancelledEvents = await Event.countDocuments({ cancelled: true });
+    
+    const totalBookings = await Booking.countDocuments();
+    const activeBookings = await Booking.countDocuments({ 
+      cancelledByUser: { $ne: true }, 
+      cancelledByEvent: { $ne: true } 
+    });
+    
+    // Calculate total revenue
+    const revenueAggregation = await Booking.aggregate([
+      {
+        $match: {
+          cancelledByUser: { $ne: true },
+          cancelledByEvent: { $ne: true }
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          totalRevenue: { $sum: "$totalAmount" }
+        }
+      }
+    ]);
+    
+    const totalRevenue = revenueAggregation.length > 0 ? revenueAggregation[0].totalRevenue : 0;
+    
+    // Get recent events
+    const recentEvents = await Event.find()
+      .populate("categoryId", "name")
+      .sort({ createdAt: -1 })
+      .limit(5);
+    
+    res.json({
+      totalEvents,
+      activeEvents,
+      cancelledEvents,
+      totalBookings,
+      activeBookings,
+      totalRevenue,
+      recentEvents
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // @desc    Get single event by ID
 // @route   GET /api/events/:id
 // @access  Public
 export const getEventById = async (req, res) => {
   try {
-    const event = await Event.findById(req.params.id).populate(
-      "categoryId",
-      "name"
-    );
+    const event = await Event.findById(req.params.id)
+      .populate("categoryId", "name")
+      .populate("organizerId", "name email phone role isVerified isBanned");
     if (!event) {
       return res.status(404).json({ message: "Event not found" });
     }

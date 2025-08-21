@@ -59,6 +59,15 @@ export const googleAuth = async (req, res) => {
       }
     }
 
+    // Check if user is banned before allowing login
+    if (user.isBanned) {
+      return res.status(403).json({ 
+        message: "Your account has been banned and you cannot log in.",
+        banReason: user.banReason,
+        bannedAt: user.bannedAt
+      });
+    }
+
     // Send welcome email for new Google OAuth users
     if (isNewUser) {
       try {
