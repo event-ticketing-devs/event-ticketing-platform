@@ -7,6 +7,13 @@ const ticketCategorySchema = new mongoose.Schema({
   description: { type: String, trim: true },
 });
 
+const customRefundPolicySchema = new mongoose.Schema({
+  sevenDaysOrMore: { type: Number, min: 0, max: 100, default: 100 }, // Refund percentage
+  oneToDays: { type: Number, min: 0, max: 100, default: 50 },
+  lessThanDay: { type: Number, min: 0, max: 100, default: 0 },
+  description: { type: String, trim: true }, // Custom description
+});
+
 const eventSchema = new mongoose.Schema(
   {
     title: { type: String, required: true, unique: true, trim: true },
@@ -35,12 +42,23 @@ const eventSchema = new mongoose.Schema(
       type: [ticketCategorySchema],
       validate: {
         validator: function (categories) {
-          return categories.length >= 1 && categories.length <= 5;
+          // Only validate if hasTicketCategories is true
+          if (this.hasTicketCategories) {
+            return categories.length >= 1 && categories.length <= 5;
+          }
+          // If not using ticket categories, allow empty array
+          return true;
         },
         message: "Event must have between 1 and 5 ticket categories",
       },
     },
     hasTicketCategories: { type: Boolean, default: false },
+    // Refund policy settings
+    useDefaultRefundPolicy: { type: Boolean, default: true },
+    customRefundPolicy: {
+      type: customRefundPolicySchema,
+      default: null,
+    },
     organizerId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

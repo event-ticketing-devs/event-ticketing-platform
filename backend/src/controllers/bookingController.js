@@ -402,7 +402,8 @@ export const cancelBooking = async (req, res) => {
       const refundCalc = calculateRefundPolicy(
         new Date(event.date),
         originalAmount / seatCount, // price per seat/ticket
-        seatCount
+        seatCount,
+        event.useDefaultRefundPolicy ? null : event.customRefundPolicy
       );
 
       console.log(

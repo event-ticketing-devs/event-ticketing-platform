@@ -13,9 +13,10 @@ import VenueMap from "../components/VenueMap";
 /**
  * Calculate refund policy based on time until event
  * @param {Date} eventDate - Event date
+ * @param {Object} customRefundPolicy - Custom refund policy (optional)
  * @returns {Object} Refund policy information
  */
-const calculateRefundPolicy = (eventDate) => {
+const calculateRefundPolicy = (eventDate, customRefundPolicy = null) => {
   const currentDate = new Date();
   const timeUntilEvent = eventDate - currentDate;
   const daysUntilEvent = timeUntilEvent / (1000 * 60 * 60 * 24);
@@ -27,18 +28,36 @@ const calculateRefundPolicy = (eventDate) => {
   // Use small epsilon to handle floating point precision issues
   const epsilon = 0.001; // About 1.4 minutes
 
-  if (daysUntilEvent >= 7 - epsilon) {
-    refundPercentage = 100;
-    refundPolicy = "Full refund (7+ days before event)";
-    refundColor = "text-green-600";
-  } else if (daysUntilEvent >= 1 - epsilon) {
-    refundPercentage = 50;
-    refundPolicy = "50% refund (1-7 days before event)";
-    refundColor = "text-yellow-600";
+  if (customRefundPolicy) {
+    // Use custom refund policy
+    if (daysUntilEvent >= 7 - epsilon) {
+      refundPercentage = customRefundPolicy.sevenDaysOrMore;
+      refundPolicy = customRefundPolicy.description || `${refundPercentage}% refund (7+ days before event)`;
+      refundColor = refundPercentage >= 80 ? "text-green-600" : refundPercentage >= 50 ? "text-yellow-600" : "text-red-600";
+    } else if (daysUntilEvent >= 1 - epsilon) {
+      refundPercentage = customRefundPolicy.oneToDays;
+      refundPolicy = customRefundPolicy.description || `${refundPercentage}% refund (1-7 days before event)`;
+      refundColor = refundPercentage >= 80 ? "text-green-600" : refundPercentage >= 50 ? "text-yellow-600" : "text-red-600";
+    } else {
+      refundPercentage = customRefundPolicy.lessThanDay;
+      refundPolicy = customRefundPolicy.description || `${refundPercentage}% refund (less than 24 hours before event)`;
+      refundColor = refundPercentage >= 80 ? "text-green-600" : refundPercentage >= 50 ? "text-yellow-600" : "text-red-600";
+    }
   } else {
-    refundPercentage = 0;
-    refundPolicy = "No refund (less than 24 hours before event)";
-    refundColor = "text-red-600";
+    // Use default refund policy
+    if (daysUntilEvent >= 7 - epsilon) {
+      refundPercentage = 100;
+      refundPolicy = "Full refund (7+ days before event)";
+      refundColor = "text-green-600";
+    } else if (daysUntilEvent >= 1 - epsilon) {
+      refundPercentage = 50;
+      refundPolicy = "50% refund (1-7 days before event)";
+      refundColor = "text-yellow-600";
+    } else {
+      refundPercentage = 0;
+      refundPolicy = "No refund (less than 24 hours before event)";
+      refundColor = "text-red-600";
+    }
   }
 
   return {
@@ -46,6 +65,7 @@ const calculateRefundPolicy = (eventDate) => {
     refundPercentage,
     refundPolicy,
     refundColor,
+    isCustomPolicy: !!customRefundPolicy,
   };
 };
 
@@ -175,7 +195,8 @@ export default function EventDetailsPage() {
     if (!userBookingId) return toast.error("No booking found");
 
     // Calculate refund policy before showing modal
-    const policy = calculateRefundPolicy(new Date(event.date));
+    const customPolicy = event.useDefaultRefundPolicy ? null : event.customRefundPolicy;
+    const policy = calculateRefundPolicy(new Date(event.date), customPolicy);
     setRefundPolicy(policy);
     setShowUnregisterModal(true);
   };
@@ -638,36 +659,112 @@ export default function EventDetailsPage() {
                   Cancellation & Refund Policy
                 </h2>
                 <div className="bg-gradient-to-r from-orange-50 to-amber-50 rounded-xl p-6 border border-orange-200">
-                  <div className="grid md:grid-cols-3 gap-4 mb-4">
-                    <div className="bg-green-100 rounded-xl p-4 text-center">
-                      <div className="font-bold text-green-700 text-lg mb-1">
-                        7+ Days Before
+                  {event.useDefaultRefundPolicy ? (
+                    /* Default Policy Display */
+                    <>
+                      <div className="grid md:grid-cols-3 gap-4 mb-4">
+                        <div className="bg-green-100 rounded-xl p-4 text-center">
+                          <div className="font-bold text-green-700 text-lg mb-1">
+                            7+ Days Before
+                          </div>
+                          <div className="text-green-600 font-semibold">
+                            100% Refund
+                          </div>
+                        </div>
+                        <div className="bg-yellow-100 rounded-xl p-4 text-center">
+                          <div className="font-bold text-yellow-700 text-lg mb-1">
+                            1-7 Days Before
+                          </div>
+                          <div className="text-yellow-600 font-semibold">
+                            50% Refund
+                          </div>
+                        </div>
+                        <div className="bg-red-100 rounded-xl p-4 text-center">
+                          <div className="font-bold text-red-700 text-lg mb-1">
+                            &lt;24 Hours
+                          </div>
+                          <div className="text-red-600 font-semibold">
+                            No Refund
+                          </div>
+                        </div>
                       </div>
-                      <div className="text-green-600 font-semibold">
-                        100% Refund
+                      <p className="text-sm text-slate-600 text-center bg-white rounded-lg p-3">
+                        Refunds are processed automatically and will appear in your
+                        account within 5-10 business days.
+                      </p>
+                    </>
+                  ) : (
+                    /* Custom Policy Display */
+                    <>
+                      <div className="grid md:grid-cols-3 gap-4 mb-4">
+                        <div className={`rounded-xl p-4 text-center ${
+                          event.customRefundPolicy?.sevenDaysOrMore >= 80 ? 'bg-green-100' :
+                          event.customRefundPolicy?.sevenDaysOrMore >= 50 ? 'bg-yellow-100' : 'bg-red-100'
+                        }`}>
+                          <div className={`font-bold text-lg mb-1 ${
+                            event.customRefundPolicy?.sevenDaysOrMore >= 80 ? 'text-green-700' :
+                            event.customRefundPolicy?.sevenDaysOrMore >= 50 ? 'text-yellow-700' : 'text-red-700'
+                          }`}>
+                            7+ Days Before
+                          </div>
+                          <div className={`font-semibold ${
+                            event.customRefundPolicy?.sevenDaysOrMore >= 80 ? 'text-green-600' :
+                            event.customRefundPolicy?.sevenDaysOrMore >= 50 ? 'text-yellow-600' : 'text-red-600'
+                          }`}>
+                            {event.customRefundPolicy?.sevenDaysOrMore || 0}% Refund
+                          </div>
+                        </div>
+                        <div className={`rounded-xl p-4 text-center ${
+                          event.customRefundPolicy?.oneToDays >= 80 ? 'bg-green-100' :
+                          event.customRefundPolicy?.oneToDays >= 50 ? 'bg-yellow-100' : 'bg-red-100'
+                        }`}>
+                          <div className={`font-bold text-lg mb-1 ${
+                            event.customRefundPolicy?.oneToDays >= 80 ? 'text-green-700' :
+                            event.customRefundPolicy?.oneToDays >= 50 ? 'text-yellow-700' : 'text-red-700'
+                          }`}>
+                            1-7 Days Before
+                          </div>
+                          <div className={`font-semibold ${
+                            event.customRefundPolicy?.oneToDays >= 80 ? 'text-green-600' :
+                            event.customRefundPolicy?.oneToDays >= 50 ? 'text-yellow-600' : 'text-red-600'
+                          }`}>
+                            {event.customRefundPolicy?.oneToDays || 0}% Refund
+                          </div>
+                        </div>
+                        <div className={`rounded-xl p-4 text-center ${
+                          event.customRefundPolicy?.lessThanDay >= 80 ? 'bg-green-100' :
+                          event.customRefundPolicy?.lessThanDay >= 50 ? 'bg-yellow-100' : 'bg-red-100'
+                        }`}>
+                          <div className={`font-bold text-lg mb-1 ${
+                            event.customRefundPolicy?.lessThanDay >= 80 ? 'text-green-700' :
+                            event.customRefundPolicy?.lessThanDay >= 50 ? 'text-yellow-700' : 'text-red-700'
+                          }`}>
+                            &lt;24 Hours
+                          </div>
+                          <div className={`font-semibold ${
+                            event.customRefundPolicy?.lessThanDay >= 80 ? 'text-green-600' :
+                            event.customRefundPolicy?.lessThanDay >= 50 ? 'text-yellow-600' : 'text-red-600'
+                          }`}>
+                            {event.customRefundPolicy?.lessThanDay || 0}% Refund
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                    <div className="bg-yellow-100 rounded-xl p-4 text-center">
-                      <div className="font-bold text-yellow-700 text-lg mb-1">
-                        1-7 Days Before
-                      </div>
-                      <div className="text-yellow-600 font-semibold">
-                        50% Refund
-                      </div>
-                    </div>
-                    <div className="bg-red-100 rounded-xl p-4 text-center">
-                      <div className="font-bold text-red-700 text-lg mb-1">
-                        &lt;24 Hours
-                      </div>
-                      <div className="text-red-600 font-semibold">
-                        No Refund
-                      </div>
-                    </div>
-                  </div>
-                  <p className="text-sm text-slate-600 text-center bg-white rounded-lg p-3">
-                    Refunds are processed automatically and will appear in your
-                    account within 5-10 business days.
-                  </p>
+                      {event.customRefundPolicy?.description && (
+                        <div className="bg-white rounded-lg p-4 mb-4">
+                          <h4 className="text-sm font-semibold text-slate-700 mb-2">
+                            Policy Details:
+                          </h4>
+                          <p className="text-sm text-slate-600">
+                            {event.customRefundPolicy.description}
+                          </p>
+                        </div>
+                      )}
+                      <p className="text-sm text-slate-600 text-center bg-white rounded-lg p-3">
+                        Refunds are processed automatically and will appear in your
+                        account within 5-10 business days.
+                      </p>
+                    </>
+                  )}
                 </div>
               </div>
             )}
@@ -857,7 +954,9 @@ export default function EventDetailsPage() {
                         <span className="text-lg font-bold text-slate-800">
                           ₹
                           {userBooking
-                            ? userBooking.totalAmount.toLocaleString()
+                            ? userBooking.totalAmount 
+                              ? userBooking.totalAmount.toLocaleString()
+                              : (userBooking.noOfSeats * userBooking.priceAtBooking).toLocaleString()
                             : ((event.price || 0) * seatCount).toLocaleString()}
                         </span>
                       </div>

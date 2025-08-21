@@ -24,6 +24,13 @@ export default function EventFormPage() {
     ticketCategories: [
       { name: "", price: "", totalSeats: "", description: "" },
     ],
+    useDefaultRefundPolicy: true,
+    customRefundPolicy: {
+      sevenDaysOrMore: 100,
+      oneToDays: 50,
+      lessThanDay: 0,
+      description: "",
+    },
   });
 
   const [categories, setCategories] = useState([]);
@@ -58,6 +65,8 @@ export default function EventFormPage() {
         photo,
         hasTicketCategories,
         ticketCategories,
+        useDefaultRefundPolicy,
+        customRefundPolicy,
       } = res.data;
 
       const formatDateForInput = (dateString) => {
@@ -93,6 +102,13 @@ export default function EventFormPage() {
                 description: cat.description || "",
               }))
             : [{ name: "", price: "", totalSeats: "", description: "" }],
+        useDefaultRefundPolicy: useDefaultRefundPolicy !== undefined ? useDefaultRefundPolicy : true,
+        customRefundPolicy: customRefundPolicy || {
+          sevenDaysOrMore: 100,
+          oneToDays: 50,
+          lessThanDay: 0,
+          description: "",
+        },
       });
 
       // Set image preview for existing event
@@ -197,6 +213,23 @@ export default function EventFormPage() {
     }));
   };
 
+  const toggleRefundPolicy = () => {
+    setForm((prev) => ({
+      ...prev,
+      useDefaultRefundPolicy: !prev.useDefaultRefundPolicy,
+    }));
+  };
+
+  const handleCustomRefundPolicyChange = (field, value) => {
+    setForm((prev) => ({
+      ...prev,
+      customRefundPolicy: {
+        ...prev.customRefundPolicy,
+        [field]: field === 'description' ? value : Math.min(100, Math.max(0, parseInt(value) || 0)),
+      },
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
@@ -212,6 +245,19 @@ export default function EventFormPage() {
       toast.error("Please enter a city");
       setSubmitting(false);
       return;
+    }
+
+    // Validate refund policy if custom is selected
+    if (!form.useDefaultRefundPolicy) {
+      const { sevenDaysOrMore, oneToDays, lessThanDay } = form.customRefundPolicy;
+      
+      if (sevenDaysOrMore < 0 || sevenDaysOrMore > 100 ||
+          oneToDays < 0 || oneToDays > 100 ||
+          lessThanDay < 0 || lessThanDay > 100) {
+        toast.error("Refund percentages must be between 0 and 100");
+        setSubmitting(false);
+        return;
+      }
     }
 
     // Validate pricing structure
@@ -289,6 +335,12 @@ export default function EventFormPage() {
       formData.append("city", form.city);
       formData.append("venue", JSON.stringify(form.venue));
       formData.append("hasTicketCategories", form.hasTicketCategories);
+      
+      // Add refund policy data
+      formData.append("useDefaultRefundPolicy", form.useDefaultRefundPolicy);
+      if (!form.useDefaultRefundPolicy && form.customRefundPolicy) {
+        formData.append("customRefundPolicy", JSON.stringify(form.customRefundPolicy));
+      }
 
       if (form.hasTicketCategories) {
         const validCategories = form.ticketCategories.filter(
@@ -962,6 +1014,150 @@ export default function EventFormPage() {
                       Optional: Add an image for your event
                     </p>
                   </div>
+                </div>
+              </div>
+
+              {/* Refund Policy Section - Full Width */}
+              <div className="mt-8">
+                <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-6">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center">
+                      <span className="text-amber-600 font-bold text-lg">₹</span>
+                    </div>
+                    <h3 className="text-lg font-semibold text-slate-800">
+                      Refund Policy
+                    </h3>
+                  </div>
+
+                  {/* Policy Type Toggle */}
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-6">
+                    <label className="flex items-center cursor-pointer">
+                      <input
+                        type="radio"
+                        name="refundPolicy"
+                        checked={form.useDefaultRefundPolicy}
+                        onChange={() => setForm(prev => ({ ...prev, useDefaultRefundPolicy: true }))}
+                        className="sr-only"
+                      />
+                      <div className={`w-4 h-4 rounded-full border-2 mr-2 flex items-center justify-center ${
+                        form.useDefaultRefundPolicy ? 'border-blue-500 bg-blue-500' : 'border-slate-300'
+                      }`}>
+                        {form.useDefaultRefundPolicy && (
+                          <div className="w-2 h-2 bg-white rounded-full"></div>
+                        )}
+                      </div>
+                      <span className="text-sm font-medium text-slate-700">
+                        Use Default Policy
+                      </span>
+                    </label>
+
+                    <label className="flex items-center cursor-pointer">
+                      <input
+                        type="radio"
+                        name="refundPolicy"
+                        checked={!form.useDefaultRefundPolicy}
+                        onChange={() => setForm(prev => ({ ...prev, useDefaultRefundPolicy: false }))}
+                        className="sr-only"
+                      />
+                      <div className={`w-4 h-4 rounded-full border-2 mr-2 flex items-center justify-center ${
+                        !form.useDefaultRefundPolicy ? 'border-blue-500 bg-blue-500' : 'border-slate-300'
+                      }`}>
+                        {!form.useDefaultRefundPolicy && (
+                          <div className="w-2 h-2 bg-white rounded-full"></div>
+                        )}
+                      </div>
+                      <span className="text-sm font-medium text-slate-700">
+                        Custom Policy
+                      </span>
+                    </label>
+                  </div>
+
+                  {/* Default Policy Display */}
+                  {form.useDefaultRefundPolicy ? (
+                    <div className="bg-white rounded-lg p-4 border border-amber-200">
+                      <h4 className="text-sm font-semibold text-slate-700 mb-3">
+                        Default Refund Policy:
+                      </h4>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm text-slate-600">
+                        <div className="flex justify-between sm:flex-col sm:items-center sm:text-center">
+                          <span className="sm:mb-1">7+ days before event:</span>
+                          <span className="font-medium text-green-600">100% refund</span>
+                        </div>
+                        <div className="flex justify-between sm:flex-col sm:items-center sm:text-center">
+                          <span className="sm:mb-1">1-7 days before event:</span>
+                          <span className="font-medium text-yellow-600">50% refund</span>
+                        </div>
+                        <div className="flex justify-between sm:flex-col sm:items-center sm:text-center">
+                          <span className="sm:mb-1">Less than 24 hours:</span>
+                          <span className="font-medium text-red-600">No refund</span>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    /* Custom Policy Form */
+                    <div className="bg-white rounded-lg p-4 border border-amber-200 space-y-4">
+                      <h4 className="text-sm font-semibold text-slate-700 mb-3">
+                        Custom Refund Policy:
+                      </h4>
+                      
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div>
+                          <label className="block text-xs font-medium text-slate-600 mb-1">
+                            7+ Days Before Event (%)
+                          </label>
+                          <input
+                            type="number"
+                            min="0"
+                            max="100"
+                            value={form.customRefundPolicy.sevenDaysOrMore}
+                            onChange={(e) => handleCustomRefundPolicyChange('sevenDaysOrMore', e.target.value)}
+                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                          />
+                        </div>
+                        
+                        <div>
+                          <label className="block text-xs font-medium text-slate-600 mb-1">
+                            1-7 Days Before Event (%)
+                          </label>
+                          <input
+                            type="number"
+                            min="0"
+                            max="100"
+                            value={form.customRefundPolicy.oneToDays}
+                            onChange={(e) => handleCustomRefundPolicyChange('oneToDays', e.target.value)}
+                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                          />
+                        </div>
+                        
+                        <div>
+                          <label className="block text-xs font-medium text-slate-600 mb-1">
+                            Less Than 24 Hours (%)
+                          </label>
+                          <input
+                            type="number"
+                            min="0"
+                            max="100"
+                            value={form.customRefundPolicy.lessThanDay}
+                            onChange={(e) => handleCustomRefundPolicyChange('lessThanDay', e.target.value)}
+                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                          />
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <label className="block text-xs font-medium text-slate-600 mb-1">
+                          Policy Description (Optional)
+                        </label>
+                        <textarea
+                          value={form.customRefundPolicy.description}
+                          onChange={(e) => handleCustomRefundPolicyChange('description', e.target.value)}
+                          placeholder="Describe your refund policy in detail..."
+                          className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                          rows="3"
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 

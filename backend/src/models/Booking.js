@@ -24,8 +24,20 @@ const bookingSchema = new mongoose.Schema(
     priceAtBooking: { type: Number },
     // New ticket category system
     ticketItems: [ticketItemSchema],
-    totalAmount: { type: Number, required: true, min: 0 },
-    totalQuantity: { type: Number, required: true, min: 1 },
+    totalAmount: { 
+      type: Number, 
+      min: 0,
+      required: function() {
+        return this.hasTicketCategories;
+      }
+    },
+    totalQuantity: { 
+      type: Number, 
+      min: 1,
+      required: function() {
+        return this.hasTicketCategories;
+      }
+    },
     hasTicketCategories: { type: Boolean, default: false },
     refundStatus: {
       type: String,

@@ -20,6 +20,8 @@ export const createEvent = async (req, res) => {
       totalSeats,
       ticketCategories,
       hasTicketCategories,
+      useDefaultRefundPolicy,
+      customRefundPolicy,
     } = req.body;
 
     // Parse venue if it's a JSON string (from FormData)
@@ -45,6 +47,21 @@ export const createEvent = async (req, res) => {
     // Convert boolean fields from strings (FormData)
     if (typeof hasTicketCategories === "string") {
       hasTicketCategories = hasTicketCategories === "true";
+    }
+    
+    if (typeof useDefaultRefundPolicy === "string") {
+      useDefaultRefundPolicy = useDefaultRefundPolicy === "true";
+    }
+
+    // Parse customRefundPolicy if it's a JSON string (from FormData)
+    if (typeof customRefundPolicy === "string") {
+      try {
+        customRefundPolicy = JSON.parse(customRefundPolicy);
+      } catch (error) {
+        return res
+          .status(400)
+          .json({ message: "Invalid custom refund policy format" });
+      }
     }
 
     // Get photo URL from uploaded file
@@ -175,7 +192,13 @@ export const createEvent = async (req, res) => {
       photo,
       organizerId: req.user._id,
       hasTicketCategories: hasTicketCategories || false,
+      useDefaultRefundPolicy: useDefaultRefundPolicy !== undefined ? useDefaultRefundPolicy : true,
     };
+
+    // Add custom refund policy if not using default
+    if (useDefaultRefundPolicy === false && customRefundPolicy) {
+      eventData.customRefundPolicy = customRefundPolicy;
+    }
 
     // Add pricing data based on event type
     if (hasTicketCategories) {
@@ -389,6 +412,21 @@ export const updateEvent = async (req, res) => {
     if (typeof req.body.hasTicketCategories === "string") {
       req.body.hasTicketCategories = req.body.hasTicketCategories === "true";
     }
+    
+    if (typeof req.body.useDefaultRefundPolicy === "string") {
+      req.body.useDefaultRefundPolicy = req.body.useDefaultRefundPolicy === "true";
+    }
+
+    // Parse customRefundPolicy if it's a JSON string (from FormData)
+    if (req.body.customRefundPolicy && typeof req.body.customRefundPolicy === "string") {
+      try {
+        req.body.customRefundPolicy = JSON.parse(req.body.customRefundPolicy);
+      } catch (error) {
+        return res
+          .status(400)
+          .json({ message: "Invalid custom refund policy format" });
+      }
+    }
 
     if (req.body.price !== undefined) {
       req.body.price = Number(req.body.price);
@@ -517,6 +555,8 @@ export const updateEvent = async (req, res) => {
       "totalSeats",
       "hasTicketCategories",
       "ticketCategories",
+      "useDefaultRefundPolicy",
+      "customRefundPolicy",
     ];
 
     // Handle photo update separately
