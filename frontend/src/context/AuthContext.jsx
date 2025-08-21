@@ -16,6 +16,20 @@ export const AuthProvider = ({ children }) => {
       console.error("Failed to parse user from localStorage:", err);
     }
     setLoading(false);
+
+    // Listen for banned user events
+    const handleUserBanned = (event) => {
+      const { message, banReason, bannedAt } = event.detail;
+      logout();
+      // You could show a toast or modal here to inform the user
+      console.log('User has been banned:', { message, banReason, bannedAt });
+    };
+
+    window.addEventListener('userBanned', handleUserBanned);
+
+    return () => {
+      window.removeEventListener('userBanned', handleUserBanned);
+    };
   }, []);
 
   const login = (user) => {

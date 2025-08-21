@@ -123,7 +123,7 @@ export default function ReportEventModal({ open, eventId, eventTitle, onClose })
                 <div>
                   <p className="text-sm text-yellow-800 font-medium">Important</p>
                   <p className="text-sm text-yellow-700">
-                    Please only report events that violate our community guidelines. False reports may result in account restrictions.
+                    Please only report events that violate our community guidelines.
                   </p>
                 </div>
               </div>

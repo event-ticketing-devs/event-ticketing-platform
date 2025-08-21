@@ -25,6 +25,28 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
+    // Handle banned user responses
+    if (error.response?.status === 403) {
+      const message = error.response?.data?.message;
+      if (message && message.includes('banned')) {
+        // User is banned, clear local storage and redirect to login
+        localStorage.removeItem('user');
+        
+        // Dispatch a custom event to notify the app
+        window.dispatchEvent(new CustomEvent('userBanned', {
+          detail: {
+            message: message,
+            banReason: error.response?.data?.banReason,
+            bannedAt: error.response?.data?.bannedAt
+          }
+        }));
+        
+        // Redirect to login page
+        if (window.location.pathname !== '/login') {
+          window.location.href = '/login';
+        }
+      }
+    }
     return Promise.reject(error);
   }
 );
