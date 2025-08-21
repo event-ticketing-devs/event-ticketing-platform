@@ -10,8 +10,9 @@ const EventListPage = () => {
   const [filters, setFilters] = useState({
     category: "",
     date: "",
-    venue: "",
+    city: "",
     price: "",
+    search: "", // Add search filter
   });
 
   const fetchEvents = async () => {
@@ -34,15 +35,21 @@ const EventListPage = () => {
     }
   };
 
-  // Get unique venues for filter dropdown
-  const venues = Array.from(
-    new Set(events.map((e) => e.venue?.name || e.venue).filter(Boolean))
+  // Get unique cities for filter dropdown
+  const cities = Array.from(
+    new Set(events.map((e) => e.city).filter(Boolean))
   );
 
   const filteredEvents = events.filter((event) => {
     if (event.cancelled) return false;
     // Exclude past events
     if (new Date(event.date) < new Date()) return false;
+    
+    // Search filter - check if search term is in event title (case insensitive)
+    const matchSearch = filters.search
+      ? event.title.toLowerCase().includes(filters.search.toLowerCase())
+      : true;
+    
     const matchCategory = filters.category
       ? (event.categoryId && (event.categoryId._id || event.categoryId)) ===
         filters.category
@@ -50,12 +57,11 @@ const EventListPage = () => {
     const matchDate = filters.date
       ? format(new Date(event.date), "yyyy-MM-dd") === filters.date
       : true;
-    const venueToMatch = event.venue?.name || event.venue;
-    const matchVenue = filters.venue ? venueToMatch === filters.venue : true;
+    const matchCity = filters.city ? event.city === filters.city : true;
     const matchPrice = filters.price
       ? Number(event.price) <= Number(filters.price)
       : true;
-    return matchCategory && matchDate && matchVenue && matchPrice;
+    return matchSearch && matchCategory && matchDate && matchCity && matchPrice;
   });
 
   useEffect(() => {
@@ -136,7 +142,87 @@ const EventListPage = () => {
               </div>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="space-y-6">
+              {/* Search Input - Full Width */}
+              <div className="space-y-2">
+                <label className="block text-sm font-semibold text-slate-700">
+                  Search Events
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg
+                      className="w-5 h-5 text-slate-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                      />
+                    </svg>
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Search events by name..."
+                    className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-slate-300"
+                    value={filters.search}
+                    onChange={(e) =>
+                      setFilters({ ...filters, search: e.target.value })
+                    }
+                  />
+                  {filters.search && (
+                    <button
+                      onClick={() => setFilters({ ...filters, search: "" })}
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                    >
+                      <svg
+                        className="w-4 h-4 text-slate-400 hover:text-slate-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Clear Filters Button */}
+              {(filters.search || filters.category || filters.date || filters.city || filters.price) && (
+                <div className="flex justify-center">
+                  <button
+                    onClick={() => setFilters({ category: "", date: "", city: "", price: "", search: "" })}
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors duration-200 text-sm font-medium"
+                  >
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                      />
+                    </svg>
+                    Clear All Filters
+                  </button>
+                </div>
+              )}
+
+              {/* Filter Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {/* Category Filter */}
               <div className="space-y-2">
                 <label className="block text-sm font-semibold text-slate-700">
@@ -173,22 +259,22 @@ const EventListPage = () => {
                 />
               </div>
 
-              {/* Venue Filter */}
+              {/* City Filter */}
               <div className="space-y-2">
                 <label className="block text-sm font-semibold text-slate-700">
-                  Venue
+                  City
                 </label>
                 <select
                   className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:border-slate-300"
-                  value={filters.venue}
+                  value={filters.city}
                   onChange={(e) =>
-                    setFilters({ ...filters, venue: e.target.value })
+                    setFilters({ ...filters, city: e.target.value })
                   }
                 >
-                  <option value="">All Venues</option>
-                  {venues.map((venue) => (
-                    <option key={venue} value={venue}>
-                      {venue}
+                  <option value="">All Cities</option>
+                  {cities.map((city) => (
+                    <option key={city} value={city}>
+                      {city}
                     </option>
                   ))}
                 </select>
@@ -211,6 +297,7 @@ const EventListPage = () => {
                 />
               </div>
             </div>
+            </div>
           )}
         </div>
 
@@ -224,9 +311,16 @@ const EventListPage = () => {
                   ? "Loading..."
                   : `${filteredEvents.length} Events Found`}
               </h2>
-              <p className="text-slate-600 mt-1">
-                Discover your next experience
-              </p>
+              {filters.search && (
+                <p className="text-slate-600 mt-1">
+                  Search results for: <span className="font-semibold text-blue-600">"{filters.search}"</span>
+                </p>
+              )}
+              {!filters.search && (
+                <p className="text-slate-600 mt-1">
+                  Discover your next experience
+                </p>
+              )}
             </div>
 
             {!loading && filteredEvents.length > 0 && (
@@ -281,16 +375,21 @@ const EventListPage = () => {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={2}
-                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                   />
                 </svg>
               </div>
               <h3 className="text-2xl font-bold text-slate-800 mb-2">
-                No events found
+                {filters.search 
+                  ? `No events found for "${filters.search}"`
+                  : "No events found"
+                }
               </h3>
               <p className="text-slate-600 mb-8 max-w-md mx-auto">
-                We couldn't find any events matching your criteria. Try
-                adjusting your filters or check back later for new events.
+                {filters.search 
+                  ? `We couldn't find any events matching "${filters.search}". Try a different search term or clear your filters.`
+                  : "We couldn't find any events matching your criteria. Try adjusting your filters or check back later for new events."
+                }
               </p>
               <Link
                 to="/events/create"
