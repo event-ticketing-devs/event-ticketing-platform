@@ -80,7 +80,6 @@ export default function BookingFlow({ event, onBookingSuccess }) {
 
       const bookingData = {
         eventId: event._id,
-        totalAmount: getTotalAmount(),
         paymentIntentId,
       };
 
@@ -89,6 +88,7 @@ export default function BookingFlow({ event, onBookingSuccess }) {
         // Send ticketItems for categorized events
         bookingData.ticketItems = getSelectedItems();
         bookingData.totalQuantity = getTotalQuantity();
+        bookingData.totalAmount = getTotalAmount();
         bookingData.hasTicketCategories = true;
       } else {
         // Send legacy noOfSeats for simple events
