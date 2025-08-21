@@ -400,7 +400,13 @@ export default function OrganizerDashboard() {
                               Total Seats
                             </p>
                             <p className="font-semibold text-slate-800">
-                              {event.totalSeats}
+                              {event.hasTicketCategories &&
+                              event.ticketCategories
+                                ? event.ticketCategories.reduce(
+                                    (sum, cat) => sum + (cat.totalSeats || 0),
+                                    0
+                                  )
+                                : event.totalSeats || 0}
                             </p>
                           </div>
                         </div>

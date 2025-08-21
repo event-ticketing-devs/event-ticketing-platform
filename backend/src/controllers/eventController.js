@@ -317,6 +317,25 @@ export const updateEvent = async (req, res) => {
       }
     }
 
+    // Parse ticketCategories if it's a JSON string (from FormData)
+    if (
+      req.body.ticketCategories &&
+      typeof req.body.ticketCategories === "string"
+    ) {
+      try {
+        req.body.ticketCategories = JSON.parse(req.body.ticketCategories);
+      } catch (error) {
+        return res
+          .status(400)
+          .json({ message: "Invalid ticket categories format" });
+      }
+    }
+
+    // Convert boolean fields from strings (FormData)
+    if (typeof req.body.hasTicketCategories === "string") {
+      req.body.hasTicketCategories = req.body.hasTicketCategories === "true";
+    }
+
     if (req.body.price !== undefined) {
       req.body.price = Number(req.body.price);
     }
@@ -442,6 +461,8 @@ export const updateEvent = async (req, res) => {
       "venue",
       "price",
       "totalSeats",
+      "hasTicketCategories",
+      "ticketCategories",
     ];
 
     // Handle photo update separately
@@ -456,13 +477,42 @@ export const updateEvent = async (req, res) => {
       const oldVal = event[field];
       const newVal = req.body[field];
       let changed = false;
+
       if (field === "date") {
         // Compare as timestamps
         changed = new Date(oldVal).getTime() !== new Date(newVal).getTime();
       } else if (field === "price" || field === "totalSeats") {
         changed = Number(oldVal) !== Number(newVal);
+      } else if (field === "hasTicketCategories") {
+        changed = Boolean(oldVal) !== Boolean(newVal);
       } else if (field === "categoryId" || field === "organizerId") {
         changed = String(oldVal) !== String(newVal);
+      } else if (field === "venue") {
+        // Deep compare venue objects
+        changed = JSON.stringify(oldVal) !== JSON.stringify(newVal);
+      } else if (field === "ticketCategories") {
+        // Deep compare ticket categories arrays
+        if (!oldVal && !newVal) {
+          changed = false;
+        } else if (!oldVal || !newVal) {
+          changed = true;
+        } else if (oldVal.length !== newVal.length) {
+          changed = true;
+        } else {
+          // Compare each category
+          for (let i = 0; i < oldVal.length; i++) {
+            const oldCategory = oldVal[i];
+            const newCategory = newVal[i];
+            if (
+              oldCategory.name !== newCategory.name ||
+              Number(oldCategory.price) !== Number(newCategory.price) ||
+              Number(oldCategory.seats) !== Number(newCategory.seats)
+            ) {
+              changed = true;
+              break;
+            }
+          }
+        }
       } else if (typeof oldVal === "string" && typeof newVal === "string") {
         changed = oldVal.trim() !== newVal.trim();
       } else if (Array.isArray(oldVal) && Array.isArray(newVal)) {
@@ -470,6 +520,7 @@ export const updateEvent = async (req, res) => {
       } else {
         changed = String(oldVal) !== String(newVal);
       }
+
       if (changed) {
         isDifferent = true;
         break;

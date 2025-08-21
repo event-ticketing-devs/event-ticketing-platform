@@ -56,6 +56,8 @@ export default function EventFormPage() {
         price,
         totalSeats,
         photo,
+        hasTicketCategories,
+        ticketCategories,
       } = res.data;
 
       const formatDateForInput = (dateString) => {
@@ -78,9 +80,19 @@ export default function EventFormPage() {
             : categoryId,
         city: city || "",
         venue: venue || null,
-        price,
-        totalSeats,
-        photo,
+        price: price || "",
+        totalSeats: totalSeats || 0,
+        photo: photo || "",
+        hasTicketCategories: hasTicketCategories || false,
+        ticketCategories:
+          hasTicketCategories && ticketCategories && ticketCategories.length > 0
+            ? ticketCategories.map((cat) => ({
+                name: cat.name || "",
+                price: cat.price || "",
+                totalSeats: cat.totalSeats || "",
+                description: cat.description || "",
+              }))
+            : [{ name: "", price: "", totalSeats: "", description: "" }],
       });
 
       // Set image preview for existing event
