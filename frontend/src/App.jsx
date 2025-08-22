@@ -23,6 +23,9 @@ import OrganizerVerify from "./pages/OrganizerVerify";
 import TicketView from "./pages/TicketView";
 import CancelledBookings from "./pages/CancelledBookings";
 import OrganizerDetailsPage from "./pages/OrganizerDetailsPage";
+import ContactUs from "./pages/ContactUs";
+import AdminContacts from "./pages/AdminContacts";
+import OrganizerContacts from "./pages/OrganizerContacts";
 
 function App() {
   return (
@@ -36,6 +39,7 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/events" element={<Events />} />
               <Route path="/events/:id" element={<EventDetails />} />
+              <Route path="/contact" element={<ContactUs />} />
               <Route path="*" element={<NotFound />} />
               <Route
                 path="/login"
@@ -115,6 +119,22 @@ function App() {
                   <AdminRoute>
                     <FlaggedEvents />
                   </AdminRoute>
+                }
+              />
+              <Route
+                path="/admin/contacts"
+                element={
+                  <AdminRoute>
+                    <AdminContacts />
+                  </AdminRoute>
+                }
+              />
+              <Route
+                path="/organizer/contacts"
+                element={
+                  <PrivateRoute>
+                    <OrganizerContacts />
+                  </PrivateRoute>
                 }
               />
               <Route

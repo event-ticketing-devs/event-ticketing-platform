@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import ConfirmModal from "../components/ConfirmModal";
 import ReportEventModal from "../components/ReportEventModal";
+import ContactOrganizer from "../components/ContactOrganizer";
 import { useParams, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import apiClient from "../api/apiClient";
@@ -85,6 +86,7 @@ export default function EventDetailsPage() {
   const [showPayment, setShowPayment] = useState(false);
   const [showUnregisterModal, setShowUnregisterModal] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
+  const [showContactOrganizer, setShowContactOrganizer] = useState(false);
   const [refundPolicy, setRefundPolicy] = useState(null);
 
   // Ticket category selection state
@@ -1358,6 +1360,21 @@ export default function EventDetailsPage() {
                 </div>
               )}
 
+              {/* Contact Organizer Button */}
+              {!isPastEvent && (
+                <div className="mt-6">
+                  <button
+                    onClick={() => setShowContactOrganizer(true)}
+                    className="w-full flex items-center justify-center gap-2 text-blue-600 hover:text-blue-700 py-3 px-4 rounded-xl border border-blue-200 hover:border-blue-300 hover:bg-blue-50 transition-all duration-300 text-sm font-medium"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    Contact Organizer
+                  </button>
+                </div>
+              )}
+
               {/* Report Event Button */}
               {currentUser && !isPastEvent && (
                 <div className="mt-6 pt-6 border-t border-slate-200">
@@ -1375,6 +1392,15 @@ export default function EventDetailsPage() {
             </div>
           </div>
         </div>
+
+        {/* Contact Organizer Modal */}
+        {event && (
+          <ContactOrganizer
+            event={event}
+            isOpen={showContactOrganizer}
+            onClose={() => setShowContactOrganizer(false)}
+          />
+        )}
 
         {/* Report Event Modal */}
         <ReportEventModal
