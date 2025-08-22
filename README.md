@@ -178,53 +178,6 @@ npm run dev
 ### Payments
 
 - `POST /api/payments/create-payment-intent` - Create Stripe payment intent
-cd backend
-npm run dev
-
-# Terminal 2 - Frontend
-cd frontend
-npm run dev
-```
-
-🌐 **Application URL:** `http://localhost:5173`
-
-## 📚 API Documentation
-
-### Authentication
-- `POST /api/auth/register` - Register new user
-- `POST /api/auth/login` - Login with email/phone and password
-- `POST /api/auth/google` - Google OAuth authentication
-- `POST /api/auth/logout` - Logout user
-
-### Events
-- `POST /api/events` - Create event (organizers)
-- `GET /api/events` - List all events
-- `GET /api/events/:id` - Get event details
-- `PATCH /api/events/:id` - Update event
-- `DELETE /api/events/:id` - Cancel event
-- `GET /api/events/:id/seats` - Get available seats
-
-### Bookings
-- `POST /api/bookings` - Create booking
-- `GET /api/bookings/user` - Get user bookings
-- `GET /api/bookings/event/:eventId` - Get event bookings
-- `DELETE /api/bookings/:id` - Cancel booking
-- `POST /api/bookings/verify` - Verify ticket code
-
-### Users
-- `GET /api/users/profile` - Get user profile
-- `PATCH /api/users/update` - Update user profile
-- `DELETE /api/users/delete` - Delete own account
-- `DELETE /api/users/:id` - Admin delete user
-
-### Categories
-- `POST /api/categories` - Create category (admin)
-- `GET /api/categories` - List categories
-- `PATCH /api/categories/:id` - Update category
-- `DELETE /api/categories/:id` - Delete category
-
-### Payments
-- `POST /api/payments/create-payment-intent` - Create Stripe payment intent
 
 ## 🏗️ Project Structure
 
@@ -255,6 +208,7 @@ event-ticketing-platform/
 ## 🔑 Key Features
 
 ### Contact Management System
+
 - **General Contact Form** for platform support inquiries
 - **Event-Specific Contact** for attendee-organizer communication
 - **Admin Dashboard** for managing contact messages
@@ -262,30 +216,35 @@ event-ticketing-platform/
 - **Status Tracking** for contact resolution
 
 ### Rate Limiting & Security
+
 - **Redis-based Rate Limiting** to prevent spam and abuse
 - **Contact Form Protection** with strict rate limits (1 message per 5 minutes)
 - **IP-based Tracking** with sliding window algorithm
 - **Graceful Degradation** when Redis is unavailable
 
 ### Payment System
+
 - **Secure Stripe Integration** with automated refund processing
 - **Flexible Refund Policy:**
   - 7+ days before event: 100% refund
   - 1-7 days before: 50% refund
   - Less than 24 hours: No refund
 
-### Authentication
+### Authentication & Authorization
+
 - Email/phone login support
 - Google OAuth integration
 - JWT-based authentication
 - Role-based access control (attendee, organizer, admin)
 
 ### QR Code System
+
 - Unique QR codes for each booking
 - Mobile-friendly verification interface
 - Real-time verification status updates
 
 ### Event Management
+
 - Rich event creation with image uploads
 - Venue location with map integration
 - Seat capacity management
@@ -302,12 +261,14 @@ event-ticketing-platform/
 ## 🛠️ Technical Stack
 
 ### Rate Limiting Implementation
+
 - **Redis Sorted Sets** for sliding window tracking
 - **IP-based Identification** with IPv4/IPv6 support
 - **Configurable Windows** for different endpoints
 - **Automatic Cleanup** of expired entries
 
 ### Development Features
+
 - ES6 modules throughout
 - Async/await for better readability
 - Comprehensive error handling
@@ -355,7 +316,6 @@ npm run dev
 ## 📈 Performance & Scalability
 
 - **Redis Integration** for fast rate limiting and caching
-- **Database Indexing** for optimized queries
 - **Image Optimization** with Cloudinary CDN
 - **Payment Processing** with Stripe's secure infrastructure
 - **Responsive Design** for mobile-first experience
