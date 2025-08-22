@@ -7,6 +7,9 @@ import transporter from '../utils/mailer.js';
 const createGeneralContact = async (req, res) => {
   try {
     const { name, email, phone, subject, message } = req.body;
+    
+    // Log incoming request (useful for monitoring)
+    console.log(`General contact form submission from IP: ${req.ip}, Email: ${email}`);
 
     // Validation
     if (!name || !email || !subject || !message) {
@@ -69,6 +72,9 @@ const createEventContact = async (req, res) => {
   try {
     const { eventId } = req.params;
     const { name, email, phone, subject, message } = req.body;
+
+    // Log incoming request (useful for monitoring)
+    console.log(`Event contact form submission from IP: ${req.ip}, Email: ${email}, EventID: ${eventId}`);
 
     // Validation
     if (!name || !email || !subject || !message) {
