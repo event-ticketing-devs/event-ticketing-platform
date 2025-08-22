@@ -8,12 +8,13 @@ import {
 } from '../controllers/contactController.js';
 import { protect } from '../middleware/authMiddleware.js';
 import { adminOnly, roleMiddleware } from '../middleware/roleMiddleware.js';
+import contactRateLimiter from '../middleware/contactRateLimiter.js';
 
 const router = express.Router();
 
-// Public routes
-router.post('/general', createGeneralContact);
-router.post('/event/:eventId', createEventContact);
+// Public routes with contact-specific rate limiting
+router.post('/general', contactRateLimiter, createGeneralContact);
+router.post('/event/:eventId', contactRateLimiter, createEventContact);
 
 // Admin routes
 router.get('/general', protect, adminOnly, getGeneralContacts);
