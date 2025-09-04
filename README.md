@@ -2,7 +2,7 @@
 
 A full-stack event management and ticketing platform built with React and Node.js. Users can browse events, book tickets, and organizers can manage their events with QR code verification and comprehensive contact management.
 
-## ✨ Features
+## Features
 
 ### For Attendees
 - Browse and search events by category, location, and date
@@ -13,6 +13,7 @@ A full-stack event management and ticketing platform built with React and Node.j
 - Flexible refund policy based on cancellation timing
 - Contact organizers directly for event-specific inquiries
 - General contact form for platform support
+- Report inappropriate events to administrators
 
 ### For Organizers
 - Create and manage events with detailed information
@@ -29,8 +30,11 @@ A full-stack event management and ticketing platform built with React and Node.j
 - System-wide analytics and oversight
 - Comprehensive contact management with status tracking
 - Rate limiting protection against spam
+- Event reporting and flagging system
+- Review and manage flagged events
+- Detailed organizer profile management and verification
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 **Frontend:**
 - React 19 with React Router
@@ -49,7 +53,7 @@ A full-stack event management and ticketing platform built with React and Node.j
 - Redis for rate limiting and caching
 - Contact management system
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -175,13 +179,21 @@ npm run dev
 - `GET /api/contacts/organizer` - Get organizer contacts
 - `PATCH /api/contacts/:contactId/status` - Update contact status
 
+### Reports
+
+- `POST /api/reports` - Report an event for inappropriate content
+- `GET /api/reports/my-reports` - Get user's own reports
+- `GET /api/reports` - Get all reports (admin)
+- `GET /api/reports/events/flagged` - Get flagged events (admin)
+- `PATCH /api/reports/:reportId/status` - Update report status (admin)
+
 ### Payments
 
 - `POST /api/payments/create-payment-intent` - Create Stripe payment intent
 
-## 🏗️ Project Structure
+## Project Structure
 
-```
+```text
 event-ticketing-platform/
 ├── backend/
 │   ├── src/
@@ -205,7 +217,7 @@ event-ticketing-platform/
     └── package.json
 ```
 
-## 🔑 Key Features
+## Key Features
 
 ### Contact Management System
 
@@ -250,6 +262,14 @@ event-ticketing-platform/
 - Seat capacity management
 - Event cancellation with automated notifications
 
+### Content Moderation & Reporting
+
+- **Event Reporting System** for flagging inappropriate content
+- **Multiple Report Categories**: spam, scam, inappropriate content, misleading information, etc.
+- **Admin Review Dashboard** for managing flagged events
+- **Report Status Tracking**: pending, reviewed, resolved, dismissed
+- **User Report History** for transparency
+
 ## 🗄️ Database Models
 
 - **User**: Handles attendee, organizer, and admin accounts
@@ -257,8 +277,9 @@ event-ticketing-platform/
 - **Booking**: Manages ticket bookings and verification
 - **Category**: Event categorization system
 - **Contact**: Manages contact messages and support tickets
+- **Report**: Handles event reporting and flagging system
 
-## 🛠️ Technical Stack
+## Technical Stack
 
 ### Rate Limiting Implementation
 
@@ -276,7 +297,7 @@ event-ticketing-platform/
 - CORS configuration for security
 - Environment-based configuration
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
@@ -284,7 +305,7 @@ event-ticketing-platform/
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📋 Prerequisites for Development
+## Prerequisites for Development
 
 - **Node.js** v18 or higher
 - **MongoDB** database (local or cloud)
@@ -293,7 +314,7 @@ event-ticketing-platform/
 - **Google** developer account for OAuth and Maps API
 - **Cloudinary** account for image storage (optional)
 
-## 🚀 Quick Start
+## Quick Start
 
 For a quick development setup:
 
@@ -313,7 +334,7 @@ cp frontend/.env.example frontend/.env
 npm run dev
 ```
 
-## 📈 Performance & Scalability
+## Performance & Scalability
 
 - **Redis Integration** for fast rate limiting and caching
 - **Image Optimization** with Cloudinary CDN
