@@ -96,11 +96,55 @@ export const updateUser = async (req, res) => {
 // @access Protected
 export const deleteSelf = async (req, res) => {
   try {
-    const deletedUser = await User.findByIdAndDelete(req.user._id);
-    if (!deletedUser) {
+    const user = await User.findById(req.user._id);
+    if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    res.status(200).json({ message: "Your account has been deleted" });
+
+    // If user is an organizer, check for upcoming events
+    if (user.role === 'organizer') {
+      const Event = (await import("../models/Event.js")).default;
+      const upcomingEvents = await Event.find({
+        organizerId: user._id,
+        date: { $gte: new Date() },
+        cancelled: { $ne: true }
+      });
+
+      if (upcomingEvents.length > 0) {
+        // Cancel all upcoming events
+        await Event.updateMany(
+          {
+            organizerId: user._id,
+            date: { $gte: new Date() },
+            cancelled: { $ne: true }
+          },
+          {
+            cancelled: true,
+            cancelledReason: "Event cancelled due to organizer account deletion"
+          }
+        );
+
+        // Mark all related bookings for refund
+        const Booking = (await import("../models/Booking.js")).default;
+        await Booking.updateMany(
+          { 
+            eventId: { $in: upcomingEvents.map(e => e._id) },
+            cancelledByEvent: { $ne: true }
+          },
+          { 
+            $set: { 
+              cancelledByEvent: true, 
+              refundStatus: "pending" 
+            } 
+          }
+        );
+      }
+    }
+
+    await User.findByIdAndDelete(req.user._id);
+    res.status(200).json({ 
+      message: "Your account has been deleted successfully" 
+    });
   } catch (err) {
     res.status(500).json({ message: "Server error", error: err.message });
   }
