@@ -386,6 +386,13 @@ export const updateEvent = async (req, res) => {
     const event = await Event.findById(req.params.id);
     if (!event) return res.status(404).json({ message: "Event not found" });
 
+    // Prevent updates to cancelled events
+    if (event.cancelled) {
+      return res.status(403).json({ 
+        message: "Cannot update a cancelled event" 
+      });
+    }
+
     if (req.body.venue && typeof req.body.venue === "string") {
       try {
         req.body.venue = JSON.parse(req.body.venue);
