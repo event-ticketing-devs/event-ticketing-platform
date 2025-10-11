@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
 import { loginUser } from "../services/authService";
@@ -8,6 +8,7 @@ import GoogleLoginButton from "../components/GoogleLoginButton";
 const Login = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [loading, setLoading] = useState(false);
   const [identifier, setIdentifier] = useState("");
@@ -24,7 +25,10 @@ const Login = () => {
       const user = await loginUser(identifier, password);
       login(user);
       toast.success("Welcome back! Login successful");
-      navigate("/profile");
+      
+      // Redirect to the original page or default to profile
+      const from = location.state?.from?.pathname || "/profile";
+      navigate(from, { replace: true });
     } catch (err) {
       setError(err.message);
       toast.error(err.message || "Login failed");
