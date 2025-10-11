@@ -64,7 +64,10 @@ const Profile = () => {
   const handleDelete = async () => {
     try {
       await deleteAccount();
-      toast.success("Account deleted successfully");
+      toast.success("Sorry to see you go! Your account has been deleted successfully.", {
+        duration: 4000,
+        icon: "👋",
+      });
       logout();
       navigate("/");
     } catch (err) {
