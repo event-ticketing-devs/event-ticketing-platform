@@ -8,6 +8,9 @@ import {
 } from "../utils/qrCodeGenerator.js";
 import { processRefund, getRefundStatus } from "../utils/stripeRefund.js";
 import { calculateRefundPolicy } from "../utils/refundPolicy.js";
+import Stripe from "stripe";
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 // @desc Create a new booking
 // @route POST /api/bookings
@@ -19,6 +22,27 @@ export const createBooking = async (req, res) => {
 
     if (!eventId) {
       return res.status(400).json({ message: "Event ID is required" });
+    }
+
+    // Verify payment if paymentIntentId is provided
+    if (paymentIntentId) {
+      try {
+        const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+        
+        if (paymentIntent.status !== 'succeeded') {
+          return res.status(400).json({ 
+            message: "Payment not completed. Cannot create booking." 
+          });
+        }
+        
+        // Optional: Verify payment amount matches booking total
+        // This would require calculating the total first, then comparing
+      } catch (stripeError) {
+        console.error('Stripe verification error:', stripeError);
+        return res.status(400).json({ 
+          message: "Payment verification failed. Cannot create booking." 
+        });
+      }
     }
 
     // Validate eventId exists
