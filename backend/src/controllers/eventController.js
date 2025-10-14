@@ -302,9 +302,112 @@ export const createEvent = async (req, res) => {
 // @access  Public
 export const getAllEvents = async (req, res) => {
   try {
-    const events = await Event.find()
+    // Parse query parameters
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    // Build filter object
+    const filter = {};
+    
+    // Category filter
+    if (req.query.category) {
+      const category = await Category.findOne({ name: { $regex: req.query.category, $options: 'i' } });
+      if (category) {
+        filter.categoryId = category._id;
+      }
+    }
+
+    // Date filters
+    if (req.query.dateFrom || req.query.dateTo) {
+      filter.date = {};
+      if (req.query.dateFrom) {
+        filter.date.$gte = new Date(req.query.dateFrom);
+      }
+      if (req.query.dateTo) {
+        const dateTo = new Date(req.query.dateTo);
+        dateTo.setHours(23, 59, 59, 999); // End of day
+        filter.date.$lte = dateTo;
+      }
+    }
+
+    // City filter
+    if (req.query.city) {
+      filter.city = { $regex: req.query.city, $options: 'i' };
+    }
+
+    // Price range filters
+    if (req.query.minPrice || req.query.maxPrice) {
+      const priceFilter = {};
+      if (req.query.minPrice) {
+        priceFilter.$gte = parseFloat(req.query.minPrice);
+      }
+      if (req.query.maxPrice) {
+        priceFilter.$lte = parseFloat(req.query.maxPrice);
+      }
+      
+      // Handle both legacy pricing and ticket categories
+      filter.$or = [
+        { price: priceFilter }, // Legacy pricing
+        { 'ticketCategories.price': priceFilter } // Ticket categories
+      ];
+    }
+
+    // Search filter (title and description)
+    if (req.query.search) {
+      const searchRegex = { $regex: req.query.search, $options: 'i' };
+      filter.$or = filter.$or ? [
+        ...filter.$or,
+        { title: searchRegex },
+        { description: searchRegex }
+      ] : [
+        { title: searchRegex },
+        { description: searchRegex }
+      ];
+    }
+
+    // Status filter (only active events by default)
+    if (req.query.includeInactive !== 'true') {
+      filter.status = { $ne: 'cancelled' };
+    }
+
+    // Build sort object
+    const sort = {};
+    const sortBy = req.query.sortBy || 'date';
+    const sortOrder = req.query.sortOrder === 'desc' ? -1 : 1;
+
+    // Map sort fields
+    switch (sortBy) {
+      case 'title':
+        sort.title = sortOrder;
+        break;
+      case 'price':
+        sort.price = sortOrder;
+        break;
+      case 'date':
+        sort.date = sortOrder;
+        break;
+      case 'city':
+        sort.city = sortOrder;
+        break;
+      case 'createdAt':
+        sort.createdAt = sortOrder;
+        break;
+      default:
+        sort.date = 1; // Default sort by date ascending
+    }
+
+    // Get total count for pagination
+    const totalEvents = await Event.countDocuments(filter);
+    const totalPages = Math.ceil(totalEvents / limit);
+
+    // Fetch events with pagination and sorting
+    const events = await Event.find(filter)
       .populate("categoryId", "name")
-      .populate("organizerId", "name email phone role isVerified isBanned");
+      .populate("organizerId", "name email phone role isVerified isBanned")
+      .sort(sort)
+      .skip(skip)
+      .limit(limit);
 
     // Enrich events with availability data
     const enrichedEvents = await Promise.all(
@@ -345,8 +448,34 @@ export const getAllEvents = async (req, res) => {
       })
     );
 
-    res.json(enrichedEvents);
+    // Return paginated response
+    res.json({
+      events: enrichedEvents,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalEvents,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1,
+        limit
+      },
+      filters: {
+        category: req.query.category || null,
+        dateFrom: req.query.dateFrom || null,
+        dateTo: req.query.dateTo || null,
+        city: req.query.city || null,
+        minPrice: req.query.minPrice || null,
+        maxPrice: req.query.maxPrice || null,
+        search: req.query.search || null,
+        includeInactive: req.query.includeInactive === 'true'
+      },
+      sorting: {
+        sortBy,
+        sortOrder: req.query.sortOrder || 'asc'
+      }
+    });
   } catch (error) {
+    console.error('Error in getAllEvents:', error);
     res.status(500).json({ message: error.message });
   }
 };

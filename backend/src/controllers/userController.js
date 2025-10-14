@@ -461,3 +461,145 @@ export const getFullOrganizerDetails = async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
+
+// @desc   Get all users (Admin only)
+// @route  GET /api/users/admin/list
+// @access Admin only
+export const getAllUsers = async (req, res) => {
+  try {
+    // Parse query parameters
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
+    const skip = (page - 1) * limit;
+
+    // Build filter object
+    const filter = {};
+    
+    // Role filter
+    if (req.query.role) {
+      filter.role = req.query.role;
+    }
+
+    // Status filters
+    if (req.query.verified === 'true') {
+      filter.isVerified = true;
+    } else if (req.query.verified === 'false') {
+      filter.isVerified = { $ne: true };
+    }
+
+    if (req.query.banned === 'true') {
+      filter.isBanned = true;
+    } else if (req.query.banned === 'false') {
+      filter.isBanned = { $ne: true };
+    }
+
+    // Search filter (name and email)
+    if (req.query.search) {
+      const searchRegex = { $regex: req.query.search, $options: 'i' };
+      filter.$or = [
+        { name: searchRegex },
+        { email: searchRegex }
+      ];
+    }
+
+    // Date range filters
+    if (req.query.dateFrom || req.query.dateTo) {
+      filter.createdAt = {};
+      if (req.query.dateFrom) {
+        filter.createdAt.$gte = new Date(req.query.dateFrom);
+      }
+      if (req.query.dateTo) {
+        const dateTo = new Date(req.query.dateTo);
+        dateTo.setHours(23, 59, 59, 999);
+        filter.createdAt.$lte = dateTo;
+      }
+    }
+
+    // Build sort object
+    const sort = {};
+    const sortBy = req.query.sortBy || 'createdAt';
+    const sortOrder = req.query.sortOrder === 'asc' ? 1 : -1;
+
+    switch (sortBy) {
+      case 'name':
+        sort.name = sortOrder;
+        break;
+      case 'email':
+        sort.email = sortOrder;
+        break;
+      case 'role':
+        sort.role = sortOrder;
+        break;
+      case 'createdAt':
+        sort.createdAt = sortOrder;
+        break;
+      case 'lastLogin':
+        sort.lastLogin = sortOrder;
+        break;
+      default:
+        sort.createdAt = -1; // Default sort by newest first
+    }
+
+    // Get total count for pagination
+    const totalUsers = await User.countDocuments(filter);
+    const totalPages = Math.ceil(totalUsers / limit);
+
+    // Fetch users with pagination
+    const users = await User.find(filter)
+      .select('name email phone role isVerified isBanned bannedAt bannedBy banReason createdAt lastLogin')
+      .sort(sort)
+      .skip(skip)
+      .limit(limit);
+
+    // Calculate statistics
+    const stats = await User.aggregate([
+      {
+        $group: {
+          _id: null,
+          totalUsers: { $sum: 1 },
+          totalOrganizers: { $sum: { $cond: [{ $eq: ['$role', 'organizer'] }, 1, 0] } },
+          totalAttendees: { $sum: { $cond: [{ $eq: ['$role', 'attendee'] }, 1, 0] } },
+          totalAdmins: { $sum: { $cond: [{ $eq: ['$role', 'admin'] }, 1, 0] } },
+          totalVerified: { $sum: { $cond: ['$isVerified', 1, 0] } },
+          totalBanned: { $sum: { $cond: ['$isBanned', 1, 0] } }
+        }
+      }
+    ]);
+
+    // Return paginated response
+    res.json({
+      users,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalUsers,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1,
+        limit
+      },
+      filters: {
+        role: req.query.role || null,
+        verified: req.query.verified || null,
+        banned: req.query.banned || null,
+        search: req.query.search || null,
+        dateFrom: req.query.dateFrom || null,
+        dateTo: req.query.dateTo || null
+      },
+      sorting: {
+        sortBy,
+        sortOrder: req.query.sortOrder || 'desc'
+      },
+      statistics: stats[0] || {
+        totalUsers: 0,
+        totalOrganizers: 0,
+        totalAttendees: 0,
+        totalAdmins: 0,
+        totalVerified: 0,
+        totalBanned: 0
+      }
+    });
+  } catch (error) {
+    console.error('Error in getAllUsers:', error);
+    res.status(500).json({ message: error.message });
+  }
+};

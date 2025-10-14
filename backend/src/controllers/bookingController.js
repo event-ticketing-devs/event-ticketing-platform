@@ -620,13 +620,115 @@ export const cancelBooking = async (req, res) => {
 // @access Logged-in users
 export const getUserBookings = async (req, res) => {
   try {
-    const bookings = await Booking.find({ userId: req.user._id })
+    // Parse query parameters
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    // Build filter object
+    const filter = { userId: req.user._id };
+    
+    // Status filter
+    if (req.query.status) {
+      switch (req.query.status) {
+        case 'active':
+          filter.cancelledByUser = { $ne: true };
+          filter.cancelledByEvent = { $ne: true };
+          break;
+        case 'cancelled':
+          filter.$or = [
+            { cancelledByUser: true },
+            { cancelledByEvent: true }
+          ];
+          break;
+        case 'verified':
+          filter.verified = true;
+          break;
+        case 'unverified':
+          filter.verified = { $ne: true };
+          break;
+      }
+    }
+
+    // Date range filters
+    if (req.query.dateFrom || req.query.dateTo) {
+      filter.createdAt = {};
+      if (req.query.dateFrom) {
+        filter.createdAt.$gte = new Date(req.query.dateFrom);
+      }
+      if (req.query.dateTo) {
+        const dateTo = new Date(req.query.dateTo);
+        dateTo.setHours(23, 59, 59, 999);
+        filter.createdAt.$lte = dateTo;
+      }
+    }
+
+    // Build sort object
+    const sort = {};
+    const sortBy = req.query.sortBy || 'createdAt';
+    const sortOrder = req.query.sortOrder === 'asc' ? 1 : -1;
+
+    switch (sortBy) {
+      case 'createdAt':
+        sort.createdAt = sortOrder;
+        break;
+      case 'totalAmount':
+        sort.totalAmount = sortOrder;
+        break;
+      case 'eventDate':
+        // We'll sort by event date after population
+        sort.createdAt = sortOrder; // Fallback for now
+        break;
+      default:
+        sort.createdAt = -1; // Default sort by newest first
+    }
+
+    // Get total count for pagination
+    const totalBookings = await Booking.countDocuments(filter);
+    const totalPages = Math.ceil(totalBookings / limit);
+
+    // Fetch bookings with pagination
+    let bookings = await Booking.find(filter)
       .populate("eventId")
       .select(
         "+ticketId +qrCode +verified +cancelledByUser +cancelledByEvent +cancellationDate +cancellationReason +refundStatus +refundAmount +refundId"
-      );
-    res.json(bookings);
+      )
+      .sort(sort)
+      .skip(skip)
+      .limit(limit);
+
+    // Sort by event date if requested (after population)
+    if (sortBy === 'eventDate') {
+      bookings = bookings.sort((a, b) => {
+        const dateA = new Date(a.eventId?.date || 0);
+        const dateB = new Date(b.eventId?.date || 0);
+        return sortOrder === 1 ? dateA - dateB : dateB - dateA;
+      });
+    }
+
+    // Return paginated response
+    res.json({
+      bookings,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalBookings,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1,
+        limit
+      },
+      filters: {
+        status: req.query.status || null,
+        dateFrom: req.query.dateFrom || null,
+        dateTo: req.query.dateTo || null
+      },
+      sorting: {
+        sortBy,
+        sortOrder: req.query.sortOrder || 'desc'
+      }
+    });
   } catch (error) {
+    console.error('Error in getUserBookings:', error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -729,12 +831,118 @@ export const getBookingsByEvent = async (req, res) => {
         .json({ message: "Not authorized to view these bookings" });
     }
 
-    const bookings = await Booking.find({ eventId: event._id }).populate(
-      "userId",
-      "name email"
-    );
-    res.json(bookings);
+    // Parse query parameters
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
+    const skip = (page - 1) * limit;
+
+    // Build filter object
+    const filter = { eventId: event._id };
+    
+    // Status filter
+    if (req.query.status) {
+      switch (req.query.status) {
+        case 'active':
+          filter.cancelledByUser = { $ne: true };
+          filter.cancelledByEvent = { $ne: true };
+          break;
+        case 'cancelled':
+          filter.$or = [
+            { cancelledByUser: true },
+            { cancelledByEvent: true }
+          ];
+          break;
+        case 'verified':
+          filter.verified = true;
+          break;
+        case 'unverified':
+          filter.verified = { $ne: true };
+          break;
+      }
+    }
+
+    // Payment status filter
+    if (req.query.paymentStatus) {
+      filter.paymentStatus = req.query.paymentStatus;
+    }
+
+    // Date range filters
+    if (req.query.dateFrom || req.query.dateTo) {
+      filter.createdAt = {};
+      if (req.query.dateFrom) {
+        filter.createdAt.$gte = new Date(req.query.dateFrom);
+      }
+      if (req.query.dateTo) {
+        const dateTo = new Date(req.query.dateTo);
+        dateTo.setHours(23, 59, 59, 999);
+        filter.createdAt.$lte = dateTo;
+      }
+    }
+
+    // Build sort object
+    const sort = {};
+    const sortBy = req.query.sortBy || 'createdAt';
+    const sortOrder = req.query.sortOrder === 'asc' ? 1 : -1;
+
+    switch (sortBy) {
+      case 'createdAt':
+        sort.createdAt = sortOrder;
+        break;
+      case 'totalAmount':
+        sort.totalAmount = sortOrder;
+        break;
+      case 'userName':
+        // We'll sort by user name after population
+        sort.createdAt = sortOrder; // Fallback for now
+        break;
+      default:
+        sort.createdAt = -1; // Default sort by newest first
+    }
+
+    // Get total count for pagination
+    const totalBookings = await Booking.countDocuments(filter);
+    const totalPages = Math.ceil(totalBookings / limit);
+
+    // Fetch bookings with pagination
+    let bookings = await Booking.find(filter)
+      .populate("userId", "name email")
+      .sort(sort)
+      .skip(skip)
+      .limit(limit);
+
+    // Sort by user name if requested (after population)
+    if (sortBy === 'userName') {
+      bookings = bookings.sort((a, b) => {
+        const nameA = a.userId?.name || '';
+        const nameB = b.userId?.name || '';
+        return sortOrder === 1 ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA);
+      });
+    }
+
+    // Return paginated response
+    res.json({
+      bookings,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalBookings,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1,
+        limit
+      },
+      filters: {
+        status: req.query.status || null,
+        paymentStatus: req.query.paymentStatus || null,
+        dateFrom: req.query.dateFrom || null,
+        dateTo: req.query.dateTo || null
+      },
+      sorting: {
+        sortBy,
+        sortOrder: req.query.sortOrder || 'desc'
+      }
+    });
   } catch (error) {
+    console.error('Error in getBookingsByEvent:', error);
     res.status(500).json({ message: error.message });
   }
 };
