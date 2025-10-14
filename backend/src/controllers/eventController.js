@@ -3,6 +3,83 @@ import User from "../models/User.js";
 import Booking from "../models/Booking.js";
 import Category from "../models/Category.js";
 import { deleteImage } from "../utils/cloudinary.js";
+import transporter from "../utils/mailer.js";
+
+// Helper function to notify users about event date changes
+const notifyUsersAboutDateChange = async (eventId, oldDate, newDate) => {
+  try {
+    // Get all bookings for this event
+    const bookings = await Booking.find({ 
+      eventId, 
+      cancelledByUser: { $ne: true },
+      cancelledByEvent: { $ne: true }
+    }).populate('userId', 'name email').populate('eventId', 'title venue');
+
+    if (bookings.length === 0) return;
+
+    const event = bookings[0].eventId;
+    
+    // Send email to each user
+    const emailPromises = bookings.map(async (booking) => {
+      if (!booking.userId?.email) return;
+      
+      try {
+        await transporter.sendMail({
+          from: '"Event Ticketing" <noreply@eventify.com>',
+          to: booking.userId.email,
+          subject: `Important: Date Change for ${event.title}`,
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+              <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+                <h2 style="color: #856404; margin: 0 0 15px 0;">⚠️ Event Date Change Notice</h2>
+                <p style="color: #856404; margin: 0;"><strong>Your booked event has a new date!</strong></p>
+              </div>
+              
+              <h3 style="color: #2d7ff9;">${event.title}</h3>
+              
+              <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0;">
+                <p><strong>Previous Date:</strong> ${new Date(oldDate).toLocaleDateString('en-IN', { 
+                  weekday: 'long', 
+                  year: 'numeric', 
+                  month: 'long', 
+                  day: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })}</p>
+                <p><strong>New Date:</strong> ${new Date(newDate).toLocaleDateString('en-IN', { 
+                  weekday: 'long', 
+                  year: 'numeric', 
+                  month: 'long', 
+                  day: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })}</p>
+                <p><strong>Venue:</strong> ${event.venue?.name || event.venue}</p>
+              </div>
+              
+              <p><strong>Your ticket remains valid</strong> for the new date. If you cannot attend the new date, you may be eligible for a refund according to our refund policy.</p>
+              
+              <p>If you have any questions, please contact the event organizer or our support team.</p>
+              
+              <p>Thank you for your understanding.</p>
+              
+              <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; color: #666; font-size: 12px;">
+                <p>This is an automated notification. Please do not reply to this email.</p>
+              </div>
+            </div>
+          `
+        });
+      } catch (emailError) {
+        console.error(`Failed to send date change notification to ${booking.userId.email}:`, emailError);
+      }
+    });
+
+    await Promise.allSettled(emailPromises);
+    console.log(`Date change notifications sent to ${bookings.length} users for event ${eventId}`);
+  } catch (error) {
+    console.error('Error sending date change notifications:', error);
+  }
+};
 
 // @desc    Create new event
 // @route   POST /api/events
@@ -643,8 +720,9 @@ export const updateEvent = async (req, res) => {
       req.body.date &&
       new Date(req.body.date).toString() !== new Date(prevDate).toString()
     ) {
-      // TODO: notify users about date change
-      console.log("Notify users about date change");
+      // Notify users about date change
+      await notifyUsersAboutDateChange(event._id, prevDate, req.body.date);
+      console.log("Notified users about date change");
     }
 
     if (req.body.price && req.body.price !== prevPrice) {
