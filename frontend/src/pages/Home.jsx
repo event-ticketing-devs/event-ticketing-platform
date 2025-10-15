@@ -10,9 +10,13 @@ const Home = () => {
   const fetchFeaturedEvents = async () => {
     setLoading(true);
     try {
-      const res = await apiClient.get("/events");
+      const res = await apiClient.get("/events?limit=20&sortBy=createdAt&sortOrder=desc");
+      
+      // Handle both old and new API response formats
+      const allEvents = res.data.events || res.data;
+      
       // Get the latest 6 events as featured events
-      const events = res.data.filter(
+      const events = allEvents.filter(
         (event) => !event.cancelled && new Date(event.date) > new Date()
       );
       setFeaturedEvents(events.slice(0, 6));
@@ -24,7 +28,7 @@ const Home = () => {
         setUserCity("Mumbai");
       }
     } catch (err) {
-      console.error(err);
+      console.error("Error fetching featured events:", err);
     }
     setLoading(false);
   };

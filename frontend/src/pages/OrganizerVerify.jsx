@@ -18,7 +18,9 @@ export default function OrganizerVerify() {
   useEffect(() => {
     if (!eventId) {
       apiClient.get("/events").then((res) => {
-        setEvents(res.data);
+        // Handle both old and new API response formats
+        const eventsData = res.data.events || res.data;
+        setEvents(eventsData);
       });
     }
   }, [eventId]);

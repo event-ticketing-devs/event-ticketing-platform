@@ -41,7 +41,9 @@ export default function AdminDashboard() {
         apiClient.get("/events/admin/stats"),
         apiClient.get("/categories"),
       ]);
-      setEvents(eventsRes.data);
+      
+      // Handle both old and new API response formats
+      setEvents(eventsRes.data.events || eventsRes.data);
       setStats(statsRes.data);
       setCategories(categoriesRes.data);
     } catch (err) {
