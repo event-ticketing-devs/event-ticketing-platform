@@ -144,8 +144,12 @@ export default function EventDetailsPage() {
       if (currentUser) {
         // For all users, check if they have an active booking for this event
         try {
-          const userBookingsRes = await apiClient.get("/bookings/user");
-          const activeBooking = userBookingsRes.data.find(
+          const userBookingsRes = await apiClient.get("/bookings/user?limit=100");
+          
+          // Handle both old and new API response formats
+          const userBookings = userBookingsRes.data.bookings || userBookingsRes.data;
+          
+          const activeBooking = userBookings.find(
             (b) =>
               b.eventId &&
               b.eventId._id === id &&

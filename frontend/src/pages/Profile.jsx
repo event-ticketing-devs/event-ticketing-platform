@@ -22,8 +22,10 @@ const Profile = () => {
   useEffect(() => {
     const fetchUserStats = async () => {
       try {
-        const response = await apiClient.get("/bookings/user");
-        const bookings = response.data;
+        const response = await apiClient.get("/bookings/user?limit=100");
+        
+        // Handle both old and new API response formats
+        const bookings = response.data.bookings || response.data;
 
         const now = new Date();
         const upcoming = bookings.filter(
