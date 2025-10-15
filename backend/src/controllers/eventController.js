@@ -336,6 +336,11 @@ export const getAllEvents = async (req, res) => {
       filter.city = { $regex: req.query.city, $options: 'i' };
     }
 
+    // Organizer filter (for organizer dashboard)
+    if (req.query.organizerId) {
+      filter.organizerId = req.query.organizerId;
+    }
+
     // Price range filters
     if (req.query.minPrice || req.query.maxPrice) {
       const priceFilter = {};
