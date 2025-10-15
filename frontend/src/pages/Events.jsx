@@ -115,15 +115,27 @@ const EventListPage = () => {
       const prices = event.ticketCategories.map(cat => cat.price);
       const minPrice = Math.min(...prices);
       const maxPrice = Math.max(...prices);
-      return minPrice === maxPrice ? `$${minPrice}` : `$${minPrice} - $${maxPrice}`;
+      return minPrice === maxPrice ? `₹${minPrice}` : `₹${minPrice} onwards`;
     }
-    return `$${event.price || 0}`;
+    return `₹${event.price || 0}`;
   };
 
   // Get unique cities for filter dropdown (from current page of events)
   const cities = Array.from(
     new Set(events.map((e) => e.city).filter(Boolean))
   );
+
+  // Client-side safety: remove past events so UI never shows events with date < now
+  const now = new Date();
+  const visibleEvents = events.filter((ev) => {
+    try {
+      // treat invalid/missing dates as hidden
+      const d = new Date(ev.date);
+      return !isNaN(d.getTime()) && d >= now;
+    } catch (e) {
+      return false;
+    }
+  });
 
   useEffect(() => {
     fetchEvents();
@@ -366,7 +378,7 @@ const EventListPage = () => {
                 </div>
               ))}
             </div>
-          ) : events.length === 0 ? (
+          ) : visibleEvents.length === 0 ? (
             // No Events State
             <div className="text-center py-16">
               <div className="mx-auto w-32 h-32 mb-6">
@@ -420,7 +432,7 @@ const EventListPage = () => {
           ) : (
             // Events Grid
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {events.map((event) => (
+              {visibleEvents.map((event) => (
                 <div
                   key={event._id}
                   className="group bg-white rounded-xl shadow-lg border border-slate-200/50 hover:shadow-xl hover:border-blue-200 transition-all duration-300 overflow-hidden"
