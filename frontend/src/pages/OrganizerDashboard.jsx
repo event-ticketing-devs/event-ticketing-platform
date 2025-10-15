@@ -23,17 +23,32 @@ export default function OrganizerDashboard() {
   const fetchEvents = async () => {
     setLoading(true);
     try {
-      const res = await apiClient.get("/events");
-      const myEvents = res.data.filter(
-        (event) => {
-          // Handle both populated and non-populated organizerId
-          const organizerId = event.organizerId?._id || event.organizerId;
-          return organizerId === currentUser?._id;
-        }
-      );
-      setEvents(myEvents);
+      // Use server-side filtering for organizer events
+      const params = new URLSearchParams({
+        organizerId: currentUser?._id,
+        sortBy: 'date',
+        sortOrder: 'asc',
+        limit: '50' // Get more events to reduce pagination in dashboard
+      });
+
+      const res = await apiClient.get(`/events?${params.toString()}`);
+      
+      // Handle both old and new API response formats
+      if (res.data.events) {
+        setEvents(res.data.events);
+      } else {
+        // Fallback for old API format - filter client-side
+        const myEvents = res.data.filter(
+          (event) => {
+            const organizerId = event.organizerId?._id || event.organizerId;
+            return organizerId === currentUser?._id;
+          }
+        );
+        setEvents(myEvents);
+      }
     } catch (err) {
       toast.error("Failed to fetch events");
+      setEvents([]);
     }
     setLoading(false);
   };
@@ -63,11 +78,14 @@ export default function OrganizerDashboard() {
     try {
       const res = await apiClient.get(`/bookings/event/${event._id}`);
 
+      // Handle both old and new API response formats
+      const bookings = res.data.bookings || res.data;
+
       // Calculate total booked seats for both legacy and categorized events
       let totalBooked = 0;
       if (event.hasTicketCategories) {
         // For categorized events, sum up totalQuantity from categorized bookings
-        totalBooked = res.data.reduce((sum, booking) => {
+        totalBooked = bookings.reduce((sum, booking) => {
           if (booking.hasTicketCategories && booking.totalQuantity) {
             return sum + booking.totalQuantity;
           } else if (!booking.hasTicketCategories && booking.noOfSeats) {
@@ -77,7 +95,7 @@ export default function OrganizerDashboard() {
         }, 0);
       } else {
         // For legacy events, sum up noOfSeats
-        totalBooked = res.data.reduce(
+        totalBooked = bookings.reduce(
           (sum, booking) => sum + (booking.noOfSeats || 0),
           0
         );
@@ -105,9 +123,10 @@ export default function OrganizerDashboard() {
         availableSeats,
         totalBooked,
       });
-      setAttendees(res.data);
+      setAttendees(bookings);
       setShowDetailsModal(true);
     } catch (err) {
+      console.error("Error fetching attendees:", err);
       toast.error("Failed to fetch attendees");
     }
   };
@@ -133,8 +152,10 @@ export default function OrganizerDashboard() {
   };
 
   useEffect(() => {
-    fetchEvents();
-  }, []);
+    if (currentUser?._id) {
+      fetchEvents();
+    }
+  }, [currentUser?._id]);
 
   if (loading) {
     return (
