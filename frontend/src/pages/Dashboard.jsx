@@ -14,10 +14,18 @@ export default function DashboardPage() {
   const fetchBookings = async () => {
     setLoading(true);
     try {
-      const res = await apiClient.get("/bookings/user");
-      setBookings(res.data);
+      const res = await apiClient.get("/bookings/user?limit=100"); // Get more bookings for dashboard
+      
+      // Handle both old and new API response formats
+      if (res.data.bookings) {
+        setBookings(res.data.bookings);
+      } else {
+        // Fallback for old API format
+        setBookings(res.data);
+      }
     } catch (err) {
-      console.error(err);
+      console.error("Error fetching bookings:", err);
+      setBookings([]);
     }
     setLoading(false);
   };
