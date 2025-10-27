@@ -1255,3 +1255,259 @@ export const removeCoOrganizer = async (req, res) => {
     return res.status(500).json({ message: "Server error" });
   }
 };
+
+// @desc    Get verifiers for an event
+// @route   GET /api/events/:id/verifiers
+// @access  Organizer/Co-Organizer/Admin
+export const getVerifiers = async (req, res) => {
+  try {
+    const eventId = req.params.id;
+    const event = await Event.findById(eventId)
+      .populate('organizerId', 'name email')
+      .populate('verifiers', 'name email role');
+
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    // Check if user is the main organizer, co-organizer, or admin
+    const isMainOrganizer = event.organizerId._id.toString() === req.user._id.toString();
+    const isCoOrganizer = event.coOrganizers?.some(
+      coOrgId => coOrgId.toString() === req.user._id.toString()
+    );
+    const isAdmin = req.user.role === "admin";
+
+    if (!isMainOrganizer && !isCoOrganizer && !isAdmin) {
+      return res.status(403).json({ message: "Access denied. Only organizers can view verifiers." });
+    }
+
+    return res.status(200).json({
+      verifiers: event.verifiers.map(verifier => ({
+        id: verifier._id,
+        name: verifier.name,
+        email: verifier.email,
+        role: verifier.role,
+      })),
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+// @desc    Add verifier to an event
+// @route   POST /api/events/:id/verifiers
+// @access  Organizer/Co-Organizer/Admin
+export const addVerifier = async (req, res) => {
+  try {
+    const eventId = req.params.id;
+    const { userEmail } = req.body;
+
+    if (!userEmail) {
+      return res.status(400).json({ message: "User email is required" });
+    }
+
+    const event = await Event.findById(eventId);
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    // Check if user is the main organizer, co-organizer, or admin
+    const isMainOrganizer = event.organizerId.toString() === req.user._id.toString();
+    const isCoOrganizer = event.coOrganizers?.some(
+      coOrgId => coOrgId.toString() === req.user._id.toString()
+    );
+    const isAdmin = req.user.role === "admin";
+
+    if (!isMainOrganizer && !isCoOrganizer && !isAdmin) {
+      return res.status(403).json({ message: "Access denied. Only organizers can add verifiers." });
+    }
+
+    // Find the user by email
+    const userToAdd = await User.findOne({ email: userEmail.toLowerCase() });
+    if (!userToAdd) {
+      return res.status(404).json({ message: "User not found with this email" });
+    }
+
+    // Check if user is already the main organizer
+    if (userToAdd._id.toString() === event.organizerId.toString()) {
+      return res.status(400).json({ message: "The main organizer doesn't need verifier access" });
+    }
+
+    // Check if user is already a co-organizer
+    const isAlreadyCoOrganizer = event.coOrganizers?.some(
+      coOrgId => coOrgId.toString() === userToAdd._id.toString()
+    );
+    if (isAlreadyCoOrganizer) {
+      return res.status(400).json({ message: "Co-organizers already have full access" });
+    }
+
+    // Check if user is already a verifier
+    const isAlreadyVerifier = event.verifiers?.some(
+      verifierId => verifierId.toString() === userToAdd._id.toString()
+    );
+    if (isAlreadyVerifier) {
+      return res.status(400).json({ message: "User is already a verifier for this event" });
+    }
+
+    // Add the user as verifier
+    event.verifiers.push(userToAdd._id);
+    await event.save();
+
+    // Populate the new verifier data
+    await event.populate('verifiers', 'name email role');
+
+    // Send notification email to the new verifier
+    try {
+      await transporter.sendMail({
+        from: '"Event Ticketing" <noreply@eventify.com>',
+        to: userToAdd.email,
+        subject: `You've been added as a verifier for ${event.title}`,
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <div style="background: #dbeafe; border: 1px solid #93c5fd; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+              <h2 style="color: #1e40af; margin: 0 0 15px 0;">🎫 You're now a Verifier!</h2>
+            </div>
+            
+            <p>Hello ${userToAdd.name},</p>
+            
+            <p>You have been added as a verifier for the following event:</p>
+            
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0;">
+              <h3 style="color: #2d7ff9; margin-top: 0;">${event.title}</h3>
+              <p><strong>Date:</strong> ${new Date(event.date).toLocaleDateString('en-IN', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+              })}</p>
+              <p><strong>Venue:</strong> ${event.venue?.name || event.venue}</p>
+              <p><strong>City:</strong> ${event.city}</p>
+            </div>
+            
+            <p>As a verifier, you can:</p>
+            <ul>
+              <li>Verify tickets at the venue</li>
+              <li>View event statistics and attendance</li>
+            </ul>
+            
+            <p><strong>Note:</strong> Verifiers have limited access and cannot modify event details or manage bookings.</p>
+            
+            <p>You can access the verification page from your dashboard.</p>
+            
+            <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; color: #666; font-size: 12px;">
+              <p>This is an automated notification. Please do not reply to this email.</p>
+            </div>
+          </div>
+        `
+      });
+    } catch (emailError) {
+      console.error('Failed to send verifier notification email:', emailError);
+    }
+
+    return res.status(200).json({
+      message: "Verifier added successfully",
+      verifier: {
+        id: userToAdd._id,
+        name: userToAdd.name,
+        email: userToAdd.email,
+        role: userToAdd.role,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+// @desc    Remove verifier from an event
+// @route   DELETE /api/events/:id/verifiers/:userId
+// @access  Organizer/Co-Organizer/Admin
+export const removeVerifier = async (req, res) => {
+  try {
+    const { id: eventId, userId } = req.params;
+
+    const event = await Event.findById(eventId);
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    // Check if user is the main organizer, co-organizer, or admin
+    const isMainOrganizer = event.organizerId.toString() === req.user._id.toString();
+    const isCoOrganizer = event.coOrganizers?.some(
+      coOrgId => coOrgId.toString() === req.user._id.toString()
+    );
+    const isAdmin = req.user.role === "admin";
+
+    if (!isMainOrganizer && !isCoOrganizer && !isAdmin) {
+      return res.status(403).json({ message: "Access denied. Only organizers can remove verifiers." });
+    }
+
+    // Check if user is a verifier
+    const verifierIndex = event.verifiers.findIndex(
+      verifierId => verifierId.toString() === userId
+    );
+
+    if (verifierIndex === -1) {
+      return res.status(404).json({ message: "User is not a verifier for this event" });
+    }
+
+    // Get user details before removing
+    const removedUser = await User.findById(userId);
+
+    // Remove the verifier
+    event.verifiers.splice(verifierIndex, 1);
+    await event.save();
+
+    // Send notification email to the removed verifier
+    if (removedUser) {
+      try {
+        await transporter.sendMail({
+          from: '"Event Ticketing" <noreply@eventify.com>',
+          to: removedUser.email,
+          subject: `Verifier access removed for ${event.title}`,
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+              <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+                <h2 style="color: #856404; margin: 0 0 15px 0;">Verifier Access Removed</h2>
+              </div>
+              
+              <p>Hello ${removedUser.name},</p>
+              
+              <p>Your verifier access has been removed for the following event:</p>
+              
+              <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0;">
+                <h3 style="color: #2d7ff9; margin-top: 0;">${event.title}</h3>
+                <p><strong>Date:</strong> ${new Date(event.date).toLocaleDateString('en-IN', { 
+                  weekday: 'long', 
+                  year: 'numeric', 
+                  month: 'long', 
+                  day: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })}</p>
+              </div>
+              
+              <p>You no longer have verifier access for this event. If you believe this was done in error, please contact the event organizer.</p>
+              
+              <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; color: #666; font-size: 12px;">
+                <p>This is an automated notification. Please do not reply to this email.</p>
+              </div>
+            </div>
+          `
+        });
+      } catch (emailError) {
+        console.error('Failed to send removal notification email:', emailError);
+      }
+    }
+
+    return res.status(200).json({
+      message: "Verifier removed successfully",
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Server error" });
+  }
+};

@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import ConfirmModal from "../components/ConfirmModal";
 import EventDetailsModal from "../components/EventDetailsModal";
 import CoOrganizerModal from "../components/CoOrganizerModal";
+import VerifierModal from "../components/VerifierModal";
 import { format } from "date-fns";
 
 export default function OrganizerDashboard() {
@@ -19,8 +20,11 @@ export default function OrganizerDashboard() {
   const [eventToDelete, setEventToDelete] = useState(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showCoOrganizerModal, setShowCoOrganizerModal] = useState(false);
+  const [showVerifierModal, setShowVerifierModal] = useState(false);
   const [coOrganizerEventId, setCoOrganizerEventId] = useState(null);
   const [coOrganizerEventTitle, setCoOrganizerEventTitle] = useState("");
+  const [verifierEventId, setVerifierEventId] = useState(null);
+  const [verifierEventTitle, setVerifierEventTitle] = useState("");
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("upcoming");
 
@@ -146,6 +150,12 @@ export default function OrganizerDashboard() {
     setCoOrganizerEventId(event._id);
     setCoOrganizerEventTitle(event.title);
     setShowCoOrganizerModal(true);
+  };
+
+  const handleManageVerifiers = (event) => {
+    setVerifierEventId(event._id);
+    setVerifierEventTitle(event.title);
+    setShowVerifierModal(true);
   };
 
   // Split events into upcoming and past
@@ -594,6 +604,27 @@ export default function OrganizerDashboard() {
                               Co-Organizers
                             </button>
                           )}
+
+                          {/* Verifiers Button - For main organizer and co-organizers */}
+                          <button
+                            onClick={() => handleManageVerifiers(event)}
+                            className="flex items-center gap-1 px-3 py-2 bg-indigo-100 text-indigo-800 rounded-lg text-sm font-semibold hover:bg-indigo-200 transition-all"
+                          >
+                            <svg
+                              className="w-4 h-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                              />
+                            </svg>
+                            Verifiers
+                          </button>
                         </div>
                       </div>
                     ))}
@@ -832,6 +863,16 @@ export default function OrganizerDashboard() {
         }}
         eventId={coOrganizerEventId}
         eventTitle={coOrganizerEventTitle}
+      />
+      <VerifierModal
+        isOpen={showVerifierModal}
+        onClose={() => {
+          setShowVerifierModal(false);
+          setVerifierEventId(null);
+          setVerifierEventTitle("");
+        }}
+        eventId={verifierEventId}
+        eventTitle={verifierEventTitle}
       />
     </div>
   );

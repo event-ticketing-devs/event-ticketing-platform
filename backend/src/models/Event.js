@@ -68,6 +68,10 @@ const eventSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     }],
+    verifiers: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    }],
     photo: { type: String },
     cancelled: { type: Boolean, default: false },
     cancelledReason: { type: String },

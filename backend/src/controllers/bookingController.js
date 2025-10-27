@@ -826,9 +826,12 @@ export const getBookingsByEvent = async (req, res) => {
     const isCoOrganizer = event.coOrganizers?.some(
       coOrgId => coOrgId.toString() === req.user._id.toString()
     );
+    const isVerifier = event.verifiers?.some(
+      verifierId => verifierId.toString() === req.user._id.toString()
+    );
     const isAdmin = req.user.role === "admin";
 
-    if (!isOwner && !isCoOrganizer && !isAdmin) {
+    if (!isOwner && !isCoOrganizer && !isVerifier && !isAdmin) {
       return res
         .status(403)
         .json({ message: "Not authorized to view these bookings" });
@@ -1016,9 +1019,12 @@ export const verifyBookingCode = async (req, res) => {
     const isCoOrganizer = event.coOrganizers?.some(
       coOrgId => coOrgId.toString() === req.user._id.toString()
     );
+    const isVerifier = event.verifiers?.some(
+      verifierId => verifierId.toString() === req.user._id.toString()
+    );
     const isAdmin = req.user.role === "admin";
 
-    if (!isOwner && !isCoOrganizer && !isAdmin) {
+    if (!isOwner && !isCoOrganizer && !isVerifier && !isAdmin) {
       return res.status(403).json({ 
         message: "Not authorized to verify tickets for this event" 
       });
