@@ -676,8 +676,12 @@ export const updateEvent = async (req, res) => {
     }
 
     const isOwner = req.user._id.toString() === event.organizerId.toString();
+    const isCoOrganizer = event.coOrganizers?.some(
+      coOrgId => coOrgId.toString() === req.user._id.toString()
+    );
     const isAdmin = req.user.role === "admin";
-    if (!isOwner && !isAdmin) {
+    
+    if (!isOwner && !isCoOrganizer && !isAdmin) {
       return res
         .status(403)
         .json({ message: "Not authorized to update this event" });
@@ -879,9 +883,12 @@ export const deleteEvent = async (req, res) => {
     if (!event) return res.status(404).json({ message: "Event not found" });
 
     const isOwner = req.user._id.toString() === event.organizerId.toString();
+    const isCoOrganizer = event.coOrganizers?.some(
+      coOrgId => coOrgId.toString() === req.user._id.toString()
+    );
     const isAdmin = req.user.role === "admin";
 
-    if (!isOwner && !isAdmin) {
+    if (!isOwner && !isCoOrganizer && !isAdmin) {
       return res
         .status(403)
         .json({ message: "Not authorized to delete this event" });
@@ -997,6 +1004,252 @@ export const getEventSeatInfo = async (req, res) => {
         price: event.price,
       });
     }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+// @desc    Get co-organizers for an event
+// @route   GET /api/events/:id/co-organizers
+// @access  Organizer/Admin
+export const getCoOrganizers = async (req, res) => {
+  try {
+    const eventId = req.params.id;
+    const event = await Event.findById(eventId)
+      .populate('organizerId', 'name email')
+      .populate('coOrganizers', 'name email role');
+
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    // Check if user is the main organizer or admin
+    const isMainOrganizer = event.organizerId._id.toString() === req.user._id.toString();
+    const isAdmin = req.user.role === "admin";
+
+    if (!isMainOrganizer && !isAdmin) {
+      return res.status(403).json({ message: "Access denied. Only the main organizer or admin can view co-organizers." });
+    }
+
+    return res.status(200).json({
+      mainOrganizer: {
+        id: event.organizerId._id,
+        name: event.organizerId.name,
+        email: event.organizerId.email,
+      },
+      coOrganizers: event.coOrganizers.map(co => ({
+        id: co._id,
+        name: co.name,
+        email: co.email,
+        role: co.role,
+      })),
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+// @desc    Add co-organizer to an event
+// @route   POST /api/events/:id/co-organizers
+// @access  Organizer/Admin
+export const addCoOrganizer = async (req, res) => {
+  try {
+    const eventId = req.params.id;
+    const { userEmail } = req.body;
+
+    if (!userEmail) {
+      return res.status(400).json({ message: "User email is required" });
+    }
+
+    const event = await Event.findById(eventId);
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    // Check if user is the main organizer or admin
+    const isMainOrganizer = event.organizerId.toString() === req.user._id.toString();
+    const isAdmin = req.user.role === "admin";
+
+    if (!isMainOrganizer && !isAdmin) {
+      return res.status(403).json({ message: "Access denied. Only the main organizer or admin can add co-organizers." });
+    }
+
+    // Find the user by email
+    const userToAdd = await User.findOne({ email: userEmail.toLowerCase() });
+    if (!userToAdd) {
+      return res.status(404).json({ message: "User not found with this email" });
+    }
+
+    // Check if user is trying to add themselves
+    if (userToAdd._id.toString() === event.organizerId.toString()) {
+      return res.status(400).json({ message: "Cannot add the main organizer as a co-organizer" });
+    }
+
+    // Check if user is already a co-organizer
+    const isAlreadyCoOrganizer = event.coOrganizers.some(
+      coOrgId => coOrgId.toString() === userToAdd._id.toString()
+    );
+
+    if (isAlreadyCoOrganizer) {
+      return res.status(400).json({ message: "User is already a co-organizer for this event" });
+    }
+
+    // Add the user as co-organizer
+    event.coOrganizers.push(userToAdd._id);
+    await event.save();
+
+    // Populate the new co-organizer data
+    await event.populate('coOrganizers', 'name email role');
+
+    // Send notification email to the new co-organizer
+    try {
+      await transporter.sendMail({
+        from: '"Event Ticketing" <noreply@eventify.com>',
+        to: userToAdd.email,
+        subject: `You've been added as a co-organizer for ${event.title}`,
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <div style="background: #d4edda; border: 1px solid #c3e6cb; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+              <h2 style="color: #155724; margin: 0 0 15px 0;">🎉 You're now a Co-Organizer!</h2>
+            </div>
+            
+            <p>Hello ${userToAdd.name},</p>
+            
+            <p>You have been added as a co-organizer for the following event:</p>
+            
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0;">
+              <h3 style="color: #2d7ff9; margin-top: 0;">${event.title}</h3>
+              <p><strong>Date:</strong> ${new Date(event.date).toLocaleDateString('en-IN', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+              })}</p>
+              <p><strong>Venue:</strong> ${event.venue?.name || event.venue}</p>
+              <p><strong>City:</strong> ${event.city}</p>
+            </div>
+            
+            <p>As a co-organizer, you can:</p>
+            <ul>
+              <li>View and manage event bookings</li>
+              <li>Verify tickets</li>
+              <li>View event statistics</li>
+            </ul>
+            
+            <p>You can access the event management dashboard from your organizer panel.</p>
+            
+            <p>If you have any questions, please contact the main organizer or our support team.</p>
+            
+            <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; color: #666; font-size: 12px;">
+              <p>This is an automated notification. Please do not reply to this email.</p>
+            </div>
+          </div>
+        `
+      });
+    } catch (emailError) {
+      console.error('Failed to send co-organizer notification email:', emailError);
+    }
+
+    return res.status(200).json({
+      message: "Co-organizer added successfully",
+      coOrganizer: {
+        id: userToAdd._id,
+        name: userToAdd.name,
+        email: userToAdd.email,
+        role: userToAdd.role,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+// @desc    Remove co-organizer from an event
+// @route   DELETE /api/events/:id/co-organizers/:userId
+// @access  Organizer/Admin
+export const removeCoOrganizer = async (req, res) => {
+  try {
+    const { id: eventId, userId } = req.params;
+
+    const event = await Event.findById(eventId);
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    // Check if user is the main organizer or admin
+    const isMainOrganizer = event.organizerId.toString() === req.user._id.toString();
+    const isAdmin = req.user.role === "admin";
+
+    if (!isMainOrganizer && !isAdmin) {
+      return res.status(403).json({ message: "Access denied. Only the main organizer or admin can remove co-organizers." });
+    }
+
+    // Check if user is a co-organizer
+    const coOrganizerIndex = event.coOrganizers.findIndex(
+      coOrgId => coOrgId.toString() === userId
+    );
+
+    if (coOrganizerIndex === -1) {
+      return res.status(404).json({ message: "User is not a co-organizer for this event" });
+    }
+
+    // Get user details before removing
+    const removedUser = await User.findById(userId);
+
+    // Remove the co-organizer
+    event.coOrganizers.splice(coOrganizerIndex, 1);
+    await event.save();
+
+    // Send notification email to the removed co-organizer
+    if (removedUser) {
+      try {
+        await transporter.sendMail({
+          from: '"Event Ticketing" <noreply@eventify.com>',
+          to: removedUser.email,
+          subject: `Co-organizer access removed for ${event.title}`,
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+              <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+                <h2 style="color: #856404; margin: 0 0 15px 0;">Co-Organizer Access Removed</h2>
+              </div>
+              
+              <p>Hello ${removedUser.name},</p>
+              
+              <p>Your co-organizer access has been removed for the following event:</p>
+              
+              <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 15px 0;">
+                <h3 style="color: #2d7ff9; margin-top: 0;">${event.title}</h3>
+                <p><strong>Date:</strong> ${new Date(event.date).toLocaleDateString('en-IN', { 
+                  weekday: 'long', 
+                  year: 'numeric', 
+                  month: 'long', 
+                  day: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })}</p>
+              </div>
+              
+              <p>You no longer have access to manage this event. If you believe this was done in error, please contact the event organizer.</p>
+              
+              <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; color: #666; font-size: 12px;">
+                <p>This is an automated notification. Please do not reply to this email.</p>
+              </div>
+            </div>
+          `
+        });
+      } catch (emailError) {
+        console.error('Failed to send removal notification email:', emailError);
+      }
+    }
+
+    return res.status(200).json({
+      message: "Co-organizer removed successfully",
+    });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Server error" });

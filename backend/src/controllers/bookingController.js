@@ -822,10 +822,13 @@ export const getBookingsByEvent = async (req, res) => {
     const event = await Event.findById(req.params.eventId);
     if (!event) return res.status(404).json({ message: "Event not found" });
 
-    if (
-      event.organizerId.toString() !== req.user._id.toString() &&
-      req.user.role !== "admin"
-    ) {
+    const isOwner = event.organizerId.toString() === req.user._id.toString();
+    const isCoOrganizer = event.coOrganizers?.some(
+      coOrgId => coOrgId.toString() === req.user._id.toString()
+    );
+    const isAdmin = req.user.role === "admin";
+
+    if (!isOwner && !isCoOrganizer && !isAdmin) {
       return res
         .status(403)
         .json({ message: "Not authorized to view these bookings" });
@@ -1001,6 +1004,24 @@ export const verifyBookingCode = async (req, res) => {
     if (booking.eventId.toString() !== ticketInfo.eventId) {
       console.log("❌ Event ID mismatch - booking vs QR code");
       return res.status(400).json({ message: "Ticket event mismatch" });
+    }
+
+    // Verify user is authorized to verify tickets for this event
+    const event = await Event.findById(booking.eventId);
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    const isOwner = event.organizerId.toString() === req.user._id.toString();
+    const isCoOrganizer = event.coOrganizers?.some(
+      coOrgId => coOrgId.toString() === req.user._id.toString()
+    );
+    const isAdmin = req.user.role === "admin";
+
+    if (!isOwner && !isCoOrganizer && !isAdmin) {
+      return res.status(403).json({ 
+        message: "Not authorized to verify tickets for this event" 
+      });
     }
 
     if (booking.verified) {

@@ -64,6 +64,10 @@ const eventSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    coOrganizers: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    }],
     photo: { type: String },
     cancelled: { type: Boolean, default: false },
     cancelledReason: { type: String },

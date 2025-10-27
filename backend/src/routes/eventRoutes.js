@@ -7,6 +7,9 @@ import {
   deleteEvent,
   getEventSeatInfo,
   getAdminStats,
+  getCoOrganizers,
+  addCoOrganizer,
+  removeCoOrganizer,
 } from "../controllers/eventController.js";
 import { protect } from "../middleware/authMiddleware.js";
 import { adminOnly } from "../middleware/roleMiddleware.js";
@@ -22,5 +25,10 @@ router.get("/:id", getEventById);
 router.patch("/:id", protect, checkBannedOrganizer, upload.single("photo"), updateEvent);
 router.delete("/:id", protect, deleteEvent);
 router.get("/:id/seats", getEventSeatInfo);
+
+// Co-organizer management routes
+router.get("/:id/co-organizers", protect, getCoOrganizers);
+router.post("/:id/co-organizers", protect, addCoOrganizer);
+router.delete("/:id/co-organizers/:userId", protect, removeCoOrganizer);
 
 export default router;

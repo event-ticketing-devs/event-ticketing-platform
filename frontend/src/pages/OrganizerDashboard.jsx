@@ -5,6 +5,7 @@ import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
 import ConfirmModal from "../components/ConfirmModal";
 import EventDetailsModal from "../components/EventDetailsModal";
+import CoOrganizerModal from "../components/CoOrganizerModal";
 import { format } from "date-fns";
 
 export default function OrganizerDashboard() {
@@ -17,6 +18,9 @@ export default function OrganizerDashboard() {
   const [cancelReason, setCancelReason] = useState("");
   const [eventToDelete, setEventToDelete] = useState(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [showCoOrganizerModal, setShowCoOrganizerModal] = useState(false);
+  const [coOrganizerEventId, setCoOrganizerEventId] = useState(null);
+  const [coOrganizerEventTitle, setCoOrganizerEventTitle] = useState("");
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("upcoming");
 
@@ -129,6 +133,19 @@ export default function OrganizerDashboard() {
       console.error("Error fetching attendees:", err);
       toast.error("Failed to fetch attendees");
     }
+  };
+
+  const handleManageCoOrganizers = (event) => {
+    // Check if current user is the main organizer
+    const organizerId = event.organizerId?._id || event.organizerId;
+    if (organizerId !== currentUser?._id) {
+      toast.error("Only the main organizer can manage co-organizers");
+      return;
+    }
+    
+    setCoOrganizerEventId(event._id);
+    setCoOrganizerEventTitle(event.title);
+    setShowCoOrganizerModal(true);
   };
 
   // Split events into upcoming and past
@@ -554,6 +571,29 @@ export default function OrganizerDashboard() {
                             </svg>
                             Verify
                           </Link>
+
+                          {/* Co-Organizers Button - Only for main organizer */}
+                          {(event.organizerId?._id || event.organizerId) === currentUser?._id && (
+                            <button
+                              onClick={() => handleManageCoOrganizers(event)}
+                              className="flex items-center gap-1 px-3 py-2 bg-purple-100 text-purple-800 rounded-lg text-sm font-semibold hover:bg-purple-200 transition-all"
+                            >
+                              <svg
+                                className="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                                />
+                              </svg>
+                              Co-Organizers
+                            </button>
+                          )}
                         </div>
                       </div>
                     ))}
@@ -782,6 +822,16 @@ export default function OrganizerDashboard() {
         event={selectedEvent}
         attendees={attendees}
         onClose={() => setShowDetailsModal(false)}
+      />
+      <CoOrganizerModal
+        isOpen={showCoOrganizerModal}
+        onClose={() => {
+          setShowCoOrganizerModal(false);
+          setCoOrganizerEventId(null);
+          setCoOrganizerEventTitle("");
+        }}
+        eventId={coOrganizerEventId}
+        eventTitle={coOrganizerEventTitle}
       />
     </div>
   );
