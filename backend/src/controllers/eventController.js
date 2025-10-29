@@ -410,6 +410,8 @@ export const getAllEvents = async (req, res) => {
     const events = await Event.find(filter)
       .populate("categoryId", "name")
       .populate("organizerId", "name email phone role isVerified isBanned")
+      .populate("coOrganizers", "_id name email")
+      .populate("verifiers", "_id name email")
       .sort(sort)
       .skip(skip)
       .limit(limit);

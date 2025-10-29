@@ -31,29 +31,29 @@ export default function OrganizerDashboard() {
   const fetchEvents = async () => {
     setLoading(true);
     try {
-      // Use server-side filtering for organizer events
-      const params = new URLSearchParams({
-        organizerId: currentUser?._id,
-        sortBy: 'date',
-        sortOrder: 'asc',
-        limit: '50' // Get more events to reduce pagination in dashboard
-      });
-
-      const res = await apiClient.get(`/events?${params.toString()}`);
+      // Fetch all events and filter client-side for main organizer + co-organizer events
+      const res = await apiClient.get('/events?sortBy=date&sortOrder=asc&limit=100');
       
       // Handle both old and new API response formats
-      if (res.data.events) {
-        setEvents(res.data.events);
-      } else {
-        // Fallback for old API format - filter client-side
-        const myEvents = res.data.filter(
-          (event) => {
-            const organizerId = event.organizerId?._id || event.organizerId;
-            return organizerId === currentUser?._id;
+      const allEvents = res.data.events || res.data;
+      
+      // Filter events where user is main organizer OR co-organizer
+      const myEvents = allEvents.filter((event) => {
+        const organizerId = event.organizerId?._id || event.organizerId;
+        const isMainOrganizer = organizerId === currentUser?._id;
+        
+        // Check if user is a co-organizer
+        const isCoOrganizer = event.coOrganizers?.some(
+          coOrgId => {
+            const id = coOrgId._id || coOrgId;
+            return id === currentUser?._id;
           }
         );
-        setEvents(myEvents);
-      }
+        
+        return isMainOrganizer || isCoOrganizer;
+      });
+      
+      setEvents(myEvents);
     } catch (err) {
       toast.error("Failed to fetch events");
       setEvents([]);

@@ -92,9 +92,7 @@ export default function Navbar() {
                   Dashboard
                 </Link>
               )}
-              {["organizer", "admin"].includes(
-                currentUser?.role?.toLowerCase?.()
-              ) && (
+              {currentUser && (
                 <Link
                   to="/organizer"
                   className={linkClassName("/organizer")}
@@ -323,9 +321,7 @@ export default function Navbar() {
               </Link>
             )}
 
-            {["organizer", "admin"].includes(
-              currentUser?.role?.toLowerCase?.()
-            ) && (
+            {currentUser && (
               <Link
                 to="/organizer"
                 className={`block px-4 py-3 rounded-xl font-medium transition-all duration-300 ${
