@@ -31,29 +31,37 @@ export default function OrganizerDashboard() {
   const fetchEvents = async () => {
     setLoading(true);
     try {
-      // Use server-side filtering for organizer events
-      const params = new URLSearchParams({
-        organizerId: currentUser?._id,
-        sortBy: 'date',
-        sortOrder: 'asc',
-        limit: '50' // Get more events to reduce pagination in dashboard
-      });
-
-      const res = await apiClient.get(`/events?${params.toString()}`);
+      // Fetch all events and filter client-side for main organizer + co-organizer + verifier events
+      const res = await apiClient.get('/events?sortBy=date&sortOrder=asc&limit=100');
       
       // Handle both old and new API response formats
-      if (res.data.events) {
-        setEvents(res.data.events);
-      } else {
-        // Fallback for old API format - filter client-side
-        const myEvents = res.data.filter(
-          (event) => {
-            const organizerId = event.organizerId?._id || event.organizerId;
-            return organizerId === currentUser?._id;
+      const allEvents = res.data.events || res.data;
+      
+      // Filter events where user is main organizer OR co-organizer OR verifier
+      const myEvents = allEvents.filter((event) => {
+        const organizerId = event.organizerId?._id || event.organizerId;
+        const isMainOrganizer = organizerId === currentUser?._id;
+        
+        // Check if user is a co-organizer
+        const isCoOrganizer = event.coOrganizers?.some(
+          coOrgId => {
+            const id = coOrgId._id || coOrgId;
+            return id === currentUser?._id;
           }
         );
-        setEvents(myEvents);
-      }
+        
+        // Check if user is a verifier
+        const isVerifier = event.verifiers?.some(
+          verifierId => {
+            const id = verifierId._id || verifierId;
+            return id === currentUser?._id;
+          }
+        );
+        
+        return isMainOrganizer || isCoOrganizer || isVerifier;
+      });
+      
+      setEvents(myEvents);
     } catch (err) {
       toast.error("Failed to fetch events");
       setEvents([]);
@@ -156,6 +164,32 @@ export default function OrganizerDashboard() {
     setVerifierEventId(event._id);
     setVerifierEventTitle(event.title);
     setShowVerifierModal(true);
+  };
+
+  // Helper functions to determine user role for an event
+  const isMainOrganizer = (event) => {
+    const organizerId = event.organizerId?._id || event.organizerId;
+    return organizerId === currentUser?._id;
+  };
+
+  const isCoOrganizer = (event) => {
+    return event.coOrganizers?.some(
+      coOrgId => {
+        const id = coOrgId._id || coOrgId;
+        return id === currentUser?._id;
+      }
+    );
+  };
+
+  const isVerifierOnly = (event) => {
+    const verifier = event.verifiers?.some(
+      verifierId => {
+        const id = verifierId._id || verifierId;
+        return id === currentUser?._id;
+      }
+    );
+    // User is verifier only if they are a verifier but NOT organizer or co-organizer
+    return verifier && !isMainOrganizer(event) && !isCoOrganizer(event);
   };
 
   // Split events into upcoming and past
@@ -487,55 +521,61 @@ export default function OrganizerDashboard() {
 
                         {/* Action Buttons */}
                         <div className="flex flex-wrap gap-2">
-                          <button
-                            onClick={() =>
-                              navigate(`/events/edit/${event._id}`)
-                            }
-                            disabled={event.cancelled}
-                            className={`flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
-                              event.cancelled
-                                ? "bg-slate-100 text-slate-400 cursor-not-allowed"
-                                : "bg-yellow-100 text-yellow-800 hover:bg-yellow-200"
-                            }`}
-                          >
-                            <svg
-                              className="w-4 h-4"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                              />
-                            </svg>
-                            Edit
-                          </button>
-
-                          {!event.cancelled && (
-                            <button
-                              onClick={() => handleDelete(event._id, false)}
-                              className="flex items-center gap-1 px-3 py-2 bg-red-100 text-red-800 rounded-lg text-sm font-semibold hover:bg-red-200 transition-all"
-                            >
-                              <svg
-                                className="w-4 h-4"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
+                          {/* Show full actions for main organizer and co-organizers */}
+                          {!isVerifierOnly(event) && (
+                            <>
+                              <button
+                                onClick={() =>
+                                  navigate(`/events/edit/${event._id}`)
+                                }
+                                disabled={event.cancelled}
+                                className={`flex items-center gap-1 px-3 py-2 rounded-lg text-sm font-semibold transition-all ${
+                                  event.cancelled
+                                    ? "bg-slate-100 text-slate-400 cursor-not-allowed"
+                                    : "bg-yellow-100 text-yellow-800 hover:bg-yellow-200"
+                                }`}
                               >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M6 18L18 6M6 6l12 12"
-                                />
-                              </svg>
-                              Cancel
-                            </button>
+                                <svg
+                                  className="w-4 h-4"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                                  />
+                                </svg>
+                                Edit
+                              </button>
+
+                              {!event.cancelled && (
+                                <button
+                                  onClick={() => handleDelete(event._id, false)}
+                                  className="flex items-center gap-1 px-3 py-2 bg-red-100 text-red-800 rounded-lg text-sm font-semibold hover:bg-red-200 transition-all"
+                                >
+                                  <svg
+                                    className="w-4 h-4"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth={2}
+                                      d="M6 18L18 6M6 6l12 12"
+                                    />
+                                  </svg>
+                                  Cancel
+                                </button>
+                              )}
+                            </>
                           )}
 
+                          {/* Show Details button for everyone */}
                           <button
                             onClick={() => viewDetails(event)}
                             className="flex items-center gap-1 px-3 py-2 bg-blue-100 text-blue-800 rounded-lg text-sm font-semibold hover:bg-blue-200 transition-all"
@@ -583,7 +623,7 @@ export default function OrganizerDashboard() {
                           </Link>
 
                           {/* Co-Organizers Button - Only for main organizer */}
-                          {(event.organizerId?._id || event.organizerId) === currentUser?._id && (
+                          {!isVerifierOnly(event) && isMainOrganizer(event) && (
                             <button
                               onClick={() => handleManageCoOrganizers(event)}
                               className="flex items-center gap-1 px-3 py-2 bg-purple-100 text-purple-800 rounded-lg text-sm font-semibold hover:bg-purple-200 transition-all"
@@ -605,26 +645,28 @@ export default function OrganizerDashboard() {
                             </button>
                           )}
 
-                          {/* Verifiers Button - For main organizer and co-organizers */}
-                          <button
-                            onClick={() => handleManageVerifiers(event)}
-                            className="flex items-center gap-1 px-3 py-2 bg-indigo-100 text-indigo-800 rounded-lg text-sm font-semibold hover:bg-indigo-200 transition-all"
-                          >
-                            <svg
-                              className="w-4 h-4"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
+                          {/* Verifiers Button - For main organizer and co-organizers only */}
+                          {!isVerifierOnly(event) && (
+                            <button
+                              onClick={() => handleManageVerifiers(event)}
+                              className="flex items-center gap-1 px-3 py-2 bg-indigo-100 text-indigo-800 rounded-lg text-sm font-semibold hover:bg-indigo-200 transition-all"
                             >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-                              />
-                            </svg>
-                            Verifiers
-                          </button>
+                              <svg
+                                className="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                                />
+                              </svg>
+                              Verifiers
+                            </button>
+                          )}
                         </div>
                       </div>
                     ))}

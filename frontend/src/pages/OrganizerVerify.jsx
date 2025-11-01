@@ -3,10 +3,12 @@ import { useParams, useNavigate } from "react-router-dom";
 import apiClient from "../api/apiClient";
 import QRScanner from "../components/QRScanner";
 import toast from "react-hot-toast";
+import { useAuth } from "../context/AuthContext";
 
 export default function OrganizerVerify() {
   const { eventId } = useParams();
   const navigate = useNavigate();
+  const { currentUser } = useAuth();
   const [result, setResult] = useState(null);
   const [events, setEvents] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState(eventId || "");
@@ -17,13 +19,36 @@ export default function OrganizerVerify() {
 
   useEffect(() => {
     if (!eventId) {
-      apiClient.get("/events").then((res) => {
+      apiClient.get("/events?sortBy=date&sortOrder=asc&limit=100").then((res) => {
         // Handle both old and new API response formats
-        const eventsData = res.data.events || res.data;
-        setEvents(eventsData);
+        const allEvents = res.data.events || res.data;
+        
+        // Filter events where user is organizer, co-organizer, or verifier
+        const myEvents = allEvents.filter((event) => {
+          const organizerId = event.organizerId?._id || event.organizerId;
+          const isMainOrganizer = organizerId === currentUser?._id;
+          
+          const isCoOrganizer = event.coOrganizers?.some(
+            coOrgId => {
+              const id = coOrgId._id || coOrgId;
+              return id === currentUser?._id;
+            }
+          );
+          
+          const isVerifier = event.verifiers?.some(
+            verifierId => {
+              const id = verifierId._id || verifierId;
+              return id === currentUser?._id;
+            }
+          );
+          
+          return isMainOrganizer || isCoOrganizer || isVerifier;
+        });
+        
+        setEvents(myEvents);
       });
     }
-  }, [eventId]);
+  }, [eventId, currentUser]);
 
   const handleQRScan = async (qrData) => {
     setResult(null);
