@@ -341,6 +341,11 @@ export const getAllEvents = async (req, res) => {
       filter.organizerId = req.query.organizerId;
     }
 
+    // Verifier filter (for verifier dashboard) - show events where user is a verifier
+    if (req.query.verifierId) {
+      filter.verifiers = req.query.verifierId;
+    }
+
     // Price range filters
     if (req.query.minPrice || req.query.maxPrice) {
       const priceFilter = {};
