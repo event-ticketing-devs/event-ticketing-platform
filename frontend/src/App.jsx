@@ -26,6 +26,7 @@ import OrganizerDetailsPage from "./pages/OrganizerDetailsPage";
 import ContactUs from "./pages/ContactUs";
 import AdminContacts from "./pages/AdminContacts";
 import OrganizerContacts from "./pages/OrganizerContacts";
+import Chatbot from "./components/Chatbot";
 
 function App() {
   return (
@@ -178,7 +179,9 @@ function App() {
                 }
               />
             </Routes>
+            
           </main>
+          <Chatbot />
           <Footer />
         </div>
       </AuthProvider>
