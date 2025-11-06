@@ -7,9 +7,6 @@ import transporter from '../utils/mailer.js';
 const createGeneralContact = async (req, res) => {
   try {
     const { name, email, phone, subject, message } = req.body;
-    
-    // Log incoming request (useful for monitoring)
-    console.log(`General contact form submission from IP: ${req.ip}, Email: ${email}`);
 
     // Validation
     if (!name || !email || !subject || !message) {
@@ -73,9 +70,6 @@ const createEventContact = async (req, res) => {
     const { eventId } = req.params;
     const { name, email, phone, subject, message } = req.body;
 
-    // Log incoming request (useful for monitoring)
-    console.log(`Event contact form submission from IP: ${req.ip}, Email: ${email}, EventID: ${eventId}`);
-
     // Validation
     if (!name || !email || !subject || !message) {
       return res.status(400).json({
@@ -99,13 +93,6 @@ const createEventContact = async (req, res) => {
       type: 'event',
       eventId,
       organizerId: event.organizerId._id
-    });
-
-    console.log('Created event contact:', {
-      contactId: contact._id,
-      eventId,
-      organizerId: event.organizerId._id,
-      type: contact.type
     });
 
     // Send notification to organizer
@@ -206,21 +193,13 @@ const getEventContacts = async (req, res) => {
   try {
     const { status, page = 1, limit = 20 } = req.query;
     
-    console.log('req.user object:', req.user);
-    console.log('req.user._id:', req.user._id);
-    console.log('req.user.role:', req.user.role);
-    
     const organizerId = req.user._id; // Changed from req.user.userId to req.user._id
-
-    console.log('Organizer contacts request:', { organizerId, status, page, limit });
 
     const filter = { 
       type: 'event',
       organizerId
     };
     if (status) filter.status = status;
-
-    console.log('Contact filter:', filter);
 
     const contacts = await Contact.find(filter)
       .populate('eventId', 'title date')
@@ -229,8 +208,6 @@ const getEventContacts = async (req, res) => {
       .skip((page - 1) * limit);
 
     const total = await Contact.countDocuments(filter);
-
-    console.log('Found contacts:', contacts.length, 'Total:', total);
 
     res.json({
       contacts,
