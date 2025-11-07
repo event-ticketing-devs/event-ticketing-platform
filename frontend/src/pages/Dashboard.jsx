@@ -145,9 +145,7 @@ export default function DashboardPage() {
     return (
       <div
         key={_id}
-        className={`bg-white rounded-2xl shadow-lg border border-slate-100 overflow-hidden hover:shadow-xl transition-all duration-300 ${
-          isCancelled ? "opacity-90" : ""
-        }`}
+        className="bg-white border border-slate-200 overflow-hidden hover:border-slate-300 transition-colors flex flex-col h-full"
       >
         {/* Event Header */}
         <div className="relative">
@@ -158,12 +156,12 @@ export default function DashboardPage() {
                 alt={eventId.title}
                 className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+              <div className="absolute inset-0 bg-slate-900/60"></div>
             </div>
           ) : (
-            <div className="h-48 bg-gradient-to-br from-blue-100 to-teal-100 flex items-center justify-center">
+            <div className="h-48 bg-slate-100 flex items-center justify-center border-b border-slate-200">
               <svg
-                className="w-16 h-16 text-blue-300"
+                className="w-16 h-16 text-slate-300"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -181,7 +179,7 @@ export default function DashboardPage() {
           {/* Status Badge */}
           <div className="absolute top-4 right-4">
             {isCancelled ? (
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-red-500/90 backdrop-blur-sm text-white">
+              <span className="inline-flex items-center px-3 py-1 text-sm font-semibold bg-red-500 text-white">
                 {cancelledByUser
                   ? "Cancelled by You"
                   : cancelledByEvent
@@ -189,15 +187,15 @@ export default function DashboardPage() {
                   : "Cancelled"}
               </span>
             ) : isPastEvent ? (
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-gray-500/90 backdrop-blur-sm text-white">
+              <span className="inline-flex items-center px-3 py-1 text-sm font-semibold bg-slate-500 text-white">
                 Past Event
               </span>
             ) : verified ? (
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-green-500/90 backdrop-blur-sm text-white">
+              <span className="inline-flex items-center px-3 py-1 text-sm font-semibold bg-green-500 text-white">
                 ✓ Verified
               </span>
             ) : (
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-orange-500/90 backdrop-blur-sm text-white">
+              <span className="inline-flex items-center px-3 py-1 text-sm font-semibold bg-orange-500 text-white">
                 Pending
               </span>
             )}
@@ -212,7 +210,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Card Content */}
-        <div className="p-6">
+        <div className="p-6 flex flex-col flex-grow">
           {/* Event Details */}
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div className="flex items-center gap-2 text-slate-600">
@@ -252,7 +250,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Booking Info */}
-          <div className="bg-slate-50 rounded-xl p-4 mb-4">
+          <div className="bg-slate-50 border border-slate-200 p-4 mb-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <p className="text-sm text-slate-600">
@@ -280,8 +278,8 @@ export default function DashboardPage() {
               </div>
               <div>
                 <p className="text-sm text-slate-600">Ticket ID</p>
-                <p className="font-mono text-sm text-slate-800">
-                  {ticketId || "N/A"}
+                <p className="font-mono text-xs text-slate-800 break-all" title={ticketId || "N/A"}>
+                  {ticketId ? `${ticketId.substring(0, 12)}...` : "N/A"}
                 </p>
               </div>
             </div>
@@ -289,7 +287,7 @@ export default function DashboardPage() {
 
           {/* Cancellation Details */}
           {isCancelled && (
-            <div className="bg-red-50 rounded-xl p-4 mb-4 border border-red-200">
+            <div className="bg-red-50 border border-red-200 p-4 mb-4">
               <h4 className="font-semibold text-red-800 mb-2 flex items-center gap-2">
                 <svg
                   className="w-4 h-4"
@@ -353,7 +351,7 @@ export default function DashboardPage() {
 
           {/* QR Code Section */}
           {qrCode && !isCancelled && (
-            <div className="bg-blue-50 rounded-xl p-4 mb-4 border border-blue-200">
+            <div className="bg-blue-50 border border-blue-200 p-4 mb-4">
               <div className="flex items-center justify-between">
                 <div>
                   <h4 className="font-semibold text-blue-800 mb-1">
@@ -363,7 +361,7 @@ export default function DashboardPage() {
                     Present this QR code at entrance
                   </p>
                 </div>
-                <div className="bg-white p-2 rounded-lg">
+                <div className="bg-white p-2 border border-blue-200">
                   <img
                     src={qrCode}
                     alt="Ticket QR Code"
@@ -375,17 +373,17 @@ export default function DashboardPage() {
           )}
 
           {/* Action Buttons */}
-          <div className="flex gap-3">
+          <div className="flex gap-3 mt-auto">
             <Link
               to={`/events/${eventId._id}`}
-              className="flex-1 bg-gradient-to-r from-blue-600 to-teal-500 text-white py-3 px-4 rounded-xl font-semibold hover:from-blue-700 hover:to-teal-600 transition-all duration-300 text-center"
+              className="flex-1 bg-slate-900 text-white py-3 px-4 font-semibold hover:bg-slate-800 transition-colors text-center"
             >
               View Event
             </Link>
             {qrCode && !isCancelled && (
               <Link
                 to={`/ticket/${_id}`}
-                className="flex-1 bg-white border-2 border-slate-200 text-slate-700 py-3 px-4 rounded-xl font-semibold hover:bg-slate-50 hover:border-slate-300 transition-all duration-300 text-center"
+                className="flex-1 bg-white border-2 border-slate-200 text-slate-700 py-3 px-4 font-semibold hover:bg-slate-50 hover:border-slate-300 transition-colors text-center"
               >
                 View Ticket
               </Link>
@@ -397,7 +395,7 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-teal-50/30">
+    <div className="min-h-screen bg-white">
       <div className="max-w-7xl mx-auto px-6 py-12">
         {/* Header Section */}
         <div className="mb-8">
@@ -413,7 +411,7 @@ export default function DashboardPage() {
             {cancelled.length > 0 && (
               <Link
                 to="/cancelled-bookings"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-red-100 text-red-700 rounded-xl hover:bg-red-200 transition-all font-semibold"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-red-100 text-red-700 hover:bg-red-200 transition-colors font-semibold border border-red-200"
               >
                 <svg
                   className="w-5 h-5"
@@ -438,15 +436,9 @@ export default function DashboardPage() {
             {tabData.map((t) => (
               <button
                 key={t.key}
-                className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-300 ${
+                className={`flex items-center gap-2 px-6 py-3 font-semibold transition-colors ${
                   tab === t.key
-                    ? `bg-gradient-to-r ${
-                        t.color === "blue"
-                          ? "from-blue-600 to-teal-500"
-                          : t.color === "red"
-                          ? "from-red-500 to-pink-500"
-                          : "from-slate-500 to-gray-500"
-                      } text-white shadow-lg`
+                    ? "bg-slate-900 text-white"
                     : "bg-white text-slate-600 hover:bg-slate-50 border border-slate-200"
                 }`}
                 onClick={() => setTab(t.key)}
@@ -461,8 +453,8 @@ export default function DashboardPage() {
         {/* Content Section */}
         {loading ? (
           <div className="flex items-center justify-center py-12">
-            <div className="flex items-center gap-3 text-blue-600">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <div className="flex items-center gap-3 text-slate-900">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-900"></div>
               <span className="text-xl font-medium">
                 Loading your bookings...
               </span>
@@ -471,7 +463,7 @@ export default function DashboardPage() {
         ) : tabData.find((t) => t.key === tab).data.length === 0 ? (
           <div className="text-center py-12">
             <div className="max-w-md mx-auto">
-              <div className="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-24 h-24 bg-slate-100 border border-slate-200 flex items-center justify-center mx-auto mb-4">
                 {tabData.find((t) => t.key === tab).icon}
               </div>
               <h3 className="text-xl font-bold text-slate-800 mb-2">
@@ -487,7 +479,7 @@ export default function DashboardPage() {
               {tab !== "cancelled" && (
                 <Link
                   to="/events"
-                  className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-teal-500 text-white px-6 py-3 rounded-xl font-semibold hover:from-blue-700 hover:to-teal-600 transition-all duration-300"
+                  className="inline-flex items-center gap-2 bg-slate-900 text-white px-6 py-3 font-semibold hover:bg-slate-800 transition-colors"
                 >
                   <svg
                     className="w-5 h-5"

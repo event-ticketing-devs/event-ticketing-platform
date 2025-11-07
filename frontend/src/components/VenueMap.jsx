@@ -96,8 +96,8 @@ const VenueMap = ({ venue, height = "300px", showDirections = true }) => {
 
   if (!venue || !venue.coordinates) {
     return (
-      <div className="bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 rounded-2xl p-8 text-center">
-        <div className="w-16 h-16 bg-gradient-to-r from-slate-200 to-slate-300 rounded-2xl flex items-center justify-center mx-auto mb-4">
+      <div className="bg-slate-50 border border-slate-200 p-8 text-center">
+        <div className="w-16 h-16 bg-slate-100 border border-slate-200 flex items-center justify-center mx-auto mb-4">
           <svg
             className="w-8 h-8 text-slate-400"
             fill="none"
@@ -130,8 +130,8 @@ const VenueMap = ({ venue, height = "300px", showDirections = true }) => {
 
   if (error) {
     return (
-      <div className="bg-gradient-to-r from-red-50 to-red-100 border border-red-200 rounded-2xl p-8 text-center">
-        <div className="w-16 h-16 bg-red-200 rounded-2xl flex items-center justify-center mx-auto mb-4">
+      <div className="bg-red-50 border border-red-200 p-8 text-center">
+        <div className="w-16 h-16 bg-red-50 border border-red-200 flex items-center justify-center mx-auto mb-4">
           <svg
             className="w-8 h-8 text-red-500"
             fill="none"
@@ -157,13 +157,13 @@ const VenueMap = ({ venue, height = "300px", showDirections = true }) => {
   return (
     <div className="space-y-6">
       {/* Map Container */}
-      <div className="relative rounded-2xl overflow-hidden shadow-lg border border-slate-200">
+      <div className="relative overflow-hidden border border-slate-200">
         {loading && (
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-teal-50 flex items-center justify-center z-10">
-            <div className="bg-white rounded-2xl p-6 shadow-lg text-center">
-              <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-teal-500 rounded-xl flex items-center justify-center mx-auto mb-4">
+          <div className="absolute inset-0 bg-white flex items-center justify-center z-10">
+            <div className="bg-white border border-slate-200 p-6 text-center">
+              <div className="w-12 h-12 bg-slate-100 border border-slate-200 flex items-center justify-center mx-auto mb-4">
                 <svg
-                  className="w-6 h-6 text-white animate-spin"
+                  className="w-6 h-6 text-slate-900 animate-spin"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -191,7 +191,7 @@ const VenueMap = ({ venue, height = "300px", showDirections = true }) => {
         <div className="flex flex-col sm:flex-row gap-3">
           <button
             onClick={openInGoogleMaps}
-            className="flex-1 bg-gradient-to-r from-blue-600 to-teal-500 hover:from-blue-700 hover:to-teal-600 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center gap-3"
+            className="flex-1 bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 font-semibold transition-colors flex items-center justify-center gap-3"
           >
             <svg
               className="w-5 h-5"
@@ -216,7 +216,7 @@ const VenueMap = ({ venue, height = "300px", showDirections = true }) => {
           </button>
           <button
             onClick={getDirections}
-            className="flex-1 bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center gap-3"
+            className="flex-1 bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 font-semibold transition-colors flex items-center justify-center gap-3"
           >
             <svg
               className="w-5 h-5"
@@ -237,11 +237,11 @@ const VenueMap = ({ venue, height = "300px", showDirections = true }) => {
       )}
 
       {/* Venue Information Card */}
-      <div className="bg-gradient-to-r from-slate-50 to-slate-100 border border-slate-200 rounded-2xl p-6">
+      <div className="bg-slate-50 border border-slate-200 p-6">
         <div className="flex items-start gap-4">
-          <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-teal-500 rounded-xl flex items-center justify-center flex-shrink-0">
+          <div className="w-12 h-12 bg-slate-100 border border-slate-200 flex items-center justify-center flex-shrink-0">
             <svg
-              className="w-6 h-6 text-white"
+              className="w-6 h-6 text-slate-900"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -255,7 +255,7 @@ const VenueMap = ({ venue, height = "300px", showDirections = true }) => {
             </svg>
           </div>
           <div className="flex-1">
-            <h4 className="text-xl font-bold text-slate-800 mb-2">
+            <h4 className="text-xl font-bold text-slate-900 mb-2">
               {venue.name}
             </h4>
             <div className="flex items-start gap-2">

@@ -116,7 +116,7 @@ export default function Chatbot() {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 z-50 bg-gradient-to-r from-blue-600 to-teal-500 text-white p-4 rounded-full shadow-lg hover:shadow-xl transform hover:scale-110 transition-all duration-300 group"
+          className="fixed bottom-6 right-6 z-50 rounded-full bg-slate-900 text-white p-4 hover:bg-slate-800 transition-colors group shadow-lg"
           aria-label="Open chatbot"
         >
           <svg
@@ -132,17 +132,16 @@ export default function Chatbot() {
               d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
             />
           </svg>
-          <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse"></span>
         </button>
       )}
 
       {/* Chatbot Window */}
       {isOpen && (
-        <div className="fixed bottom-6 right-6 z-50 w-96 h-[600px] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-slate-200">
+        <div className="fixed bottom-6 right-6 z-50 w-96 h-[600px] bg-white flex flex-col overflow-hidden border border-slate-200">
           {/* Header */}
-          <div className="bg-gradient-to-r from-blue-600 to-teal-500 text-white p-4 flex items-center justify-between">
+          <div className="bg-slate-900 text-white p-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+              <div className="w-10 h-10 bg-white/20 flex items-center justify-center">
                 <svg
                   className="w-6 h-6"
                   fill="none"
@@ -165,7 +164,7 @@ export default function Chatbot() {
             <div className="flex items-center gap-2">
               <button
                 onClick={handleResetChat}
-                className="p-2 hover:bg-white/20 rounded-lg transition-colors"
+                className="p-2 hover:bg-white/20 transition-colors"
                 aria-label="Reset chat"
                 title="Reset chat"
               >
@@ -185,7 +184,7 @@ export default function Chatbot() {
               </button>
               <button
                 onClick={() => setIsOpen(false)}
-                className="p-2 hover:bg-white/20 rounded-lg transition-colors"
+                className="p-2 hover:bg-white/20 transition-colors"
                 aria-label="Close chatbot"
               >
                 <svg
@@ -206,7 +205,7 @@ export default function Chatbot() {
           </div>
 
           {/* Messages Container */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gradient-to-b from-slate-50 to-white">
+          <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50">
             {messages.map((message) => (
               <div
                 key={message.id}
@@ -217,9 +216,9 @@ export default function Chatbot() {
                 <div
                   className={`max-w-[80%] ${
                     message.sender === "user"
-                      ? "bg-gradient-to-r from-blue-600 to-teal-500 text-white"
+                      ? "bg-slate-900 text-white"
                       : "bg-white border border-slate-200"
-                  } rounded-2xl px-4 py-3 shadow-sm`}
+                  } border-2 border-slate-200 px-4 py-3 `}
                 >
                   <p
                     className={`text-sm whitespace-pre-wrap ${
@@ -244,15 +243,15 @@ export default function Chatbot() {
             {/* Typing Indicator */}
             {isTyping && (
               <div className="flex justify-start">
-                <div className="bg-white border border-slate-200 rounded-2xl px-4 py-3 shadow-sm">
+                <div className="bg-white border border-slate-200 px-4 py-3 ">
                   <div className="flex gap-1">
-                    <div className="w-2 h-2 bg-slate-400 rounded-full animate-bounce"></div>
+                    <div className="w-2 h-2 bg-slate-400 border border-slate-200 animate-bounce"></div>
                     <div
-                      className="w-2 h-2 bg-slate-400 rounded-full animate-bounce"
+                      className="w-2 h-2 bg-slate-400 border border-slate-200 animate-bounce"
                       style={{ animationDelay: "0.2s" }}
                     ></div>
                     <div
-                      className="w-2 h-2 bg-slate-400 rounded-full animate-bounce"
+                      className="w-2 h-2 bg-slate-400 border border-slate-200 animate-bounce"
                       style={{ animationDelay: "0.4s" }}
                     ></div>
                   </div>
@@ -270,7 +269,7 @@ export default function Chatbot() {
                   <button
                     key={index}
                     onClick={() => handleSuggestionClick(question)}
-                    className="w-full text-left px-4 py-2 text-sm bg-white hover:bg-blue-50 border border-slate-200 hover:border-blue-300 rounded-lg transition-all duration-200 text-slate-700 hover:text-blue-600"
+                    className="w-full text-left px-4 py-2 text-sm bg-white hover:bg-slate-100 hover:border-slate-300 border border-slate-200 transition-colors text-slate-700 hover:text-slate-900"
                   >
                     {question}
                   </button>
@@ -292,13 +291,13 @@ export default function Chatbot() {
                 onKeyPress={handleKeyPress}
                 placeholder="Type your message..."
                 maxLength={100}
-                className="flex-1 px-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                className="flex-1 px-4 py-3 border border-slate-200 focus:outline-none focus:ring-1 focus:ring-slate-900 focus:border-slate-900 text-sm"
                 disabled={isTyping}
               />
               <button
                 onClick={() => handleSendMessage()}
                 disabled={!inputMessage.trim() || isTyping}
-                className="px-5 py-3 bg-gradient-to-r from-blue-600 to-teal-500 text-white rounded-xl hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center"
+                className="px-5 py-3 bg-slate-900 text-white border border-slate-200 hover: disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
                 aria-label="Send message"
               >
                 <svg

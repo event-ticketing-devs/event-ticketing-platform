@@ -41,13 +41,13 @@ const ProfileUpdate = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-8">
+    <div className="min-h-screen bg-white py-8">
       <div className="max-w-2xl mx-auto px-6">
         {/* Header */}
         <div className="mb-8">
           <button
             onClick={() => navigate("/profile")}
-            className="inline-flex items-center gap-2 text-slate-600 hover:text-slate-800 transition-colors mb-6"
+            className="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors mb-6"
           >
             <svg
               className="w-4 h-4"
@@ -65,7 +65,7 @@ const ProfileUpdate = () => {
             Back to Profile
           </button>
           <div>
-            <h1 className="text-3xl font-bold text-slate-800 mb-2">
+            <h1 className="text-3xl font-bold text-slate-900 mb-2">
               Update Profile
             </h1>
             <p className="text-slate-600">
@@ -75,22 +75,22 @@ const ProfileUpdate = () => {
         </div>
 
         {/* Form Card */}
-        <div className="bg-white rounded-2xl shadow-lg border border-slate-200/50 overflow-hidden">
+        <div className="bg-white border border-slate-200 overflow-hidden">
           {/* Current User Info */}
-          <div className="bg-slate-50 p-6 border-b border-slate-200/50">
+          <div className="bg-slate-50 p-6 border-b border-slate-200">
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-teal-100 rounded-xl flex items-center justify-center">
-                <span className="text-2xl font-bold text-blue-600">
+              <div className="w-16 h-16 bg-slate-100 border border-slate-200 flex items-center justify-center">
+                <span className="text-2xl font-bold text-slate-900">
                   {currentUser.name?.charAt(0).toUpperCase() || "U"}
                 </span>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-slate-800">
+                <h3 className="text-lg font-semibold text-slate-900">
                   {currentUser.name || "User"}
                 </h3>
                 <p className="text-slate-600">{currentUser.email}</p>
                 {currentUser.googleId && (
-                  <span className="inline-flex items-center gap-1 mt-1 px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                  <span className="inline-flex items-center gap-1 mt-1 px-2 py-1 bg-blue-50 border border-blue-200 text-blue-800 text-xs">
                     <svg className="w-3 h-3" viewBox="0 0 24 24">
                       <path
                         fill="currentColor"
@@ -144,7 +144,7 @@ const ProfileUpdate = () => {
                     type="text"
                     name="name"
                     placeholder="Enter your full name"
-                    className="block w-full pl-10 pr-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-slate-50 transition-all duration-200"
+                    className="block w-full pl-10 pr-4 py-3 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900 bg-slate-50 transition-colors"
                     value={formData.name}
                     onChange={handleChange}
                     required
@@ -177,7 +177,7 @@ const ProfileUpdate = () => {
                     type="email"
                     name="email"
                     placeholder="Enter your email address"
-                    className="block w-full pl-10 pr-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-slate-50 transition-all duration-200"
+                    className="block w-full pl-10 pr-4 py-3 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900 bg-slate-50 transition-colors"
                     value={formData.email}
                     onChange={handleChange}
                     required
@@ -210,7 +210,7 @@ const ProfileUpdate = () => {
                     type="tel"
                     name="phone"
                     placeholder="Enter your phone number"
-                    className="block w-full pl-10 pr-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-slate-50 transition-all duration-200"
+                    className="block w-full pl-10 pr-4 py-3 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900 bg-slate-50 transition-colors"
                     value={formData.phone}
                     onChange={handleChange}
                     required
@@ -244,7 +244,7 @@ const ProfileUpdate = () => {
                       type="password"
                       name="password"
                       placeholder="Leave blank to keep current password"
-                      className="block w-full pl-10 pr-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-slate-50 transition-all duration-200"
+                      className="block w-full pl-10 pr-4 py-3 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900 bg-slate-50 transition-colors"
                       value={formData.password}
                       onChange={handleChange}
                     />
@@ -262,14 +262,14 @@ const ProfileUpdate = () => {
               <button
                 type="button"
                 onClick={() => navigate("/profile")}
-                className="flex-1 bg-slate-100 text-slate-700 py-3 px-6 rounded-xl font-semibold hover:bg-slate-200 transition-all duration-300"
+                className="flex-1 bg-slate-100 text-slate-700 py-3 px-6 font-semibold hover:bg-slate-200 transition-colors"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={loading}
-                className="flex-1 bg-gradient-to-r from-blue-600 to-teal-500 text-white py-3 px-6 rounded-xl font-semibold shadow-lg hover:from-blue-700 hover:to-teal-600 hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="flex-1 bg-slate-900 text-white py-3 px-6 font-semibold hover:bg-slate-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <>
@@ -313,9 +313,9 @@ const ProfileUpdate = () => {
           {/* Information Notice */}
           {currentUser.googleId && (
             <div className="p-6 pt-0">
-              <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+              <div className="bg-blue-50 border border-blue-200 p-4">
                 <div className="flex gap-3">
-                  <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                  <div className="w-6 h-6 bg-blue-50 border border-blue-200 flex items-center justify-center flex-shrink-0">
                     <svg
                       className="w-4 h-4 text-blue-600"
                       fill="none"
