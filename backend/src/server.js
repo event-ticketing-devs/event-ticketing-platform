@@ -1,7 +1,13 @@
 import dotenv from "dotenv";
+import { createServer } from "http";
+import { Server } from "socket.io";
 import connectDB from "./db/index.js";
 import { app } from "./app.js";
 import { shutdownRedisClient } from "./redis/helper.js";
+import jwt from "jsonwebtoken";
+import User from "./models/User.js";
+import Event from "./models/Event.js";
+import TeamChat from "./models/TeamChat.js";
 
 dotenv.config({
   path: "./.env",
@@ -9,7 +15,170 @@ dotenv.config({
 
 connectDB()
   .then(() => {
-    app.listen(process.env.PORT || 8000, () => {
+    const httpServer = createServer(app);
+    
+    // Configure Socket.io
+    const io = new Server(httpServer, {
+      cors: {
+        origin: process.env.CORS_ORIGIN,
+        credentials: true,
+      },
+    });
+
+    // Socket.io authentication middleware
+    io.use(async (socket, next) => {
+      try {
+        const token = socket.handshake.auth.token;
+        
+        if (!token) {
+          return next(new Error("Authentication token required"));
+        }
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const user = await User.findById(decoded.id).select("-password");
+        
+        if (!user) {
+          return next(new Error("User not found"));
+        }
+
+        socket.user = user;
+        next();
+      } catch (error) {
+        console.error("Socket authentication error:", error);
+        next(new Error("Authentication failed"));
+      }
+    });
+
+    // Socket.io connection handler
+    io.on("connection", (socket) => {
+      // Join event room
+      socket.on("join-event-chat", async ({ eventId }) => {
+        try {
+          const event = await Event.findById(eventId);
+          
+          if (!event) {
+            socket.emit("error", { message: "Event not found" });
+            return;
+          }
+
+          // Check if user has access (organizer, co-organizer, or verifier)
+          const userId = socket.user._id.toString();
+          const isOrganizer = event.organizerId.toString() === userId;
+          const isCoOrganizer = event.coOrganizers?.some(
+            coOrgId => coOrgId.toString() === userId
+          );
+          const isVerifier = event.verifiers?.some(
+            verifierId => verifierId.toString() === userId
+          );
+
+          if (!isOrganizer && !isCoOrganizer && !isVerifier) {
+            socket.emit("error", { message: "Access denied" });
+            return;
+          }
+
+          // Join the room
+          socket.join(`event-chat-${eventId}`);
+        } catch (error) {
+          console.error("Error joining event chat:", error);
+          socket.emit("error", { message: "Failed to join chat" });
+        }
+      });
+
+      // Leave event room
+      socket.on("leave-event-chat", async ({ eventId }) => {
+        socket.leave(`event-chat-${eventId}`);
+      });
+
+      // Send message
+      socket.on("send-message", async ({ eventId, message, messageType, fileUrl, fileName, fileSize }) => {
+        try {
+          const event = await Event.findById(eventId);
+          
+          if (!event) {
+            socket.emit("error", { message: "Event not found" });
+            return;
+          }
+
+          // Verify access
+          const userId = socket.user._id.toString();
+          const isOrganizer = event.organizerId.toString() === userId;
+          const isCoOrganizer = event.coOrganizers?.some(
+            coOrgId => coOrgId.toString() === userId
+          );
+          const isVerifier = event.verifiers?.some(
+            verifierId => verifierId.toString() === userId
+          );
+
+          if (!isOrganizer && !isCoOrganizer && !isVerifier) {
+            socket.emit("error", { message: "Access denied" });
+            return;
+          }
+
+          // Create message
+          const chatMessage = await TeamChat.create({
+            eventId,
+            senderId: socket.user._id,
+            messageType: messageType || 'text',
+            message: messageType === 'text' ? message : undefined,
+            fileUrl: (messageType === 'file' || messageType === 'image') ? fileUrl : undefined,
+            fileName: (messageType === 'file' || messageType === 'image') ? fileName : undefined,
+            fileSize: (messageType === 'file' || messageType === 'image') ? fileSize : undefined,
+          });
+
+          const populatedMessage = await TeamChat.findById(chatMessage._id)
+            .populate('senderId', 'name email');
+
+          // Broadcast to all users in the room
+          io.to(`event-chat-${eventId}`).emit("new-message", populatedMessage);
+        } catch (error) {
+          console.error("Error sending message:", error);
+          socket.emit("error", { message: "Failed to send message" });
+        }
+      });
+
+      // Typing indicator
+      socket.on("typing", ({ eventId, isTyping }) => {
+        socket.to(`event-chat-${eventId}`).emit("user-typing", {
+          userId: socket.user._id,
+          userName: socket.user.name,
+          isTyping,
+        });
+      });
+
+      // Delete message
+      socket.on("delete-message", async ({ eventId, messageId }) => {
+        try {
+          const event = await Event.findById(eventId);
+          
+          if (!event) {
+            socket.emit("error", { message: "Event not found" });
+            return;
+          }
+
+          // Verify user is the main organizer (only they can delete messages)
+          const userId = socket.user._id.toString();
+          const isMainOrganizer = event.organizerId.toString() === userId;
+
+          if (!isMainOrganizer) {
+            socket.emit("error", { message: "Access denied. Only the main event organizer can delete messages." });
+            return;
+          }
+
+          // Broadcast deletion to all users in the room
+          io.to(`event-chat-${eventId}`).emit("message-deleted", { messageId });
+        } catch (error) {
+          console.error("Error deleting message:", error);
+          socket.emit("error", { message: "Failed to delete message" });
+        }
+      });
+
+      // Disconnect
+      socket.on("disconnect", () => {
+        // Silent disconnect
+      });
+    });
+
+    httpServer.listen(process.env.PORT || 8000, () => {
       console.log(`Server is running on port ${process.env.PORT || 8000}`);
     });
   })

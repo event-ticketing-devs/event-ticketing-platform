@@ -1,8 +1,14 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
 import apiClient from '../api/apiClient';
+import TeamChat from '../components/TeamChat';
+import { useAuth } from '../context/AuthContext';
 
 const OrganizerContacts = () => {
+  const { currentUser } = useAuth();
+  const [activeTab, setActiveTab] = useState('inquiries'); // 'inquiries' or 'team-chat'
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [myEvents, setMyEvents] = useState([]);
   const [contacts, setContacts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
@@ -16,18 +22,13 @@ const OrganizerContacts = () => {
       const params = new URLSearchParams({ page, limit: 20 });
       if (status && status !== 'all') params.append('status', status);
       
-      console.log('Fetching organizer contacts with params:', params.toString());
-      
       const response = await apiClient.get(`/contacts/organizer?${params}`);
-      
-      console.log('Organizer contacts response:', response.data);
       
       setContacts(response.data.contacts);
       setPagination(response.data.pagination);
     } catch (error) {
-      console.error('Error fetching organizer contacts:', error);
-      toast.error('Failed to fetch contacts');
       console.error('Error fetching contacts:', error);
+      toast.error('Failed to fetch contacts');
     } finally {
       setLoading(false);
     }
@@ -50,7 +51,49 @@ const OrganizerContacts = () => {
 
   useEffect(() => {
     fetchContacts(1, filter === 'all' ? '' : filter);
-  }, [filter]);
+    if (activeTab === 'team-chat') {
+      fetchMyEvents();
+    }
+  }, [filter, activeTab]);
+
+  const fetchMyEvents = async () => {
+    try {
+      const response = await apiClient.get('/events?sortBy=date&sortOrder=asc&limit=100');
+      const allEvents = response.data.events || response.data;
+      
+      // Filter events where user is organizer, co-organizer, or verifier
+      const myEvents = allEvents.filter((event) => {
+        const organizerId = event.organizerId?._id || event.organizerId;
+        const isMainOrganizer = organizerId === currentUser?._id;
+        
+        // Check if user is a co-organizer
+        const isCoOrganizer = event.coOrganizers?.some(
+          coOrgId => {
+            const id = coOrgId._id || coOrgId;
+            return id === currentUser?._id;
+          }
+        );
+        
+        // Check if user is a verifier
+        const isVerifier = event.verifiers?.some(
+          verifierId => {
+            const id = verifierId._id || verifierId;
+            return id === currentUser?._id;
+          }
+        );
+        
+        return isMainOrganizer || isCoOrganizer || isVerifier;
+      });
+      
+      setMyEvents(myEvents);
+      if (myEvents.length > 0 && !selectedEvent) {
+        setSelectedEvent(myEvents[0]);
+      }
+    } catch (error) {
+      toast.error('Failed to fetch events');
+      console.error('Error fetching events:', error);
+    }
+  };
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -98,45 +141,84 @@ const OrganizerContacts = () => {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">Event Inquiries</h1>
-          <p className="text-gray-600">Manage contact messages from attendees about your events</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">Messages</h1>
+          <p className="text-gray-600">Manage contact inquiries and team communication</p>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          {[
-            { label: 'Total Messages', value: pagination.total, color: 'bg-blue-500' },
-            { 
-              label: 'Pending', 
-              value: contacts.filter(c => c.status === 'pending').length, 
-              color: 'bg-yellow-500' 
-            },
-            { 
-              label: 'In Progress', 
-              value: contacts.filter(c => c.status === 'in-progress').length, 
-              color: 'bg-blue-500' 
-            },
-            { 
-              label: 'Resolved', 
-              value: contacts.filter(c => c.status === 'resolved').length, 
-              color: 'bg-green-500' 
-            },
-          ].map((stat, index) => (
-            <div key={index} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <div className="flex items-center">
-                <div className={`w-12 h-12 ${stat.color} rounded-lg flex items-center justify-center mr-4`}>
-                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                  </svg>
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
-                  <p className="text-sm text-gray-600">{stat.label}</p>
-                </div>
+        {/* Tabs */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
+          <div className="flex border-b border-gray-200">
+            <button
+              onClick={() => setActiveTab('inquiries')}
+              className={`flex-1 px-6 py-4 text-sm font-medium transition-all duration-200 ${
+                activeTab === 'inquiries'
+                  ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+              }`}
+            >
+              <div className="flex items-center justify-center gap-2">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                Event Inquiries
               </div>
-            </div>
-          ))}
+            </button>
+            <button
+              onClick={() => setActiveTab('team-chat')}
+              className={`flex-1 px-6 py-4 text-sm font-medium transition-all duration-200 ${
+                activeTab === 'team-chat'
+                  ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+              }`}
+            >
+              <div className="flex items-center justify-center gap-2">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" />
+                </svg>
+                Team Chat
+              </div>
+            </button>
+          </div>
         </div>
+
+        {/* Tab Content */}
+        {activeTab === 'inquiries' ? (
+          <>
+            {/* Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+              {[
+                { label: 'Total Messages', value: pagination.total, color: 'bg-blue-500' },
+                { 
+                  label: 'Pending', 
+                  value: contacts.filter(c => c.status === 'pending').length, 
+                  color: 'bg-yellow-500' 
+                },
+                { 
+                  label: 'In Progress', 
+                  value: contacts.filter(c => c.status === 'in-progress').length, 
+                  color: 'bg-blue-500' 
+                },
+                { 
+                  label: 'Resolved', 
+                  value: contacts.filter(c => c.status === 'resolved').length, 
+                  color: 'bg-green-500' 
+                },
+              ].map((stat, index) => (
+                <div key={index} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                  <div className="flex items-center">
+                    <div className={`w-12 h-12 ${stat.color} rounded-lg flex items-center justify-center mr-4`}>
+                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+                      <p className="text-sm text-gray-600">{stat.label}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
 
         {/* Filters */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
@@ -275,6 +357,57 @@ const OrganizerContacts = () => {
             </>
           )}
         </div>
+        </> 
+        ) : (
+          /* Team Chat Tab */
+          <div className="space-y-6">
+            {/* Event Selector */}
+            {myEvents.length > 0 && (
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  Select Event
+                </label>
+                <select
+                  value={selectedEvent?._id || ''}
+                  onChange={(e) => {
+                    const event = myEvents.find(ev => ev._id === e.target.value);
+                    setSelectedEvent(event);
+                  }}
+                  className="w-full md:w-1/2 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  {myEvents.map((event) => (
+                    <option key={event._id} value={event._id}>
+                      {event.title} - {new Date(event.date).toLocaleDateString()}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {/* Team Chat Component */}
+            {selectedEvent ? (
+              <TeamChat eventId={selectedEvent._id} eventTitle={selectedEvent.title} />
+            ) : (
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
+                <svg
+                  className="w-16 h-16 text-gray-300 mx-auto mb-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
+                  />
+                </svg>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">No Events Available</h3>
+                <p className="text-gray-600">You don't have any events to chat about yet.</p>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Contact Detail Modal */}
         {showContactModal && selectedContact && (
