@@ -273,7 +273,7 @@ export default function TeamChat({ eventId, eventTitle }) {
     return (
       <div className="flex items-center justify-center h-96">
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="w-12 h-12 border-t-transparent border-b-2 rounded-full border-slate-900 animate-spin mx-auto mb-4"></div>
           <p className="text-slate-600">Loading chat...</p>
         </div>
       </div>
@@ -283,17 +283,17 @@ export default function TeamChat({ eventId, eventTitle }) {
   const groupedMessages = groupMessagesByDate();
 
   return (
-    <div className="flex flex-col h-[750px] bg-white rounded-2xl shadow-lg border border-slate-200">
+    <div className="flex flex-col h-[750px] bg-white border border-slate-200">
       {/* Chat Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-teal-500 px-6 py-4 rounded-t-2xl flex justify-between items-center">
+      <div className="bg-slate-900 px-6 py-4 border-t-2 border-slate-200 flex justify-between items-center">
         <div>
           <h3 className="text-xl font-bold text-white">{eventTitle}</h3>
-          <p className="text-blue-100 text-sm">Team Chat</p>
+          <p className="text-slate-300 text-sm">Team Chat</p>
         </div>
         {isMainOrganizer && (
           <button
             onClick={() => setShowResetModal(true)}
-            className="p-2 hover:bg-white/20 rounded-lg transition-colors text-white"
+            className="p-2 hover:bg-white/20 border border-slate-200 transition-colors text-white"
             aria-label="Reset chat"
             title="Reset chat (delete all messages)"
           >
@@ -339,7 +339,7 @@ export default function TeamChat({ eventId, eventTitle }) {
             <div key={date}>
               {/* Date Separator */}
               <div className="flex items-center justify-center my-4">
-                <div className="bg-white px-4 py-1 rounded-full shadow-sm border border-slate-200">
+                <div className="bg-white px-4 py-1 border border-slate-200">
                   <span className="text-xs font-medium text-slate-600">{date}</span>
                 </div>
               </div>
@@ -352,7 +352,7 @@ export default function TeamChat({ eventId, eventTitle }) {
                 if (isSystemMessage) {
                   return (
                     <div key={message._id} className="flex justify-center my-2">
-                      <div className="bg-slate-200 px-4 py-1 rounded-full">
+                      <div className="bg-slate-200 px-4 py-1 border border-slate-200">
                         <p className="text-xs text-slate-600">{message.message}</p>
                       </div>
                     </div>
@@ -373,12 +373,20 @@ export default function TeamChat({ eventId, eventTitle }) {
                       )}
                       <div className="relative">
                         <div
-                          className={`rounded-2xl px-4 py-3 ${
+                          className={`px-4 py-3 relative ${
                             isOwnMessage
-                              ? 'bg-gradient-to-r from-blue-600 to-teal-500 text-white'
-                              : 'bg-white border border-slate-200 text-slate-800'
+                              ? 'bg-slate-900 text-white border-2 border-slate-900'
+                              : 'bg-white border-2 border-slate-200 text-slate-800'
                           }`}
                         >
+                          {/* Message tail/arrow at bottom */}
+                          <div
+                            className={`absolute bottom-0 w-0 h-0 ${
+                              isOwnMessage
+                                ? 'right-0 translate-x-full border-l-[12px] border-l-slate-900 border-b-[12px] border-b-transparent'
+                                : 'left-0 -translate-x-full border-r-[12px] border-r-slate-200 border-b-[12px] border-b-transparent'
+                            }`}
+                          ></div>
                           {message.messageType === 'text' && (
                             <p className="text-sm whitespace-pre-wrap break-words">
                               {message.message}
@@ -387,7 +395,7 @@ export default function TeamChat({ eventId, eventTitle }) {
 
                           <p
                             className={`text-xs mt-2 ${
-                              isOwnMessage ? 'text-blue-100' : 'text-slate-500'
+                              isOwnMessage ? 'text-slate-300' : 'text-slate-500'
                             }`}
                           >
                             {formatTime(message.createdAt)}
@@ -397,7 +405,7 @@ export default function TeamChat({ eventId, eventTitle }) {
                           {isMainOrganizer && expandedMessageId !== message._id && (
                             <button
                               onClick={() => setExpandedMessageId(message._id)}
-                              className={`absolute top-2 right-2 p-1.5 rounded-lg transition-colors ${
+                              className={`absolute top-2 right-2 p-1.5 border border-slate-200 transition-colors ${
                                 isOwnMessage
                                   ? 'hover:bg-white/20 text-white'
                                   : 'hover:bg-slate-100 text-slate-600'
@@ -424,7 +432,7 @@ export default function TeamChat({ eventId, eventTitle }) {
                               setShowDeleteModal(true);
                               setExpandedMessageId(null);
                             }}
-                            className="absolute top-2 right-2 px-3 py-1.5 text-xs font-semibold rounded-lg shadow-lg transition-all opacity-0 group-hover:opacity-100 bg-red-500 hover:bg-red-600 text-white whitespace-nowrap z-10 transform translate-x-1/2"
+                            className="absolute top-2 right-2 px-3 py-1.5 text-xs font-semibold border border-slate-200  transition-all opacity-0 group-hover:opacity-100 bg-red-500 hover:bg-red-600 text-white whitespace-nowrap z-10 transform translate-x-1/2"
                           >
                             Delete
                           </button>
@@ -442,13 +450,13 @@ export default function TeamChat({ eventId, eventTitle }) {
         {typingUsers.length > 0 && (
           <div className="flex items-center gap-2 text-sm text-slate-600 px-4">
             <div className="flex gap-1">
-              <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce"></span>
+              <span className="w-2 h-2 bg-slate-400 border border-slate-200 animate-bounce"></span>
               <span
-                className="w-2 h-2 bg-slate-400 rounded-full animate-bounce"
+                className="w-2 h-2 bg-slate-400 border border-slate-200 animate-bounce"
                 style={{ animationDelay: '0.2s' }}
               ></span>
               <span
-                className="w-2 h-2 bg-slate-400 rounded-full animate-bounce"
+                className="w-2 h-2 bg-slate-400 border border-slate-200 animate-bounce"
                 style={{ animationDelay: '0.4s' }}
               ></span>
             </div>
@@ -460,8 +468,8 @@ export default function TeamChat({ eventId, eventTitle }) {
       </div>
 
       {/* Input Area */}
-      <form onSubmit={handleSendMessage} className="p-4 bg-white border-t border-slate-200 rounded-b-2xl">
-        <div className="flex items-end gap-2">
+      <form onSubmit={handleSendMessage} className="p-4 bg-white border-t border-slate-200">
+        <div className="flex items-center gap-2">
           <input
             type="text"
             value={newMessage}
@@ -477,15 +485,15 @@ export default function TeamChat({ eventId, eventTitle }) {
             }}
             placeholder="Type a message..."
             disabled={sending}
-            className="flex-1 px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 disabled:bg-slate-100"
+            className="flex-1 px-4 py-3 border border-slate-200 focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-colors disabled:bg-slate-100"
           />
           <button
             type="submit"
             disabled={!newMessage.trim() || sending}
-            className="px-6 py-3 bg-gradient-to-r from-blue-600 to-teal-500 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-teal-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            className="h-[50px] px-6 bg-slate-900 text-white border border-slate-200 font-semibold hover:bg-slate-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {sending ? (
-              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded animate-spin"></div>
             ) : (
               <svg className="w-5 h-5 rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path

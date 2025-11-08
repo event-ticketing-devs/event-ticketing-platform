@@ -71,17 +71,17 @@ const VerifierModal = ({ isOpen, onClose, eventId, eventTitle }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-white border border-slate-200  max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           {/* Header */}
           <div className="flex justify-between items-start mb-6">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">Manage Verifiers</h2>
-              <p className="text-gray-600 mt-1">{eventTitle}</p>
+              <h2 className="text-2xl font-bold text-slate-900">Manage Verifiers</h2>
+              <p className="text-slate-600 mt-1">{eventTitle}</p>
             </div>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 text-2xl"
+              className="text-slate-400 hover:text-slate-600 text-2xl"
             >
               ×
             </button>
@@ -89,45 +89,45 @@ const VerifierModal = ({ isOpen, onClose, eventId, eventTitle }) => {
 
           {loading ? (
             <div className="text-center py-8">
-              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-              <p className="mt-2 text-gray-600">Loading...</p>
+              <div className="inline-block rounded-full animate-spin h-8 w-8 border-b-2 border-slate-900"></div>
+              <p className="mt-2 text-slate-600">Loading...</p>
             </div>
           ) : (
             <>
               {/* Add Verifier Form */}
               <div className="mb-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">Add Verifier</h3>
+                <h3 className="text-lg font-semibold text-slate-900 mb-3">Add Verifier</h3>
                 <form onSubmit={handleAddVerifier} className="flex gap-2">
                   <input
                     type="email"
                     value={newEmail}
                     onChange={(e) => setNewEmail(e.target.value)}
                     placeholder="Enter user email"
-                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="flex-1 px-4 py-2 border border-slate-200 focus:outline-none focus:ring-1 focus:ring-slate-900"
                     disabled={submitting}
                   />
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+                    className="px-6 py-2 bg-slate-900 text-white border border-slate-200 hover:bg-slate-800 disabled:bg-slate-400 disabled:cursor-not-allowed transition-colors"
                   >
                     {submitting ? 'Adding...' : 'Add'}
                   </button>
                 </form>
-                <p className="text-sm text-gray-500 mt-2">
+                <p className="text-sm text-slate-500 mt-2">
                   Note: Only existing users can be added as verifiers
                 </p>
               </div>
 
               {/* Verifiers List */}
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                <h3 className="text-lg font-semibold text-slate-900 mb-3">
                   Verifiers ({verifiers.length})
                 </h3>
                 {verifiers.length === 0 ? (
-                  <div className="text-center py-8 bg-gray-50 rounded-lg">
+                  <div className="text-center py-8 bg-slate-50 border border-slate-200">
                     <svg
-                      className="mx-auto h-12 w-12 text-gray-400"
+                      className="mx-auto h-12 w-12 text-slate-400"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -139,23 +139,23 @@ const VerifierModal = ({ isOpen, onClose, eventId, eventTitle }) => {
                         d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                       />
                     </svg>
-                    <p className="mt-2 text-gray-600">No verifiers yet</p>
-                    <p className="text-sm text-gray-500">Add verifiers to help check tickets at the venue</p>
+                    <p className="mt-2 text-slate-600">No verifiers yet</p>
+                    <p className="text-sm text-slate-500">Add verifiers to help check tickets at the venue</p>
                   </div>
                 ) : (
                   <div className="space-y-3">
                     {verifiers.map((verifier) => (
                       <div
                         key={verifier.id}
-                        className="bg-gray-50 rounded-lg p-4 border border-gray-200 flex items-center justify-between"
+                        className="bg-slate-50 border border-slate-200 p-4 flex items-center justify-between"
                       >
                         <div>
-                          <p className="font-medium text-gray-900">{verifier.name}</p>
-                          <p className="text-sm text-gray-600">{verifier.email}</p>
+                          <p className="font-medium text-slate-900">{verifier.name}</p>
+                          <p className="text-sm text-slate-600">{verifier.email}</p>
                         </div>
                         <button
                           onClick={() => handleRemoveVerifier(verifier.id, verifier.name)}
-                          className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm"
+                          className="px-4 py-2 bg-red-600 text-white border border-slate-200 hover:bg-red-700 transition-colors text-sm"
                         >
                           Remove
                         </button>
@@ -166,10 +166,10 @@ const VerifierModal = ({ isOpen, onClose, eventId, eventTitle }) => {
               </div>
 
               {/* Info Box */}
-              <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="mt-6 bg-slate-100 border-slate-200 p-4">
                 <div className="flex">
                   <svg
-                    className="h-5 w-5 text-blue-600 mt-0.5"
+                    className="h-5 w-5 text-slate-900 mt-0.5"
                     fill="currentColor"
                     viewBox="0 0 20 20"
                   >
@@ -180,10 +180,10 @@ const VerifierModal = ({ isOpen, onClose, eventId, eventTitle }) => {
                     />
                   </svg>
                   <div className="ml-3">
-                    <h4 className="text-sm font-medium text-blue-800">
+                    <h4 className="text-sm font-medium text-slate-900">
                       Verifier Permissions
                     </h4>
-                    <div className="mt-2 text-sm text-blue-700">
+                    <div className="mt-2 text-sm text-slate-900">
                       <p>Verifiers have limited access and can:</p>
                       <ul className="list-disc list-inside mt-1 space-y-1">
                         <li>Verify tickets at the venue using QR codes</li>
@@ -203,7 +203,7 @@ const VerifierModal = ({ isOpen, onClose, eventId, eventTitle }) => {
           <div className="mt-6 flex justify-end">
             <button
               onClick={onClose}
-              className="px-6 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors"
+              className="px-6 py-2 bg-slate-200 text-slate-800 border border-slate-200 hover:bg-slate-300 transition-colors"
             >
               Close
             </button>

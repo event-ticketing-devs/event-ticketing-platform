@@ -90,12 +90,12 @@ export default function EventDetailsModal({ open, event, attendees, onClose }) {
 
   return (
     <div
-      className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 bg-black/60  flex items-center justify-center z-50 p-4"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-200/50">
+      <div className="bg-white border-2 border-slate-200 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="relative">
           {event.photo && (
@@ -108,13 +108,13 @@ export default function EventDetailsModal({ open, event, attendees, onClose }) {
                   e.target.style.display = "none";
                 }}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent rounded-t-2xl" />
+              <div className="absolute inset-0 bg-black/30 rounded-t-2xl" />
             </div>
           )}
 
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 w-10 h-10 bg-white/90 backdrop-blur-sm text-slate-600 hover:text-slate-800 hover:bg-white rounded-full flex items-center justify-center transition-all duration-200 shadow-lg"
+            className="absolute top-4 right-4 w-10 h-10 bg-white/90  text-slate-600 hover:text-slate-800 hover:bg-white rounded-full flex items-center justify-center transition-colors "
           >
             <svg
               className="w-5 h-5"
@@ -142,7 +142,7 @@ export default function EventDetailsModal({ open, event, attendees, onClose }) {
               </h2>
               <div className="flex flex-wrap gap-2">
                 {event.categoryId && (
-                  <span className="px-3 py-1 text-sm bg-blue-100 text-blue-800 rounded-full font-semibold">
+                  <span className="px-3 py-1 text-sm bg-slate-100 text-slate-900 border border-slate-200 rounded-full font-semibold">
                     {typeof event.categoryId === "object"
                       ? event.categoryId.name
                       : event.categoryId}
@@ -158,11 +158,11 @@ export default function EventDetailsModal({ open, event, attendees, onClose }) {
 
             {/* Event Details Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-              <div className="bg-slate-50 rounded-xl p-4">
+              <div className="bg-slate-50 border border-slate-200 p-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+                  <div className="w-10 h-10 bg-slate-100 border border-slate-200 flex items-center justify-center">
                     <svg
-                      className="w-5 h-5 text-blue-600"
+                      className="w-5 h-5 text-slate-900"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -184,9 +184,9 @@ export default function EventDetailsModal({ open, event, attendees, onClose }) {
                 </div>
               </div>
 
-              <div className="bg-slate-50 rounded-xl p-4">
+              <div className="bg-slate-50 border border-slate-200 p-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
+                  <div className="w-10 h-10 bg-green-100 border border-slate-200 flex items-center justify-center">
                     <span className="text-green-600 font-bold text-lg">₹</span>
                   </div>
                   <div className="flex-1">
@@ -215,9 +215,9 @@ export default function EventDetailsModal({ open, event, attendees, onClose }) {
                 </div>
               </div>
 
-              <div className="bg-slate-50 rounded-xl p-4">
+              <div className="bg-slate-50 border border-slate-200 p-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center">
+                  <div className="w-10 h-10 bg-orange-100 border border-slate-200 flex items-center justify-center">
                     <svg
                       className="w-5 h-5 text-orange-600"
                       fill="none"
@@ -242,9 +242,9 @@ export default function EventDetailsModal({ open, event, attendees, onClose }) {
               </div>
 
               {event.city && (
-                <div className="bg-slate-50 rounded-xl p-4">
+                <div className="bg-slate-50 border border-slate-200 p-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
+                    <div className="w-10 h-10 bg-purple-100 border border-slate-200 flex items-center justify-center">
                       <svg
                         className="w-5 h-5 text-purple-600"
                         fill="none"
@@ -295,7 +295,7 @@ export default function EventDetailsModal({ open, event, attendees, onClose }) {
                   </svg>
                   Event Description
                 </h3>
-                <div className="bg-slate-50 rounded-xl p-4">
+                <div className="bg-slate-50 border border-slate-200 p-4">
                   <p className="text-slate-700 leading-relaxed">
                     {event.description}
                   </p>
@@ -306,7 +306,7 @@ export default function EventDetailsModal({ open, event, attendees, onClose }) {
             {/* Cancellation Reason */}
             {event.cancelled && event.cancelledReason && (
               <div className="mb-6">
-                <div className="bg-red-50 border border-red-200 rounded-xl p-4">
+                <div className="bg-red-50 border border-red-200 p-4">
                   <div className="flex items-center gap-2 mb-2">
                     <svg
                       className="w-5 h-5 text-red-600"
@@ -350,13 +350,13 @@ export default function EventDetailsModal({ open, event, attendees, onClose }) {
               Booking Statistics
             </h3>
 
-            <div className="bg-gradient-to-br from-blue-50 to-teal-50 rounded-xl p-6">
+            <div className="bg-slate-50 border border-slate-200 p-6">
               <div className="flex items-center justify-between">
                 <div className="flex-1">
                   <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-                    <div className="bg-white rounded-lg p-4 shadow-sm">
+                    <div className="bg-white border border-slate-200 p-4 shadow-sm">
                       <div className="text-center">
-                        <p className="text-2xl font-bold text-blue-600">
+                        <p className="text-2xl font-bold text-slate-900">
                           {bookedSeats}
                         </p>
                         <p className="text-sm text-slate-600">
@@ -364,7 +364,7 @@ export default function EventDetailsModal({ open, event, attendees, onClose }) {
                         </p>
                       </div>
                     </div>
-                    <div className="bg-white rounded-lg p-4 shadow-sm">
+                    <div className="bg-white border border-slate-200 p-4 shadow-sm">
                       <div className="text-center">
                         <p className="text-2xl font-bold text-green-600">
                           {availableSeats}
@@ -375,7 +375,7 @@ export default function EventDetailsModal({ open, event, attendees, onClose }) {
                       </div>
                     </div>
                     {cancelledSeats > 0 && (
-                      <div className="bg-white rounded-lg p-4 shadow-sm">
+                      <div className="bg-white border border-slate-200 p-4 shadow-sm">
                         <div className="text-center">
                           <p className="text-2xl font-bold text-red-600">
                             {cancelledSeats}
@@ -386,7 +386,7 @@ export default function EventDetailsModal({ open, event, attendees, onClose }) {
                         </div>
                       </div>
                     )}
-                    <div className="bg-white rounded-lg p-4 shadow-sm">
+                    <div className="bg-white border border-slate-200 p-4 shadow-sm">
                       <div className="text-center">
                         <p className="text-2xl font-bold text-slate-800">
                           {totalSeats}
@@ -417,7 +417,7 @@ export default function EventDetailsModal({ open, event, attendees, onClose }) {
                         cy={radius}
                         r={normalizedRadius}
                         fill="none"
-                        stroke="url(#gradient)"
+                        stroke="#0f172a"
                         strokeWidth={stroke}
                         strokeDasharray={circumference}
                         strokeDashoffset={circumference - bookedStroke}
@@ -426,18 +426,6 @@ export default function EventDetailsModal({ open, event, attendees, onClose }) {
                           transition: "stroke-dashoffset 0.8s ease-in-out",
                         }}
                       />
-                      <defs>
-                        <linearGradient
-                          id="gradient"
-                          x1="0%"
-                          y1="0%"
-                          x2="100%"
-                          y2="100%"
-                        >
-                          <stop offset="0%" stopColor="#2563eb" />
-                          <stop offset="100%" stopColor="#0d9488" />
-                        </linearGradient>
-                      </defs>
                     </svg>
                     <div className="absolute inset-0 flex items-center justify-center">
                       <div className="text-center">
@@ -452,7 +440,7 @@ export default function EventDetailsModal({ open, event, attendees, onClose }) {
               </div>
 
               {availableSeats === 0 && totalSeats > 0 && (
-                <div className="mt-4 bg-red-100 border border-red-200 rounded-lg p-3">
+                <div className="mt-4 bg-red-100 border border-red-200 p-3">
                   <div className="flex items-center gap-2">
                     <svg
                       className="w-5 h-5 text-red-600"
@@ -503,7 +491,7 @@ export default function EventDetailsModal({ open, event, attendees, onClose }) {
               </span>
             </h3>
 
-            <div className="bg-slate-50 rounded-xl border border-slate-200">
+            <div className="bg-slate-50 border border-slate-200">
               {attendees && attendees.length === 0 ? (
                 <div className="p-8 text-center">
                   <div className="w-16 h-16 bg-slate-200 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -544,7 +532,7 @@ export default function EventDetailsModal({ open, event, attendees, onClose }) {
                                 className={`w-10 h-10 rounded-full flex items-center justify-center ${
                                   cancelled
                                     ? "bg-red-100 border-2 border-red-300"
-                                    : "bg-gradient-to-r from-blue-600 to-teal-500"
+                                    : "bg-slate-900"
                                 }`}
                               >
                                 {cancelled ? (
@@ -594,7 +582,7 @@ export default function EventDetailsModal({ open, event, attendees, onClose }) {
                                 className={`px-3 py-1 rounded-full text-sm font-semibold ${
                                   cancelled
                                     ? "bg-red-100 text-red-800"
-                                    : "bg-blue-100 text-blue-800"
+                                    : "bg-slate-100 text-slate-900 border border-slate-200"
                                 }`}
                               >
                                 {booking.hasTicketCategories &&

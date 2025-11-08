@@ -146,14 +146,14 @@ export default function OrganizerVerify() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-teal-50">
+    <div className="min-h-screen bg-white">
       {/* Header Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-teal-500 text-white py-12">
+      <div className="bg-slate-900 text-white py-12">
         <div className="max-w-4xl mx-auto px-6">
           <div className="text-center">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl mb-4">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-slate-800 border border-slate-700 mb-4">
               <svg
-                className="w-8 h-8"
+                className="w-8 h-8 text-white"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -167,7 +167,7 @@ export default function OrganizerVerify() {
               </svg>
             </div>
             <h1 className="text-4xl font-bold mb-2">Ticket Verification</h1>
-            <p className="text-blue-100 text-lg max-w-2xl mx-auto">
+            <p className="text-slate-300 text-lg max-w-2xl mx-auto">
               Verify attendee tickets quickly and securely using QR code
               scanning or manual entry
             </p>
@@ -177,12 +177,12 @@ export default function OrganizerVerify() {
 
       {/* Main Content */}
       <div className="max-w-2xl mx-auto px-6 -mt-8 relative z-10">
-        <div className="bg-white rounded-3xl shadow-2xl border border-white/50 backdrop-blur-sm overflow-hidden">
+        <div className="bg-white border-2 border-slate-200 overflow-hidden">
           {/* Event Selection */}
           {!eventId && (
             <div className="p-8 border-b border-slate-100">
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-teal-500 rounded-xl flex items-center justify-center">
+                <div className="w-10 h-10 bg-slate-900 border border-slate-200 flex items-center justify-center">
                   <svg
                     className="w-5 h-5 text-white"
                     fill="none"
@@ -203,7 +203,7 @@ export default function OrganizerVerify() {
               </div>
               <div className="relative">
                 <select
-                  className="w-full px-4 py-3 pl-12 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-slate-700 font-medium appearance-none"
+                  className="w-full px-4 py-3 pl-12 border border-slate-200 focus:outline-none focus:ring-1 focus:ring-slate-900 focus:border-transparent bg-white text-slate-700 font-medium appearance-none"
                   value={selectedEvent}
                   onChange={(e) => setSelectedEvent(e.target.value)}
                 >
@@ -258,9 +258,9 @@ export default function OrganizerVerify() {
             <div className="flex gap-3">
               <button
                 onClick={() => setInputMode("qr")}
-                className={`flex-1 py-4 px-6 rounded-xl font-semibold transition-all duration-200 border-2 ${
+                className={`flex-1 py-4 px-6 font-semibold transition-colors border-2 ${
                   inputMode === "qr"
-                    ? "bg-gradient-to-r from-blue-600 to-teal-500 text-white border-transparent shadow-lg"
+                    ? "bg-slate-900 text-white border-transparent"
                     : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 hover:border-slate-300"
                 }`}
               >
@@ -283,9 +283,9 @@ export default function OrganizerVerify() {
               </button>
               <button
                 onClick={() => setInputMode("manual")}
-                className={`flex-1 py-4 px-6 rounded-xl font-semibold transition-all duration-200 border-2 ${
+                className={`flex-1 py-4 px-6 font-semibold transition-colors border-2 ${
                   inputMode === "manual"
-                    ? "bg-gradient-to-r from-blue-600 to-teal-500 text-white border-transparent shadow-lg"
+                    ? "bg-slate-900 text-white border-transparent"
                     : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 hover:border-slate-300"
                 }`}
               >
@@ -313,9 +313,9 @@ export default function OrganizerVerify() {
           {inputMode === "qr" && (
             <div className="p-8">
               <div className="text-center">
-                <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-blue-100 to-teal-100 rounded-2xl mb-6">
+                <div className="inline-flex items-center justify-center w-20 h-20 bg-slate-100 border border-slate-200 mb-6">
                   <svg
-                    className="w-10 h-10 text-blue-600"
+                    className="w-10 h-10 text-slate-900"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -336,7 +336,7 @@ export default function OrganizerVerify() {
                   ticket instantly
                 </p>
                 <button
-                  className="w-full bg-gradient-to-r from-blue-600 to-teal-500 hover:from-blue-700 hover:to-teal-600 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+                  className="w-full bg-slate-900 hover:bg-slate-800 text-white px-8 py-4 font-semibold transition-colors flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
                   onClick={startScanning}
                   disabled={!selectedEvent}
                 >
@@ -387,9 +387,9 @@ export default function OrganizerVerify() {
           {inputMode === "manual" && (
             <div className="p-8">
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-12 h-12 bg-gradient-to-r from-blue-100 to-teal-100 rounded-xl flex items-center justify-center">
+                <div className="w-12 h-12 bg-slate-100 border border-slate-200 flex items-center justify-center">
                   <svg
-                    className="w-6 h-6 text-blue-600"
+                    className="w-6 h-6 text-slate-900"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -414,7 +414,7 @@ export default function OrganizerVerify() {
 
               <div className="relative mb-6">
                 <textarea
-                  className="w-full px-4 py-4 pl-12 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-slate-700 resize-none"
+                  className="w-full px-4 py-4 pl-12 border border-slate-200 focus:outline-none focus:ring-1 focus:ring-slate-900 focus:border-transparent bg-white text-slate-700 resize-none"
                   rows="4"
                   value={manualInput}
                   onChange={(e) => setManualInput(e.target.value)}
@@ -438,7 +438,7 @@ export default function OrganizerVerify() {
               </div>
 
               <button
-                className="w-full bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg flex items-center justify-center gap-3"
+                className="w-full bg-slate-900 hover:bg-slate-800 text-white px-8 py-4 font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
                 onClick={handleManualVerify}
                 disabled={!selectedEvent || !manualInput.trim()}
               >
@@ -464,17 +464,17 @@ export default function OrganizerVerify() {
           {result && (
             <div className="p-8 border-t border-slate-100">
               <div
-                className={`p-6 rounded-2xl border-2 ${
+                className={`p-6 border-2 ${
                   result.success
-                    ? "bg-emerald-50 border-emerald-200"
+                    ? "bg-green-50 border-green-200"
                     : "bg-red-50 border-red-200"
                 }`}
               >
                 <div className="flex items-center gap-4 mb-4">
                   <div
-                    className={`w-12 h-12 rounded-xl flex items-center justify-center ${
+                    className={`w-12 h-12 border border-slate-200 flex items-center justify-center ${
                       result.success
-                        ? "bg-emerald-500 text-white"
+                        ? "bg-green-600 text-white"
                         : "bg-red-500 text-white"
                     }`}
                   >
@@ -511,7 +511,7 @@ export default function OrganizerVerify() {
                   <div>
                     <h5
                       className={`text-lg font-semibold ${
-                        result.success ? "text-emerald-800" : "text-red-800"
+                        result.success ? "text-green-800" : "text-red-800"
                       }`}
                     >
                       {result.success
@@ -520,7 +520,7 @@ export default function OrganizerVerify() {
                     </h5>
                     <p
                       className={`text-sm ${
-                        result.success ? "text-emerald-600" : "text-red-600"
+                        result.success ? "text-green-600" : "text-red-600"
                       }`}
                     >
                       {result.message}
@@ -529,12 +529,12 @@ export default function OrganizerVerify() {
                 </div>
 
                 {result.success && result.booking && (
-                  <div className="bg-white rounded-xl p-4 space-y-3">
+                  <div className="bg-white p-4 border border-slate-200 space-y-3">
                     <div className="flex justify-between items-center">
                       <span className="text-slate-600 font-medium">
                         Ticket ID:
                       </span>
-                      <span className="text-slate-800 font-mono bg-slate-100 px-3 py-1 rounded-lg">
+                      <span className="text-slate-800 font-mono bg-slate-100 px-3 py-1 border border-slate-200">
                         {result.booking.ticketId}
                       </span>
                     </div>
@@ -555,7 +555,7 @@ export default function OrganizerVerify() {
           {/* Footer */}
           <div className="p-8 border-t border-slate-100 text-center">
             <button
-              className="text-blue-600 hover:text-blue-700 font-semibold transition-colors flex items-center justify-center gap-2 mx-auto"
+              className="text-slate-900 hover:text-slate-700 font-semibold transition-colors flex items-center justify-center gap-2 mx-auto"
               onClick={() => navigate(-1)}
             >
               <svg
