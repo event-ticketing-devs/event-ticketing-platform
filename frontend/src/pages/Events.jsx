@@ -152,42 +152,24 @@ const EventListPage = () => {
   }, [filters, sorting]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-teal-50/30">
+    <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <div className="relative bg-gradient-to-r from-blue-600 via-blue-700 to-teal-600 text-white">
-        <div className="absolute inset-0 bg-black/10"></div>
-        <div className="relative max-w-7xl mx-auto px-6 py-16 sm:py-20">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
-            <div className="flex-1 text-center lg:text-left">
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4 tracking-tight">
-                Discover Amazing
-                <span className="block text-transparent bg-gradient-to-r from-teal-300 to-cyan-300 bg-clip-text">
-                  Events
-                </span>
+      <div className="bg-slate-900 text-white border-b border-slate-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="flex flex-col lg:flex-row items-start justify-between gap-6">
+            <div className="flex-1">
+              <h1 className="text-3xl sm:text-4xl font-bold mb-2">
+                All Events
               </h1>
-              <p className="text-xl sm:text-2xl text-blue-100 mb-6 max-w-2xl">
-                Find and book tickets for concerts, festivals, conferences, and
-                more
+              <p className="text-slate-400">
+                Find and book tickets for concerts, festivals, conferences, and more
               </p>
             </div>
             <div className="flex-shrink-0">
               <Link
                 to="/events/create"
-                className="group inline-flex items-center gap-3 bg-white/10 backdrop-blur-sm border border-white/20 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:bg-white/20 hover:scale-105 transition-all duration-300"
+                className="inline-flex items-center gap-2 bg-white text-slate-900 px-5 py-2.5 font-semibold hover:bg-slate-100 transition-colors"
               >
-                <svg
-                  className="w-5 h-5 transition-transform group-hover:rotate-12"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 4v16m8-8H4"
-                  />
-                </svg>
                 Create Event
               </Link>
             </div>
@@ -196,19 +178,19 @@ const EventListPage = () => {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-6 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Search and Filters Section */}
-        <div className="bg-white rounded-2xl shadow-lg border border-slate-200/50 p-6 mb-8">
-          <div className="flex flex-col lg:flex-row gap-6">
+        <div className="bg-white border border-slate-200 p-6 mb-8">
+          <div className="flex flex-col lg:flex-row gap-4">
             {/* Search Bar */}
             <div className="flex-1">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-slate-900 mb-2">
                 Search Events
               </label>
               <input
                 type="text"
                 placeholder="Search by event name or description..."
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                className="w-full px-4 py-2.5 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-colors"
                 value={filters.search}
                 onChange={(e) => handleFilterChange('search', e.target.value)}
               />
@@ -216,11 +198,11 @@ const EventListPage = () => {
 
             {/* Category Filter */}
             <div className="lg:w-48">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-slate-900 mb-2">
                 Category
               </label>
               <select
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2.5 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900"
                 value={filters.category}
                 onChange={(e) => handleFilterChange('category', e.target.value)}
               >
@@ -235,15 +217,15 @@ const EventListPage = () => {
           </div>
 
           {/* Advanced Filters Row */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
             {/* Date From */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-slate-900 mb-2">
                 From Date
               </label>
               <input
                 type="date"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2.5 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900"
                 value={filters.dateFrom}
                 onChange={(e) => handleFilterChange('dateFrom', e.target.value)}
               />
@@ -251,12 +233,12 @@ const EventListPage = () => {
 
             {/* Date To */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-slate-900 mb-2">
                 To Date
               </label>
               <input
                 type="date"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2.5 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900"
                 value={filters.dateTo}
                 onChange={(e) => handleFilterChange('dateTo', e.target.value)}
               />
@@ -264,13 +246,13 @@ const EventListPage = () => {
 
             {/* City Filter */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-slate-900 mb-2">
                 City
               </label>
               <input
                 type="text"
                 placeholder="Enter city..."
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2.5 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900"
                 value={filters.city}
                 onChange={(e) => handleFilterChange('city', e.target.value)}
               />
@@ -278,21 +260,21 @@ const EventListPage = () => {
 
             {/* Price Range */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-slate-900 mb-2">
                 Price Range
               </label>
               <div className="flex gap-2">
                 <input
                   type="number"
                   placeholder="Min"
-                  className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2.5 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900"
                   value={filters.minPrice}
                   onChange={(e) => handleFilterChange('minPrice', e.target.value)}
                 />
                 <input
                   type="number"
                   placeholder="Max"
-                  className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2.5 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900"
                   value={filters.maxPrice}
                   onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
                 />
@@ -301,11 +283,11 @@ const EventListPage = () => {
           </div>
 
           {/* Sorting and Actions */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6 pt-6 border-t border-gray-200">
-            <div className="flex items-center gap-4">
-              <label className="text-sm font-medium text-gray-700">Sort by:</label>
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6 pt-6 border-t border-slate-200">
+            <div className="flex items-center gap-3">
+              <label className="text-sm font-medium text-slate-900">Sort by:</label>
               <select
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="px-3 py-2 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900"
                 value={sorting.sortBy}
                 onChange={(e) => handleSortChange(e.target.value, sorting.sortOrder)}
               >
@@ -316,7 +298,7 @@ const EventListPage = () => {
                 <option value="createdAt">Created Date</option>
               </select>
               <select
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="px-3 py-2 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900"
                 value={sorting.sortOrder}
                 onChange={(e) => handleSortChange(sorting.sortBy, e.target.value)}
               >
@@ -328,13 +310,13 @@ const EventListPage = () => {
             <div className="flex gap-3">
               <button
                 onClick={resetFilters}
-                className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+                className="px-4 py-2 text-slate-900 border border-slate-300 hover:bg-slate-50 transition-colors text-sm font-medium"
               >
                 Reset Filters
               </button>
               <button
                 onClick={applyFiltersAndSort}
-                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
+                className="px-6 py-2 bg-slate-900 text-white hover:bg-slate-800 transition-colors text-sm font-medium"
               >
                 Apply Filters
               </button>
@@ -344,19 +326,17 @@ const EventListPage = () => {
 
         {/* Results Summary */}
         <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4 sm:mb-0">
+          <h2 className="text-xl font-semibold text-slate-900 mb-4 sm:mb-0">
             {loading 
               ? "Loading events..." 
-              : pagination.totalEvents === 0 
+              : visibleEvents.length === 0 
                 ? "No events found" 
-                : `${pagination.totalEvents} Events Found`}
+                : `${visibleEvents.length} Event${visibleEvents.length !== 1 ? 's' : ''}`}
           </h2>
           
-          {!loading && pagination.totalEvents > 0 && (
-            <div className="text-sm text-gray-600">
-              Showing {((pagination.currentPage - 1) * pagination.limit) + 1} to{' '}
-              {Math.min(pagination.currentPage * pagination.limit, pagination.totalEvents)} of{' '}
-              {pagination.totalEvents} events
+          {!loading && visibleEvents.length > 0 && (
+            <div className="text-sm text-slate-600">
+              Showing {visibleEvents.length} upcoming event{visibleEvents.length !== 1 ? 's' : ''}
             </div>
           )}
         </div>
@@ -369,52 +349,23 @@ const EventListPage = () => {
               {[...Array(8)].map((_, index) => (
                 <div
                   key={index}
-                  className="bg-white rounded-xl shadow-lg border border-slate-200/50 p-6 animate-pulse"
+                  className="bg-white border border-slate-200 overflow-hidden animate-pulse"
                 >
-                  <div className="h-48 bg-gray-200 rounded-lg mb-4"></div>
-                  <div className="h-4 bg-gray-200 rounded mb-2"></div>
-                  <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                  <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                  <div className="h-48 bg-slate-200"></div>
+                  <div className="p-5 space-y-3">
+                    <div className="h-4 bg-slate-200 w-3/4"></div>
+                    <div className="h-3 bg-slate-200 w-1/2"></div>
+                    <div className="h-10 bg-slate-200"></div>
+                  </div>
                 </div>
               ))}
             </div>
           ) : visibleEvents.length === 0 ? (
             // No Events State
             <div className="text-center py-16">
-              <div className="mx-auto w-32 h-32 mb-6">
+              <div className="mx-auto w-16 h-16 mb-6 bg-slate-100 flex items-center justify-center">
                 <svg
-                  className="w-full h-full text-gray-300"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={1}
-                    d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 0h6M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V9a2 2 0 00-2-2h-2M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4"
-                  />
-                </svg>
-              </div>
-              <h3 className="text-xl font-semibold text-gray-700 mb-2">
-                No events found
-              </h3>
-              <p className="text-gray-500 mb-6">
-                Try adjusting your filters or{" "}
-                <button 
-                  onClick={resetFilters}
-                  className="text-blue-600 hover:text-blue-800 font-medium"
-                >
-                  reset them
-                </button>{" "}
-                to see more events.
-              </p>
-              <Link
-                to="/events/create"
-                className="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-200"
-              >
-                <svg
-                  className="w-5 h-5"
+                  className="w-8 h-8 text-slate-400"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -423,9 +374,27 @@ const EventListPage = () => {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={2}
-                    d="M12 4v16m8-8H4"
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
                   />
                 </svg>
+              </div>
+              <h3 className="text-xl font-semibold text-slate-900 mb-2">
+                No events found
+              </h3>
+              <p className="text-slate-600 mb-6">
+                Try adjusting your filters or{" "}
+                <button 
+                  onClick={resetFilters}
+                  className="text-slate-900 hover:text-slate-700 font-medium"
+                >
+                  reset them
+                </button>{" "}
+                to see more events
+              </p>
+              <Link
+                to="/events/create"
+                className="inline-flex items-center gap-2 bg-slate-900 text-white px-5 py-2.5 font-semibold hover:bg-slate-800 transition-colors"
+              >
                 Create New Event
               </Link>
             </div>
@@ -435,20 +404,20 @@ const EventListPage = () => {
               {visibleEvents.map((event) => (
                 <div
                   key={event._id}
-                  className="group bg-white rounded-xl shadow-lg border border-slate-200/50 hover:shadow-xl hover:border-blue-200 transition-all duration-300 overflow-hidden"
+                  className="group bg-white border border-slate-200 hover:border-slate-300 overflow-hidden transition-colors flex flex-col"
                 >
                   {/* Event Image */}
-                  <div className="relative h-48 bg-gradient-to-br from-blue-100 to-teal-100 overflow-hidden">
+                  <div className="relative h-48 bg-slate-100 overflow-hidden">
                     {event.photo ? (
                       <img
                         src={event.photo}
                         alt={event.title}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                        className="w-full h-full object-cover"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
                         <svg
-                          className="w-16 h-16 text-gray-400"
+                          className="w-12 h-12 text-slate-300"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -456,8 +425,8 @@ const EventListPage = () => {
                           <path
                             strokeLinecap="round"
                             strokeLinejoin="round"
-                            strokeWidth={1}
-                            d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 0h6M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V9a2 2 0 00-2-2h-2M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4"
+                            strokeWidth={2}
+                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
                           />
                         </svg>
                       </div>
@@ -466,23 +435,30 @@ const EventListPage = () => {
                     {/* Category Badge */}
                     {event.categoryId && (
                       <div className="absolute top-3 left-3">
-                        <span className="inline-block bg-white/90 backdrop-blur-sm text-gray-700 px-3 py-1 rounded-full text-xs font-medium shadow-sm">
+                        <span className="inline-block bg-white text-slate-900 px-2.5 py-1 text-xs font-medium">
                           {event.categoryId.name || event.categoryId}
                         </span>
                       </div>
                     )}
+
+                    {/* Price Badge */}
+                    <div className="absolute top-3 right-3">
+                      <span className="inline-block bg-slate-900 text-white px-2.5 py-1 text-xs font-semibold">
+                        {formatEventPrice(event)}
+                      </span>
+                    </div>
                   </div>
 
-                  {/* Event Details */}
-                  <div className="p-6">
-                    <h3 className="text-lg font-bold text-gray-800 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors duration-200">
+                  {/* Event Details - flex-1 to grow and push button down */}
+                  <div className="p-5 flex flex-col flex-1">
+                    <h3 className="text-lg font-semibold text-slate-900 mb-2 line-clamp-2">
                       {event.title}
                     </h3>
                     
                     {/* Date and Time */}
-                    <div className="flex items-center gap-2 text-gray-600 mb-2">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 0h6M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V9a2 2 0 00-2-2h-2" />
+                    <div className="flex items-center gap-2 text-slate-600 mb-2">
+                      <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
                       <span className="text-sm">
                         {format(new Date(event.date), "MMM dd, yyyy 'at' h:mm a")}
@@ -490,8 +466,8 @@ const EventListPage = () => {
                     </div>
 
                     {/* Location */}
-                    <div className="flex items-center gap-2 text-gray-600 mb-4">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="flex items-center gap-2 text-slate-600 mb-4">
+                      <svg className="w-4 h-4 text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                       </svg>
@@ -500,22 +476,13 @@ const EventListPage = () => {
                       </span>
                     </div>
 
-                    {/* Price */}
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="text-2xl font-bold text-blue-600">
-                        {formatEventPrice(event)}
-                      </div>
-                      {event.hasTicketCategories && event.ticketCategories && (
-                        <div className="text-xs text-gray-500">
-                          {event.ticketCategories.length} categories
-                        </div>
-                      )}
-                    </div>
+                    {/* Spacer to push button to bottom */}
+                    <div className="flex-1"></div>
 
                     {/* View Details Button */}
                     <Link
                       to={`/events/${event._id}`}
-                      className="block w-full bg-gradient-to-r from-blue-600 to-teal-600 text-white text-center py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-teal-700 transition-all duration-200 shadow-md hover:shadow-lg"
+                      className="block w-full bg-slate-900 text-white text-center py-2.5 font-semibold hover:bg-slate-800 transition-colors"
                     >
                       View Details
                     </Link>
@@ -529,7 +496,7 @@ const EventListPage = () => {
         {/* Pagination */}
         {!loading && pagination.totalPages > 1 && (
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="text-sm text-gray-600">
+            <div className="text-sm text-slate-600">
               Page {pagination.currentPage} of {pagination.totalPages}
             </div>
             
@@ -538,7 +505,7 @@ const EventListPage = () => {
               <button
                 onClick={() => handlePageChange(1)}
                 disabled={pagination.currentPage === 1}
-                className="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                className="px-3 py-2 text-sm border border-slate-300 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 First
               </button>
@@ -547,7 +514,7 @@ const EventListPage = () => {
               <button
                 onClick={() => handlePageChange(pagination.currentPage - 1)}
                 disabled={!pagination.hasPrevPage}
-                className="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                className="px-3 py-2 text-sm border border-slate-300 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 Previous
               </button>
@@ -560,10 +527,10 @@ const EventListPage = () => {
                     <button
                       key={pageNum}
                       onClick={() => handlePageChange(pageNum)}
-                      className={`px-3 py-2 text-sm border rounded-lg transition-colors duration-200 ${
+                      className={`px-3 py-2 text-sm border transition-colors ${
                         pageNum === pagination.currentPage
-                          ? "bg-blue-600 text-white border-blue-600"
-                          : "border-gray-300 hover:bg-gray-50"
+                          ? "bg-slate-900 text-white border-slate-900"
+                          : "border-slate-300 hover:bg-slate-50"
                       }`}
                     >
                       {pageNum}
@@ -577,7 +544,7 @@ const EventListPage = () => {
               <button
                 onClick={() => handlePageChange(pagination.currentPage + 1)}
                 disabled={!pagination.hasNextPage}
-                className="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                className="px-3 py-2 text-sm border border-slate-300 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 Next
               </button>
@@ -586,7 +553,7 @@ const EventListPage = () => {
               <button
                 onClick={() => handlePageChange(pagination.totalPages)}
                 disabled={pagination.currentPage === pagination.totalPages}
-                className="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                className="px-3 py-2 text-sm border border-slate-300 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 Last
               </button>

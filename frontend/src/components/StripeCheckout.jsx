@@ -95,13 +95,13 @@ function CheckoutForm({ amount, onSuccess }) {
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
+    <div className="bg-white border border-slate-200 overflow-hidden">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-teal-500 px-6 py-4">
+      <div className="bg-slate-900 px-6 py-4">
         <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+          <div className="w-8 h-8 bg-slate-100 border border-slate-200 flex items-center justify-center">
             <svg
-              className="w-5 h-5 text-white"
+              className="w-5 h-5 text-slate-900"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -116,7 +116,7 @@ function CheckoutForm({ amount, onSuccess }) {
           </div>
           <div>
             <h2 className="text-xl font-bold text-white">Secure Payment</h2>
-            <p className="text-blue-100 text-sm">Powered by Stripe</p>
+            <p className="text-slate-300 text-sm">Powered by Stripe</p>
           </div>
         </div>
       </div>
@@ -124,7 +124,7 @@ function CheckoutForm({ amount, onSuccess }) {
       {/* Payment Form */}
       <form onSubmit={handleSubmit} className="p-6 space-y-6">
         {/* Amount Summary */}
-        <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
+        <div className="bg-slate-50 p-4 border border-slate-200">
           <div className="flex items-center justify-between">
             <span className="text-slate-600 font-medium">Total Amount</span>
             <span className="text-2xl font-bold text-slate-900">
@@ -139,7 +139,7 @@ function CheckoutForm({ amount, onSuccess }) {
             Card Information
           </label>
           <div className="relative">
-            <div className="border border-slate-300 rounded-xl p-4 focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition-all duration-200 bg-white">
+            <div className="border border-slate-300 p-4 focus-within:ring-1 focus-within:ring-slate-900 focus-within:border-slate-900 transition-colors bg-white">
               <CardElement
                 options={cardElementOptions}
                 onChange={handleCardChange}
@@ -147,7 +147,7 @@ function CheckoutForm({ amount, onSuccess }) {
             </div>
             {cardComplete && (
               <div className="absolute top-4 right-4">
-                <div className="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center">
+                <div className="w-5 h-5 bg-green-50 border border-green-200 flex items-center justify-center">
                   <svg
                     className="w-3 h-3 text-green-600"
                     fill="none"
@@ -169,9 +169,9 @@ function CheckoutForm({ amount, onSuccess }) {
 
         {/* Error Message */}
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-xl p-4">
+          <div className="bg-red-50 border border-red-200 p-4">
             <div className="flex items-center space-x-3">
-              <div className="w-5 h-5 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
+              <div className="w-5 h-5 bg-red-50 border border-red-200 flex items-center justify-center flex-shrink-0">
                 <svg
                   className="w-3 h-3 text-red-600"
                   fill="none"
@@ -192,11 +192,11 @@ function CheckoutForm({ amount, onSuccess }) {
         )}
 
         {/* Security Notice */}
-        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+        <div className="bg-slate-50 border border-slate-200 p-4">
           <div className="flex items-start space-x-3">
-            <div className="w-5 h-5 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+            <div className="w-5 h-5 bg-slate-100 border border-slate-200 flex items-center justify-center flex-shrink-0 mt-0.5">
               <svg
-                className="w-3 h-3 text-blue-600"
+                className="w-3 h-3 text-slate-900"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -210,10 +210,10 @@ function CheckoutForm({ amount, onSuccess }) {
               </svg>
             </div>
             <div>
-              <p className="text-blue-800 text-sm font-medium">
+              <p className="text-slate-900 text-sm font-medium">
                 Your payment is secure
               </p>
-              <p className="text-blue-600 text-xs mt-1">
+              <p className="text-slate-600 text-xs mt-1">
                 Your card information is never stored on our servers
               </p>
             </div>
@@ -224,15 +224,15 @@ function CheckoutForm({ amount, onSuccess }) {
         <button
           type="submit"
           disabled={!stripe || !cardComplete || loading}
-          className={`w-full py-4 px-6 rounded-xl font-semibold text-white transition-all duration-200 flex items-center justify-center space-x-2 ${
+          className={`w-full py-4 px-6 font-semibold text-white transition-colors flex items-center justify-center space-x-2 ${
             !stripe || !cardComplete || loading
               ? "bg-slate-300 cursor-not-allowed"
-              : "bg-gradient-to-r from-blue-600 to-teal-500 hover:from-blue-700 hover:to-teal-600 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+              : "bg-slate-900 hover:bg-slate-800"
           }`}
         >
           {loading ? (
             <>
-              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+              <div className="w-5 h-5 border-2 rounded-full border-white/30 border-t-white animate-spin"></div>
               <span>Processing Payment...</span>
             </>
           ) : (

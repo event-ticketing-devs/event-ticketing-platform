@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 export default function NotFound() {
   return (
-    <div className="min-h-[80vh] flex flex-col items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-teal-50 px-4">
+    <div className="min-h-[80vh] flex flex-col items-center justify-center bg-white px-4">
       {/* Sad/Broken Robot SVG illustration */}
       <svg
         width="120"
@@ -114,7 +114,7 @@ export default function NotFound() {
 
       <Link
         to="/"
-        className="bg-gradient-to-r from-blue-600 to-teal-500 hover:from-blue-700 hover:to-teal-600 text-white px-8 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl"
+        className="bg-slate-900 hover:bg-slate-800 text-white px-8 py-3 font-semibold transition-colors"
       >
         Back to Home
       </Link>

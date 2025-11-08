@@ -391,24 +391,10 @@ export default function EventFormPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
-        <div className="bg-white rounded-2xl shadow-lg border border-slate-200/50 p-8">
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="bg-white border border-slate-200 p-8">
           <div className="flex items-center gap-4">
-            <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-teal-500 rounded-full animate-spin">
-              <svg
-                className="w-8 h-8 text-white"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                />
-              </svg>
-            </div>
+            <div className="w-8 h-8 border-b-2 border-slate-900 rounded-full border-t-transparent animate-spin"></div>
             <div>
               <h2 className="text-xl font-semibold text-slate-800">
                 Loading event form...
@@ -424,7 +410,7 @@ export default function EventFormPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-8">
+    <div className="min-h-screen bg-white py-8">
       <div className="max-w-4xl mx-auto px-6">
         {/* Header */}
         <div className="mb-8">
@@ -448,7 +434,7 @@ export default function EventFormPage() {
             Back to Organizer Dashboard
           </button>
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-teal-500 rounded-xl flex items-center justify-center">
+            <div className="w-12 h-12 bg-slate-900 flex items-center justify-center">
               <svg
                 className="w-6 h-6 text-white"
                 fill="none"
@@ -477,7 +463,7 @@ export default function EventFormPage() {
         </div>
 
         {/* Form Card */}
-        <div className="bg-white rounded-2xl shadow-lg border border-slate-200/50 overflow-hidden">
+        <div className="bg-white border-2 border-slate-200 overflow-hidden">
           <form onSubmit={handleSubmit}>
             {/* Form Content */}
             <div className="p-8">
@@ -509,7 +495,7 @@ export default function EventFormPage() {
                         type="text"
                         name="title"
                         placeholder="Enter event title"
-                        className="block w-full pl-10 pr-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-slate-50 transition-all duration-200"
+                        className="block w-full pl-10 pr-4 py-3 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900 bg-slate-50 transition-colors"
                         value={form.title}
                         onChange={handleChange}
                         required
@@ -542,7 +528,7 @@ export default function EventFormPage() {
                         name="description"
                         placeholder="Describe your event..."
                         rows={4}
-                        className="block w-full pl-10 pr-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-slate-50 transition-all duration-200 resize-none"
+                        className="block w-full pl-10 pr-4 py-3 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900 bg-slate-50 transition-colors resize-none"
                         value={form.description}
                         onChange={handleChange}
                         required
@@ -574,7 +560,7 @@ export default function EventFormPage() {
                       <input
                         type="datetime-local"
                         name="date"
-                        className="block w-full pl-10 pr-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-slate-50 transition-all duration-200"
+                        className="block w-full pl-10 pr-4 py-3 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900 bg-slate-50 transition-colors"
                         value={form.date}
                         onChange={handleChange}
                         required
@@ -605,7 +591,7 @@ export default function EventFormPage() {
                       </div>
                       <select
                         name="categoryId"
-                        className="block w-full pl-10 pr-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-slate-50 transition-all duration-200 appearance-none"
+                        className="block w-full pl-10 pr-4 py-3 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900 bg-slate-50 transition-colors appearance-none"
                         value={form.categoryId}
                         onChange={handleChange}
                         required
@@ -669,7 +655,7 @@ export default function EventFormPage() {
                         type="text"
                         name="city"
                         placeholder="Enter city name"
-                        className="block w-full pl-10 pr-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-slate-50 transition-all duration-200"
+                        className="block w-full pl-10 pr-4 py-3 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900 bg-slate-50 transition-colors"
                         value={form.city}
                         onChange={handleChange}
                         required
@@ -679,7 +665,7 @@ export default function EventFormPage() {
 
                   {/* Pricing Type Toggle */}
                   <div className="col-span-2">
-                    <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
+                    <div className="bg-slate-50 p-4 border border-slate-200">
                       <div className="flex items-center space-x-4">
                         <label className="flex items-center cursor-pointer">
                           <input
@@ -691,7 +677,7 @@ export default function EventFormPage() {
                                 hasTicketCategories: false,
                               }))
                             }
-                            className="mr-2 text-blue-600"
+                            className="mr-2 text-slate-900"
                           />
                           <span className="text-sm font-medium text-slate-700">
                             Simple Pricing (One price for all tickets)
@@ -702,7 +688,7 @@ export default function EventFormPage() {
                             type="radio"
                             checked={form.hasTicketCategories}
                             onChange={toggleTicketCategories}
-                            className="mr-2 text-blue-600"
+                            className="mr-2 text-slate-900"
                           />
                           <span className="text-sm font-medium text-slate-700">
                             Multiple Ticket Categories
@@ -727,7 +713,7 @@ export default function EventFormPage() {
                             type="number"
                             name="price"
                             placeholder="0.00"
-                            className="block w-full pl-10 pr-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-slate-50 transition-all duration-200"
+                            className="block w-full pl-10 pr-4 py-3 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900 bg-slate-50 transition-colors"
                             value={form.price}
                             onChange={handleChange}
                             min={0}
@@ -762,7 +748,7 @@ export default function EventFormPage() {
                             type="number"
                             name="totalSeats"
                             placeholder="Enter number of seats"
-                            className="block w-full pl-10 pr-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-slate-50 transition-all duration-200"
+                            className="block w-full pl-10 pr-4 py-3 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900 bg-slate-50 transition-colors"
                             value={form.totalSeats}
                             onChange={handleChange}
                             min={1}
@@ -783,7 +769,7 @@ export default function EventFormPage() {
                             type="button"
                             onClick={addTicketCategory}
                             disabled={form.ticketCategories.length >= 5}
-                            className="inline-flex items-center px-3 py-1 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                            className="inline-flex items-center px-3 py-1 bg-slate-900 text-white text-sm font-medium hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
                           >
                             <svg
                               className="w-4 h-4 mr-1"
@@ -806,7 +792,7 @@ export default function EventFormPage() {
                           {form.ticketCategories.map((category, index) => (
                             <div
                               key={index}
-                              className="bg-slate-50 rounded-xl p-4 border border-slate-200"
+                              className="bg-slate-50 p-4 border border-slate-200"
                             >
                               <div className="flex items-center justify-between mb-3">
                                 <h4 className="text-sm font-medium text-slate-700">
@@ -851,7 +837,7 @@ export default function EventFormPage() {
                                         e.target.value
                                       )
                                     }
-                                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                    className="w-full px-3 py-2 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-blue-500 text-sm"
                                     required
                                   />
                                 </div>
@@ -871,7 +857,7 @@ export default function EventFormPage() {
                                         e.target.value
                                       )
                                     }
-                                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                    className="w-full px-3 py-2 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-blue-500 text-sm"
                                     min={0}
                                     step="0.01"
                                     required
@@ -893,7 +879,7 @@ export default function EventFormPage() {
                                         e.target.value
                                       )
                                     }
-                                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                    className="w-full px-3 py-2 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-blue-500 text-sm"
                                     min={1}
                                     required
                                   />
@@ -914,7 +900,7 @@ export default function EventFormPage() {
                                         e.target.value
                                       )
                                     }
-                                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                                    className="w-full px-3 py-2 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-blue-500 text-sm"
                                   />
                                 </div>
                               </div>
@@ -947,7 +933,7 @@ export default function EventFormPage() {
                       />
                       <label
                         htmlFor="photo-upload"
-                        className="flex items-center justify-center w-full h-32 border-2 border-dashed border-slate-300 rounded-xl cursor-pointer hover:border-blue-400 transition-colors duration-200 bg-slate-50 hover:bg-blue-50"
+                        className="flex items-center justify-center w-full h-32 border-2 border-dashed border-slate-300 cursor-pointer hover:border-slate-400 transition-colors bg-slate-50 hover:bg-slate-100"
                       >
                         <div className="text-center">
                           <svg
@@ -976,7 +962,7 @@ export default function EventFormPage() {
                     {/* Image Preview */}
                     {imagePreview && (
                       <div className="mt-4 relative">
-                        <div className="relative w-full h-48 rounded-xl overflow-hidden bg-slate-100">
+                        <div className="relative w-full h-48 overflow-hidden bg-slate-100 border border-slate-200">
                           <img
                             src={imagePreview}
                             alt="Event preview"
@@ -1019,10 +1005,10 @@ export default function EventFormPage() {
 
               {/* Refund Policy Section - Full Width */}
               <div className="mt-8">
-                <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-6">
+                <div className="bg-slate-50 border border-slate-200 p-6">
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center">
-                      <span className="text-amber-600 font-bold text-lg">₹</span>
+                    <div className="w-8 h-8 bg-slate-100 border border-slate-200 flex items-center justify-center">
+                      <span className="text-slate-900 font-bold text-lg">₹</span>
                     </div>
                     <h3 className="text-lg font-semibold text-slate-800">
                       Refund Policy
@@ -1040,7 +1026,7 @@ export default function EventFormPage() {
                         className="sr-only"
                       />
                       <div className={`w-4 h-4 rounded-full border-2 mr-2 flex items-center justify-center ${
-                        form.useDefaultRefundPolicy ? 'border-blue-500 bg-blue-500' : 'border-slate-300'
+                        form.useDefaultRefundPolicy ? 'border-slate-900 bg-slate-900' : 'border-slate-300'
                       }`}>
                         {form.useDefaultRefundPolicy && (
                           <div className="w-2 h-2 bg-white rounded-full"></div>
@@ -1060,7 +1046,7 @@ export default function EventFormPage() {
                         className="sr-only"
                       />
                       <div className={`w-4 h-4 rounded-full border-2 mr-2 flex items-center justify-center ${
-                        !form.useDefaultRefundPolicy ? 'border-blue-500 bg-blue-500' : 'border-slate-300'
+                        !form.useDefaultRefundPolicy ? 'border-slate-900 bg-slate-900' : 'border-slate-300'
                       }`}>
                         {!form.useDefaultRefundPolicy && (
                           <div className="w-2 h-2 bg-white rounded-full"></div>
@@ -1074,7 +1060,7 @@ export default function EventFormPage() {
 
                   {/* Default Policy Display */}
                   {form.useDefaultRefundPolicy ? (
-                    <div className="bg-white rounded-lg p-4 border border-amber-200">
+                    <div className="bg-white p-4 border border-slate-200">
                       <h4 className="text-sm font-semibold text-slate-700 mb-3">
                         Default Refund Policy:
                       </h4>
@@ -1095,7 +1081,7 @@ export default function EventFormPage() {
                     </div>
                   ) : (
                     /* Custom Policy Form */
-                    <div className="bg-white rounded-lg p-4 border border-amber-200 space-y-4">
+                    <div className="bg-white p-4 border border-slate-200 space-y-4">
                       <h4 className="text-sm font-semibold text-slate-700 mb-3">
                         Custom Refund Policy:
                       </h4>
@@ -1111,7 +1097,7 @@ export default function EventFormPage() {
                             max="100"
                             value={form.customRefundPolicy.sevenDaysOrMore}
                             onChange={(e) => handleCustomRefundPolicyChange('sevenDaysOrMore', e.target.value)}
-                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                            className="w-full px-3 py-2 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900 text-sm"
                           />
                         </div>
                         
@@ -1125,7 +1111,7 @@ export default function EventFormPage() {
                             max="100"
                             value={form.customRefundPolicy.oneToDays}
                             onChange={(e) => handleCustomRefundPolicyChange('oneToDays', e.target.value)}
-                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                            className="w-full px-3 py-2 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900 text-sm"
                           />
                         </div>
                         
@@ -1139,7 +1125,7 @@ export default function EventFormPage() {
                             max="100"
                             value={form.customRefundPolicy.lessThanDay}
                             onChange={(e) => handleCustomRefundPolicyChange('lessThanDay', e.target.value)}
-                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                            className="w-full px-3 py-2 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900 text-sm"
                           />
                         </div>
                       </div>
@@ -1152,7 +1138,7 @@ export default function EventFormPage() {
                           value={form.customRefundPolicy.description}
                           onChange={(e) => handleCustomRefundPolicyChange('description', e.target.value)}
                           placeholder="Describe your refund policy in detail..."
-                          className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                          className="w-full px-3 py-2 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900 text-sm"
                           rows="3"
                         />
                       </div>
@@ -1166,7 +1152,7 @@ export default function EventFormPage() {
                 <label className="block text-sm font-semibold text-slate-800 mb-2">
                   Venue Location
                 </label>
-                <div className="bg-slate-50 border border-slate-300 rounded-xl p-4">
+                <div className="bg-slate-50 border border-slate-300 p-4">
                   <VenueSelector
                     onVenueSelect={handleVenueSelect}
                     selectedVenue={form.venue}
@@ -1185,14 +1171,14 @@ export default function EventFormPage() {
                 <button
                   type="button"
                   onClick={() => navigate("/organizer")}
-                  className="flex-1 bg-slate-100 text-slate-700 py-3 px-6 rounded-xl font-semibold hover:bg-slate-200 transition-all duration-300"
+                  className="flex-1 bg-white border border-slate-200 text-slate-700 py-3 px-6 font-semibold hover:bg-slate-50 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="flex-1 bg-gradient-to-r from-blue-600 to-teal-500 text-white py-3 px-6 rounded-xl font-semibold shadow-lg hover:from-blue-700 hover:to-teal-600 hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="flex-1 bg-slate-900 text-white py-3 px-6 font-semibold hover:bg-slate-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {submitting ? (
                     <>

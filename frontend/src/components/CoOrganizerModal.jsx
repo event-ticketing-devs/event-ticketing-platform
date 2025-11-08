@@ -73,17 +73,17 @@ const CoOrganizerModal = ({ isOpen, onClose, eventId, eventTitle }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-white border border-slate-200  max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           {/* Header */}
           <div className="flex justify-between items-start mb-6">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">Manage Co-Organizers</h2>
-              <p className="text-gray-600 mt-1">{eventTitle}</p>
+              <h2 className="text-2xl font-bold text-slate-900">Manage Co-Organizers</h2>
+              <p className="text-slate-600 mt-1">{eventTitle}</p>
             </div>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 text-2xl"
+              className="text-slate-400 hover:text-slate-600 text-2xl"
             >
               ×
             </button>
@@ -91,22 +91,22 @@ const CoOrganizerModal = ({ isOpen, onClose, eventId, eventTitle }) => {
 
           {loading ? (
             <div className="text-center py-8">
-              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-              <p className="mt-2 text-gray-600">Loading...</p>
+              <div className="inline-block rounded-full animate-spin h-8 w-8 border-b-2 border-slate-900"></div>
+              <p className="mt-2 text-slate-600">Loading...</p>
             </div>
           ) : (
             <>
               {/* Main Organizer */}
               {mainOrganizer && (
                 <div className="mb-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3">Main Organizer</h3>
-                  <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                  <h3 className="text-lg font-semibold text-slate-900 mb-3">Main Organizer</h3>
+                  <div className="bg-slate-100 border border-slate-200 p-4">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="font-medium text-gray-900">{mainOrganizer.name}</p>
-                        <p className="text-sm text-gray-600">{mainOrganizer.email}</p>
+                        <p className="font-medium text-slate-900">{mainOrganizer.name}</p>
+                        <p className="text-sm text-slate-600">{mainOrganizer.email}</p>
                       </div>
-                      <span className="px-3 py-1 bg-blue-600 text-white text-sm rounded-full">
+                      <span className="px-3 py-1 bg-slate-900 text-white text-sm border border-slate-200">
                         Owner
                       </span>
                     </div>
@@ -116,38 +116,38 @@ const CoOrganizerModal = ({ isOpen, onClose, eventId, eventTitle }) => {
 
               {/* Add Co-Organizer Form */}
               <div className="mb-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">Add Co-Organizer</h3>
+                <h3 className="text-lg font-semibold text-slate-900 mb-3">Add Co-Organizer</h3>
                 <form onSubmit={handleAddCoOrganizer} className="flex gap-2">
                   <input
                     type="email"
                     value={newEmail}
                     onChange={(e) => setNewEmail(e.target.value)}
                     placeholder="Enter user email"
-                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="flex-1 px-4 py-2 border border-slate-200 focus:outline-none focus:ring-1 focus:ring-slate-900"
                     disabled={submitting}
                   />
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+                    className="px-6 py-2 bg-slate-900 text-white border border-slate-200 hover:bg-slate-800 disabled:bg-slate-400 disabled:cursor-not-allowed transition-colors"
                   >
                     {submitting ? 'Adding...' : 'Add'}
                   </button>
                 </form>
-                <p className="text-sm text-gray-500 mt-2">
+                <p className="text-sm text-slate-500 mt-2">
                   Note: Only existing users can be added as co-organizers
                 </p>
               </div>
 
               {/* Co-Organizers List */}
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                <h3 className="text-lg font-semibold text-slate-900 mb-3">
                   Co-Organizers ({coOrganizers.length})
                 </h3>
                 {coOrganizers.length === 0 ? (
-                  <div className="text-center py-8 bg-gray-50 rounded-lg">
+                  <div className="text-center py-8 bg-slate-50 border border-slate-200">
                     <svg
-                      className="mx-auto h-12 w-12 text-gray-400"
+                      className="mx-auto h-12 w-12 text-slate-400"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -159,23 +159,23 @@ const CoOrganizerModal = ({ isOpen, onClose, eventId, eventTitle }) => {
                         d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
                       />
                     </svg>
-                    <p className="mt-2 text-gray-600">No co-organizers yet</p>
-                    <p className="text-sm text-gray-500">Add co-organizers to help manage this event</p>
+                    <p className="mt-2 text-slate-600">No co-organizers yet</p>
+                    <p className="text-sm text-slate-500">Add co-organizers to help manage this event</p>
                   </div>
                 ) : (
                   <div className="space-y-3">
                     {coOrganizers.map((coOrg) => (
                       <div
                         key={coOrg.id}
-                        className="bg-gray-50 rounded-lg p-4 border border-gray-200 flex items-center justify-between"
+                        className="bg-slate-50 border border-slate-200 p-4 flex items-center justify-between"
                       >
                         <div>
-                          <p className="font-medium text-gray-900">{coOrg.name}</p>
-                          <p className="text-sm text-gray-600">{coOrg.email}</p>
+                          <p className="font-medium text-slate-900">{coOrg.name}</p>
+                          <p className="text-sm text-slate-600">{coOrg.email}</p>
                         </div>
                         <button
                           onClick={() => handleRemoveCoOrganizer(coOrg.id, coOrg.name)}
-                          className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm"
+                          className="px-4 py-2 bg-red-600 text-white border border-slate-200 hover:bg-red-700 transition-colors text-sm"
                         >
                           Remove
                         </button>
@@ -186,7 +186,7 @@ const CoOrganizerModal = ({ isOpen, onClose, eventId, eventTitle }) => {
               </div>
 
               {/* Info Box */}
-              <div className="mt-6 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+              <div className="mt-6 bg-yellow-50 border border-yellow-200 p-4">
                 <div className="flex">
                   <svg
                     className="h-5 w-5 text-yellow-600 mt-0.5"
@@ -225,7 +225,7 @@ const CoOrganizerModal = ({ isOpen, onClose, eventId, eventTitle }) => {
           <div className="mt-6 flex justify-end">
             <button
               onClick={onClose}
-              className="px-6 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors"
+              className="px-6 py-2 bg-slate-200 text-slate-800 border border-slate-200 hover:bg-slate-300 transition-colors"
             >
               Close
             </button>
