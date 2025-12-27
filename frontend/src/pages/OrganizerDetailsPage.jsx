@@ -231,7 +231,7 @@ const OrganizerDetailsPage = () => {
     return (
       <div className="max-w-7xl mx-auto p-6">
         <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+          <div className="animate-spin rounded-full w-12 h-12 border-slate-900 border-b-2"></div>
         </div>
       </div>
     );
@@ -270,7 +270,7 @@ const OrganizerDetailsPage = () => {
             <h2 className="text-xl font-bold text-slate-800">Ban Organizer</h2>
             <button
               onClick={() => setShowBanForm(false)}
-              className="text-slate-400 hover:text-slate-600 transition-colors"
+              className="text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
             >
               <CloseIcon />
             </button>
@@ -291,14 +291,14 @@ const OrganizerDetailsPage = () => {
           <div className="flex gap-3">
             <button
               onClick={() => setShowBanForm(false)}
-              className="flex-1 px-4 py-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition-colors"
+              className="flex-1 px-4 py-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition-colors cursor-pointer"
             >
               Cancel
             </button>
             <button
               onClick={handleBanUser}
               disabled={actionLoading || !banReason.trim()}
-              className="flex-1 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors disabled:opacity-50"
+              className="flex-1 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors disabled:opacity-50 cursor-pointer"
             >
               {actionLoading ? 'Banning...' : 'Ban User'}
             </button>
@@ -320,7 +320,7 @@ const OrganizerDetailsPage = () => {
             </div>
             <button
               onClick={() => setShowDeleteConfirm(false)}
-              className="text-slate-400 hover:text-slate-600 transition-colors"
+              className="text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
             >
               <CloseIcon />
             </button>
@@ -334,14 +334,14 @@ const OrganizerDetailsPage = () => {
           <div className="flex gap-3">
             <button
               onClick={() => setShowDeleteConfirm(false)}
-              className="flex-1 px-4 py-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition-colors"
+              className="flex-1 px-4 py-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition-colors cursor-pointer"
             >
               Cancel
             </button>
             <button
               onClick={handleDeleteUser}
               disabled={actionLoading}
-              className="flex-1 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors disabled:opacity-50"
+              className="flex-1 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors disabled:opacity-50 cursor-pointer"
             >
               {actionLoading ? 'Deleting...' : 'Delete'}
             </button>
@@ -358,7 +358,7 @@ const OrganizerDetailsPage = () => {
         <div className="flex items-center gap-4">
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center px-3 py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
+            className="flex items-center px-3 py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
           >
             <ArrowLeftIcon />
             <span className="ml-2 font-medium">Back to Dashboard</span>
@@ -370,7 +370,7 @@ const OrganizerDetailsPage = () => {
         <div className="flex items-center gap-3">
           <button
             onClick={handleContactOrganizer}
-            className="flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors"
+            className="flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors cursor-pointer"
           >
             <EmailIcon />
             <span className="ml-2">Contact</span>
@@ -379,7 +379,7 @@ const OrganizerDetailsPage = () => {
           {organizer.phone ? (
             <button
               onClick={handleCallOrganizer}
-              className="flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+              className="flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors cursor-pointer"
             >
               <PhoneIcon />
               <span className="ml-2">Call</span>
@@ -404,7 +404,7 @@ const OrganizerDetailsPage = () => {
             <button
               onClick={handleUnbanUser}
               disabled={actionLoading}
-              className="flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               <CheckIcon />
               <span className="ml-2">{actionLoading ? 'Unbanning...' : 'Unban User'}</span>
@@ -427,7 +427,7 @@ const OrganizerDetailsPage = () => {
             <button
               onClick={() => setShowBanForm(true)}
               disabled={actionLoading}
-              className="flex items-center px-4 py-2 bg-yellow-600 text-white text-sm font-medium rounded-lg hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center px-4 py-2 bg-yellow-600 text-white text-sm font-medium rounded-lg hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               <BanIcon />
               <span className="ml-2">Ban User</span>
@@ -452,7 +452,7 @@ const OrganizerDetailsPage = () => {
             <button
               onClick={() => setShowDeleteConfirm(true)}
               disabled={actionLoading}
-              className="flex items-center px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               <TrashIcon />
               <span className="ml-2">Delete</span>
@@ -637,7 +637,7 @@ const OrganizerDetailsPage = () => {
           <nav className="-mb-px flex space-x-8 px-6">
             <button
               onClick={() => setActiveTab('overview')}
-              className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+              className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors cursor-pointer ${
                 activeTab === 'overview'
                   ? 'border-blue-500 text-blue-600'
                   : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
@@ -647,7 +647,7 @@ const OrganizerDetailsPage = () => {
             </button>
             <button
               onClick={() => setActiveTab('events')}
-              className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+              className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors cursor-pointer ${
                 activeTab === 'events'
                   ? 'border-blue-500 text-blue-600'
                   : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
@@ -657,7 +657,7 @@ const OrganizerDetailsPage = () => {
             </button>
             <button
               onClick={() => setActiveTab('reports')}
-              className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+              className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors cursor-pointer ${
                 activeTab === 'reports'
                   ? 'border-blue-500 text-blue-600'
                   : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'
@@ -712,7 +712,7 @@ const OrganizerDetailsPage = () => {
                         </span>
                         <button
                           onClick={() => navigate(`/events/${event._id}`)}
-                          className="flex items-center px-3 py-1 bg-blue-600 text-white text-xs font-medium rounded-lg hover:bg-blue-700 transition-colors"
+                          className="flex items-center px-3 py-1 bg-blue-600 text-white text-xs font-medium rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
                         >
                           <EyeIcon className="w-3 h-3 mr-1" />
                           View Event

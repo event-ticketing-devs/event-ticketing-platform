@@ -19,7 +19,7 @@ const OrganizerActions = ({ organizer }) => {
   return (
     <button
       onClick={handleClick}
-      className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+      className="p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors"
       title="View organizer details and actions"
     >
       <GearIcon />
