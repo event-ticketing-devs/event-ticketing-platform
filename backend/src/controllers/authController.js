@@ -14,50 +14,43 @@ const generateToken = (user) => {
 // @access Public
 export const register = async (req, res) => {
   try {
-    const { name, email, phone, password, googleId } = req.body;
+    const { name, email, phone, password } = req.body;
 
-    // Validate email format (required for both regular and Google users)
+    // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email || !emailRegex.test(email)) {
       return res.status(400).json({ message: "Invalid or missing email" });
     }
 
-    let user;
-    // If registering via Google OAuth (googleId present)
-    if (googleId) {
-      // Check if user already exists with this googleId or email
-      user = await User.findOne({ $or: [{ googleId }, { email }] });
-      if (user) {
-        return res.status(400).json({ message: "User already exists" });
-      }
-      // Phone is optional for Google users
-      user = await User.create({ name, email, googleId, phone });
-    } else {
-      // For regular signup, phone is required
-      const phoneRegex = /^\d{10}$/;
-      if (!phone || !phoneRegex.test(phone)) {
-        return res
-          .status(400)
-          .json({ message: "Phone number must be exactly 10 digits" });
-      }
-
-      // Require password for regular signup
-      if (!password || !/^.{6,}$/.test(password)) {
-        return res
-          .status(400)
-          .json({ message: "Password must be at least 6 characters" });
-      }
-
-      const existingEmailUser = await User.findOne({ email });
-      if (existingEmailUser)
-        return res.status(400).json({ message: "Email already in use" });
-
-      const existingPhoneUser = await User.findOne({ phone });
-      if (existingPhoneUser)
-        return res.status(400).json({ message: "Phone number already in use" });
-
-      user = await User.create({ name, email, phone, password });
+    // Validate phone number (required)
+    const phoneRegex = /^\d{10}$/;
+    if (!phone || !phoneRegex.test(phone)) {
+      return res
+        .status(400)
+        .json({ message: "Phone number must be exactly 10 digits" });
     }
+
+    // Validate password (required)
+    if (!password || !/^.{6,}$/.test(password)) {
+      return res
+        .status(400)
+        .json({ message: "Password must be at least 6 characters" });
+    }
+
+    // Check for existing email
+    const existingEmailUser = await User.findOne({ email });
+    if (existingEmailUser) {
+      return res.status(400).json({ message: "Email already in use" });
+    }
+
+    // Check for existing phone
+    const existingPhoneUser = await User.findOne({ phone });
+    if (existingPhoneUser) {
+      return res.status(400).json({ message: "Phone number already in use" });
+    }
+
+    // Create new user
+    const user = await User.create({ name, email, phone, password });
 
     // Send welcome email (Nodemailer + Mailhog)
     await transporter.sendMail({
@@ -67,19 +60,13 @@ export const register = async (req, res) => {
       html: `
         <div style="font-family: Arial, sans-serif; background: #f9f9f9; padding: 24px;">
           <div style="max-width: 500px; margin: auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); padding: 24px;">
-            <h1 style="color: #2d7ff9; text-align: center;">👋 Welcome, ${
-              user.name || user.email
-            }!</h1>
+            <h1 style="color: #2d7ff9; text-align: center;">👋 Welcome, ${user.name}!</h1>
             <hr style="margin: 16px 0;">
             <p style="font-size: 1.1em;">Thank you for registering at <strong>Event Ticketing Platform</strong>!</p>
             <ul style="list-style: none; padding: 0; font-size: 1.1em;">
-              <li><strong>Name:</strong> ${user.name || user.email}</li>
+              <li><strong>Name:</strong> ${user.name}</li>
               <li><strong>Email:</strong> ${user.email}</li>
-              ${
-                user.phone
-                  ? `<li><strong>Phone:</strong> ${user.phone}</li>`
-                  : ""
-              }
+              <li><strong>Phone:</strong> ${user.phone}</li>
             </ul>
             <hr style="margin: 16px 0;">
             <p style="text-align: center; color: #888;">We’re excited to have you join our events community!</p>
@@ -89,9 +76,7 @@ export const register = async (req, res) => {
     });
 
     res.status(201).json({
-      message: user.googleId
-        ? "User registered via Google OAuth"
-        : "User registered successfully",
+      message: "User registered successfully",
     });
   } catch (err) {
     res.status(500).json({ message: "Server error", error: err.message });
