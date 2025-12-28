@@ -4,8 +4,11 @@
   "main": "server.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest --runInBand",
     "dev": "nodemon -r dotenv/config --experimental-json-modules src/server.js"
+  },
+  "jest": {
+    "testEnvironment": "node"
   },
   "keywords": [],
   "author": "",
@@ -25,10 +28,14 @@
     "multer-storage-cloudinary": "^4.0.0",
     "nodemailer": "^7.0.5",
     "qrcode": "^1.5.4",
-    "socket.io": "^4.8.1",
+    "socket.io": "^4.8.3",
     "stripe": "^18.3.0"
   },
   "devDependencies": {
-    "nodemon": "^3.1.10"
+    "@shelf/jest-mongodb": "^6.0.2",
+    "jest": "^30.2.0",
+    "mongodb-memory-server": "^11.0.1",
+    "nodemon": "^3.1.10",
+    "supertest": "^7.1.4"
   }
 }

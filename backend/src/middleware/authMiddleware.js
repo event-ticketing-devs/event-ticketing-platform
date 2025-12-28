@@ -2,6 +2,19 @@ import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 
 export const protect = async (req, res, next) => {
+  // Test mode: allow x-test-user header for testing
+  if (process.env.NODE_ENV === 'test' || process.env.JEST_WORKER_ID) {
+    const testUser = req.get('x-test-user');
+    if (testUser) {
+      try {
+        req.user = JSON.parse(testUser);
+        return next();
+      } catch (err) {
+        // Fall through to normal auth if parsing fails
+      }
+    }
+  }
+
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
