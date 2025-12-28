@@ -228,6 +228,7 @@ const EventListPage = () => {
                 className="w-full px-4 py-2.5 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900"
                 value={filters.dateFrom}
                 onChange={(e) => handleFilterChange('dateFrom', e.target.value)}
+                min={new Date().toISOString().split('T')[0]}
               />
             </div>
 
@@ -241,6 +242,7 @@ const EventListPage = () => {
                 className="w-full px-4 py-2.5 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900"
                 value={filters.dateTo}
                 onChange={(e) => handleFilterChange('dateTo', e.target.value)}
+                min={filters.dateFrom || new Date().toISOString().split('T')[0]}
               />
             </div>
 

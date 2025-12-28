@@ -52,28 +52,33 @@ export const register = async (req, res) => {
     // Create new user
     const user = await User.create({ name, email, phone, password });
 
-    // Send welcome email (Nodemailer + Mailhog)
-    await transporter.sendMail({
-      from: '"Event Ticketing" <welcome@example.com>',
-      to: user.email,
-      subject: `Welcome to Event Ticketing Platform!`,
-      html: `
-        <div style="font-family: Arial, sans-serif; background: #f9f9f9; padding: 24px;">
-          <div style="max-width: 500px; margin: auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); padding: 24px;">
-            <h1 style="color: #2d7ff9; text-align: center;">👋 Welcome, ${user.name}!</h1>
-            <hr style="margin: 16px 0;">
-            <p style="font-size: 1.1em;">Thank you for registering at <strong>Event Ticketing Platform</strong>!</p>
-            <ul style="list-style: none; padding: 0; font-size: 1.1em;">
-              <li><strong>Name:</strong> ${user.name}</li>
-              <li><strong>Email:</strong> ${user.email}</li>
-              <li><strong>Phone:</strong> ${user.phone}</li>
-            </ul>
-            <hr style="margin: 16px 0;">
-            <p style="text-align: center; color: #888;">We’re excited to have you join our events community!</p>
+    // Send welcome email (Nodemailer + Mailhog) - non-blocking
+    try {
+      await transporter.sendMail({
+        from: '"Event Ticketing" <welcome@example.com>',
+        to: user.email,
+        subject: `Welcome to Event Ticketing Platform!`,
+        html: `
+          <div style="font-family: Arial, sans-serif; background: #f9f9f9; padding: 24px;">
+            <div style="max-width: 500px; margin: auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); padding: 24px;">
+              <h1 style="color: #2d7ff9; text-align: center;">👋 Welcome, ${user.name}!</h1>
+              <hr style="margin: 16px 0;">
+              <p style="font-size: 1.1em;">Thank you for registering at <strong>Event Ticketing Platform</strong>!</p>
+              <ul style="list-style: none; padding: 0; font-size: 1.1em;">
+                <li><strong>Name:</strong> ${user.name}</li>
+                <li><strong>Email:</strong> ${user.email}</li>
+                <li><strong>Phone:</strong> ${user.phone}</li>
+              </ul>
+              <hr style="margin: 16px 0;">
+              <p style="text-align: center; color: #888;">We're excited to have you join our events community!</p>
+            </div>
           </div>
-        </div>
-      `,
-    });
+        `,
+      });
+    } catch (emailErr) {
+      console.error("Failed to send welcome email:", emailErr.message);
+      // Continue anyway - email failure shouldn't block registration
+    }
 
     res.status(201).json({
       message: "User registered successfully",

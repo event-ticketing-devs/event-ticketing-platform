@@ -8,6 +8,9 @@ import jwt from "jsonwebtoken";
 import User from "./models/User.js";
 import Event from "./models/Event.js";
 import TeamChat from "./models/TeamChat.js";
+import VenueRequest from "./models/VenueRequest.js";
+import VenueInquiryChat from "./models/VenueInquiryChat.js";
+import Venue from "./models/Venue.js";
 
 dotenv.config({
   path: "./.env",
@@ -139,6 +142,126 @@ connectDB()
       // Typing indicator
       socket.on("typing", ({ eventId, isTyping }) => {
         socket.to(`event-chat-${eventId}`).emit("user-typing", {
+          userId: socket.user._id,
+          userName: socket.user.name,
+          isTyping,
+        });
+      });
+
+      // --- Venue Enquiry Chat Handlers ---
+      
+      // Join venue request chat room
+      socket.on("join-venue-chat", async ({ requestId }) => {
+        try {
+          console.log("User joining venue chat:", { requestId, userId: socket.user._id });
+          
+          const venueRequest = await VenueRequest.findById(requestId).populate("venue");
+          
+          if (!venueRequest) {
+            console.error("Venue request not found:", requestId);
+            socket.emit("error", { message: "Venue request not found" });
+            return;
+          }
+
+          const venue = await Venue.findById(venueRequest.venue);
+          const userId = socket.user._id.toString();
+          const isOrganizer = venueRequest.organizer.toString() === userId;
+          const isVenueOwner = venue.owner.toString() === userId;
+          const isTeamMember = venue.teamMembers.some(
+            (member) => member.toString() === userId
+          );
+
+          if (!isOrganizer && !isVenueOwner && !isTeamMember) {
+            console.error("Access denied for user:", userId);
+            socket.emit("error", { message: "Access denied" });
+            return;
+          }
+
+          socket.join(`venue-chat-${requestId}`);
+          console.log("User successfully joined venue-chat-" + requestId);
+        } catch (error) {
+          console.error("Error joining venue chat:", error);
+          socket.emit("error", { message: "Failed to join chat" });
+        }
+      });
+
+      // Leave venue request chat room
+      socket.on("leave-venue-chat", async ({ requestId }) => {
+        socket.leave(`venue-chat-${requestId}`);
+      });
+
+      // Send venue chat message
+      socket.on("send-venue-message", async ({ requestId, message }) => {
+        try {
+          console.log("Received send-venue-message:", { requestId, message, userId: socket.user._id });
+          
+          if (!message || message.trim() === "") {
+            socket.emit("error", { message: "Message cannot be empty" });
+            return;
+          }
+
+          const venueRequest = await VenueRequest.findById(requestId).populate("venue");
+          if (!venueRequest) {
+            console.error("Venue request not found:", requestId);
+            socket.emit("error", { message: "Venue request not found" });
+            return;
+          }
+
+          const venue = await Venue.findById(venueRequest.venue);
+          const userId = socket.user._id.toString();
+          const isOrganizer = venueRequest.organizer.toString() === userId;
+          const isVenueOwner = venue.owner.toString() === userId;
+          const isTeamMember = venue.teamMembers.some(
+            (member) => member.toString() === userId
+          );
+
+          if (!isOrganizer && !isVenueOwner && !isTeamMember) {
+            console.error("Access denied for user:", userId);
+            socket.emit("error", { message: "Access denied" });
+            return;
+          }
+
+          // Find or create chat
+          let chat = await VenueInquiryChat.findOne({ request: requestId });
+          if (!chat) {
+            chat = await VenueInquiryChat.create({ request: requestId });
+          }
+
+          // Add message to chat
+          const newMessage = {
+            sender: socket.user._id,
+            text: message.trim(),
+            createdAt: new Date()
+          };
+
+          chat.messages.push(newMessage);
+          await chat.save();
+
+          // Populate sender info
+          await chat.populate("messages.sender", "name email");
+          const addedMessage = chat.messages[chat.messages.length - 1];
+
+          // Transform to match expected format
+          const responseMessage = {
+            _id: addedMessage._id,
+            message: addedMessage.text,
+            sender: addedMessage.sender,
+            createdAt: addedMessage.createdAt
+          };
+
+          console.log("Broadcasting message to venue-chat-" + requestId, responseMessage);
+
+          // Broadcast to all users in the room
+          io.to(`venue-chat-${requestId}`).emit("new-venue-message", responseMessage);
+        } catch (error) {
+          console.error("Error sending venue message:", error);
+          socket.emit("error", { message: "Failed to send message" });
+        }
+      });
+
+      // Venue chat typing indicator
+      socket.on("venue-typing", ({ requestId, isTyping }) => {
+        socket.to(`venue-chat-${requestId}`).emit("venue-user-typing", {
           userId: socket.user._id,
           userName: socket.user.name,
           isTyping,

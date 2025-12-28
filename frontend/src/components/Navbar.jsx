@@ -63,6 +63,9 @@ export default function Navbar() {
             <Link to="/events" className={linkClassName("/events")} onClick={handleCloseMenu}>
               Events
             </Link>
+            <Link to="/venues" className={linkClassName("/venues")} onClick={handleCloseMenu}>
+              Venues
+            </Link>
             <Link to="/contact" className={linkClassName("/contact")} onClick={handleCloseMenu}>
               Contact
             </Link>
@@ -71,8 +74,14 @@ export default function Navbar() {
                 <Link to="/dashboard" className={linkClassName("/dashboard")} onClick={handleCloseMenu}>
                   My Bookings
                 </Link>
+                <Link to="/venue-enquiries" className={linkClassName("/venue-enquiries")} onClick={handleCloseMenu}>
+                  My Enquiries
+                </Link>
                 <Link to="/organizer" className={linkClassName("/organizer")} onClick={handleCloseMenu}>
                   Organizer
+                </Link>
+                <Link to="/venue-partner" className={linkClassName("/venue-partner")} onClick={handleCloseMenu}>
+                  Venue Partner
                 </Link>
               </>
             )}
@@ -159,7 +168,7 @@ export default function Navbar() {
                 </Link>
                 <Link
                   to="/register"
-                  className="px-4 py-2 text-sm font-medium bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition-colors duration-200"
+                  className="px-4 py-2 text-sm font-medium bg-slate-900 text-white hover:bg-slate-800 transition-colors duration-200"
                   onClick={handleCloseMenu}
                 >
                   Sign Up
@@ -229,6 +238,15 @@ export default function Navbar() {
                   onClick={handleCloseMenu}
                 >
                   My Bookings
+                </Link>
+                <Link
+                  to="/venue-enquiries"
+                  className={`block px-3 py-2 rounded-lg text-sm font-medium ${
+                    isActiveLink("/venue-enquiries") ? "bg-slate-100 text-slate-900" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                  }`}
+                  onClick={handleCloseMenu}
+                >
+                  My Enquiries
                 </Link>
                 <Link
                   to="/organizer"

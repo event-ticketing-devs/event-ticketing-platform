@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
+import { ComparisonProvider } from "./context/ComparisonContext";
 import { Toaster } from "react-hot-toast";
 import Home from "./pages/Home";
 import Events from "./pages/Events";
@@ -27,23 +28,40 @@ import ContactUs from "./pages/ContactUs";
 import AdminContacts from "./pages/AdminContacts";
 import OrganizerContacts from "./pages/OrganizerContacts";
 import Chatbot from "./components/Chatbot";
+import Venues from "./pages/Venues";
+import VenueDetails from "./pages/VenueDetails";
+import VenueEnquiries from "./pages/VenueEnquiries";
+import VenueEnquiryDetail from "./pages/VenueEnquiryDetail";
+import VenuePartnerDashboard from "./pages/VenuePartnerDashboard";
+import VenuePartnerEnquiryDetail from "./pages/VenuePartnerEnquiryDetail";
+import VenueRegistration from "./pages/VenueRegistration";
+import SpaceManagement from "./pages/SpaceManagement";
+import SpaceAvailabilityManagement from "./pages/SpaceAvailabilityManagement";
+import VenueEdit from "./pages/VenueEdit";
+import AdminVenues from "./pages/AdminVenues";
+import AdminVenueActivity from "./pages/AdminVenueActivity";
+import ComparisonTray from "./components/ComparisonTray";
+import SpaceComparisonModal from "./components/SpaceComparisonModal";
 
 function App() {
   return (
     <Router>
       <AuthProvider>
-        <Toaster position="top-right" reverseOrder={false} />
-        <div className="flex flex-col min-h-screen">
-          <Navbar />
-          <main className="flex-1">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/events" element={<Events />} />
-              <Route path="/events/:id" element={<EventDetails />} />
-              <Route path="/contact" element={<ContactUs />} />
-              <Route path="*" element={<NotFound />} />
-              <Route
-                path="/login"
+        <ComparisonProvider>
+          <Toaster position="top-right" reverseOrder={false} />
+          <div className="flex flex-col min-h-screen">
+            <Navbar />
+            <main className="flex-1">
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/events" element={<Events />} />
+                <Route path="/events/:id" element={<EventDetails />} />
+                <Route path="/contact" element={<ContactUs />} />
+                <Route path="/venues" element={<Venues />} />
+                <Route path="/venues/:id" element={<VenueDetails />} />
+                <Route path="*" element={<NotFound />} />
+                <Route
+                  path="/login"
                 element={
                   <PublicRoute>
                     <Login />
@@ -83,6 +101,30 @@ function App() {
                 }
               />
               <Route
+                path="/venue-enquiries"
+                element={
+                  <PrivateRoute>
+                    <VenueEnquiries />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/venue-enquiries"
+                element={
+                  <PrivateRoute>
+                    <VenueEnquiries />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/venue-enquiries/:id"
+                element={
+                  <PrivateRoute>
+                    <VenueEnquiryDetail />
+                  </PrivateRoute>
+                }
+              />
+              <Route
                 path="/cancelled-bookings"
                 element={
                   <PrivateRoute>
@@ -107,6 +149,54 @@ function App() {
                 }
               />
               <Route
+                path="/venue-partner"
+                element={
+                  <PrivateRoute>
+                    <VenuePartnerDashboard />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/venue-partner/register"
+                element={
+                  <PrivateRoute>
+                    <VenueRegistration />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/venue-partner/venues/:venueId/edit"
+                element={
+                  <PrivateRoute>
+                    <VenueEdit />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/venue-partner/venues/:venueId/spaces"
+                element={
+                  <PrivateRoute>
+                    <SpaceManagement />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/venue-partner/spaces/:spaceId/availability"
+                element={
+                  <PrivateRoute>
+                    <SpaceAvailabilityManagement />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/venue-partner/enquiries/:id"
+                element={
+                  <PrivateRoute>
+                    <VenuePartnerEnquiryDetail />
+                  </PrivateRoute>
+                }
+              />
+              <Route
                 path="/admin"
                 element={
                   <AdminRoute>
@@ -127,6 +217,22 @@ function App() {
                 element={
                   <AdminRoute>
                     <AdminContacts />
+                  </AdminRoute>
+                }
+              />
+              <Route
+                path="/admin/venues"
+                element={
+                  <AdminRoute>
+                    <AdminVenues />
+                  </AdminRoute>
+                }
+              />
+              <Route
+                path="/admin/venues/:id/activity"
+                element={
+                  <AdminRoute>
+                    <AdminVenueActivity />
                   </AdminRoute>
                 }
               />
@@ -181,12 +287,15 @@ function App() {
             </Routes>
             
           </main>
+          <ComparisonTray />
+          <SpaceComparisonModal />
           <Chatbot />
           <Footer />
         </div>
-      </AuthProvider>
-    </Router>
-  );
+      </ComparisonProvider>
+    </AuthProvider>
+  </Router>
+);
 }
 
 export default App;
