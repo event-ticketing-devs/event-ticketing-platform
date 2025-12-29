@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import apiClient from "../api/apiClient";
 import toast from "react-hot-toast";
-import { getAmenityLabel, getPolicyItemLabel } from "../constants/venueConstants";
+import { getAmenityLabel } from "../constants/venueConstants";
 import ConfirmModal from "../components/ConfirmModal";
+import { Building2, X, CheckCircle2, Clock, XCircle } from "lucide-react";
 
 export default function AdminVenues() {
   const navigate = useNavigate();
@@ -113,14 +114,15 @@ export default function AdminVenues() {
 
   const getStatusBadge = (status) => {
     const config = {
-      verified: { bg: "bg-success/10", text: "text-success", label: "✓ Verified" },
-      unverified: { bg: "bg-warning/10", text: "text-warning", label: "⏳ Pending" },
-      suspended: { bg: "bg-error/10", text: "text-error", label: "⊘ Suspended" },
+      verified: { bg: "bg-success/10", text: "text-success", icon: <CheckCircle2 className="w-3 h-3" />, label: "Verified" },
+      unverified: { bg: "bg-warning/10", text: "text-warning", icon: <Clock className="w-3 h-3" />, label: "Pending" },
+      suspended: { bg: "bg-error/10", text: "text-error", icon: <XCircle className="w-3 h-3" />, label: "Suspended" },
     };
-    const { bg, text, label } = config[status] || config.unverified;
+    const { bg, text, icon, label } = config[status] || config.unverified;
     return (
-      <span className={`px-3 py-1 rounded-md text-xs font-medium ${bg} ${text}`}>
-        {label}
+      <span className={`px-3 py-1 rounded-md text-xs font-medium ${bg} ${text} inline-flex items-center gap-1`}>
+        {icon}
+        <span>{label}</span>
       </span>
     );
   };
@@ -217,9 +219,7 @@ export default function AdminVenues() {
           </div>
         ) : venues.length === 0 ? (
           <div className="bg-bg-primary border border-border rounded-lg p-12 text-center">
-            <svg className="mx-auto h-16 w-16 text-text-secondary mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-            </svg>
+            <Building2 className="mx-auto h-16 w-16 text-text-secondary mb-4" />
             <p className="text-text-secondary text-lg">No venues found</p>
           </div>
         ) : (
@@ -352,9 +352,7 @@ export default function AdminVenues() {
                   onClick={() => setShowDetailsModal(false)}
                   className="text-text-secondary hover:text-text-primary transition-colors"
                 >
-                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
+                  <X className="h-6 w-6" />
                 </button>
               </div>
 
@@ -397,8 +395,12 @@ export default function AdminVenues() {
                     {viewingVenue.parking && (
                       <div className="mt-4 pt-4 border-t border-border">
                         <p className="text-sm text-text-secondary mb-2">Parking</p>
-                        <p className="text-sm font-medium text-text-primary">
-                          {viewingVenue.parking.available ? "✓ Available" : "✗ Not Available"}
+                        <p className="text-sm font-medium text-text-primary inline-flex items-center gap-1">
+                          {viewingVenue.parking.available ? (
+                            <><CheckCircle2 className="w-4 h-4 text-success" /><span>Available</span></>
+                          ) : (
+                            <><XCircle className="w-4 h-4 text-error" /><span>Not Available</span></>
+                          )}
                         </p>
                         {viewingVenue.parking.notes && (
                           <p className="text-xs text-text-secondary mt-1">{viewingVenue.parking.notes}</p>
@@ -445,8 +447,9 @@ export default function AdminVenues() {
                           </div>
                           {viewingVenue.owner.isBanned && (
                             <div className="pt-2">
-                              <span className="px-3 py-1 rounded-md text-xs font-medium bg-error/10 text-error">
-                                ⊘ Owner Banned
+                              <span className="px-3 py-1 rounded-md text-xs font-medium bg-error/10 text-error inline-flex items-center gap-1">
+                                <XCircle className="w-3 h-3" />
+                                <span>Owner Banned</span>
                               </span>
                             </div>
                           )}

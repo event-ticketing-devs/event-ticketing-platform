@@ -8,6 +8,7 @@ import toast from "react-hot-toast";
 import apiClient from "../api/apiClient";
 import { useAuth } from "../context/AuthContext";
 import { format } from "date-fns";
+import { Calendar, MapPin, Tag, MessageCircle, CheckCircle2, XCircle, AlertCircle, Info } from "lucide-react";
 import StripeCheckout from "../components/StripeCheckout";
 import VenueMap from "../components/VenueMap";
 
@@ -181,7 +182,7 @@ export default function EventDetailsPage() {
 
   const handleBooking = async () => {
     if (!currentUser) {
-      toast("Please log in to book", { icon: "🔒" });
+      toast("Please log in to book");
       return navigate("/login");
     }
 
@@ -244,7 +245,6 @@ export default function EventDetailsPage() {
             toast(
               `Cancelled ${cancellation.daysBeforeEvent} days before event - ${cancellation.refundPolicy}`,
               {
-                icon: "ℹ️",
                 duration: 4000,
               }
             );
@@ -278,19 +278,7 @@ export default function EventDetailsPage() {
       <div className="min-h-screen bg-bg-primary flex items-center justify-center">
         <div className="bg-bg-primary border border-border p-8 max-w-md text-center rounded-lg">
           <div className="w-16 h-16 bg-error/10 border border-error/20 flex items-center justify-center mx-auto mb-4 rounded-lg">
-            <svg
-              className="w-8 h-8 text-error"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
+            <AlertCircle className="w-8 h-8 text-error" />
           </div>
           <h3 className="text-xl font-bold text-text-primary mb-2">
             Event Not Found
@@ -361,19 +349,7 @@ export default function EventDetailsPage() {
                 </h1>
                 <div className="flex items-center gap-4 text-white/90">
                   <div className="flex items-center gap-2">
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                      />
-                    </svg>
+                    <Calendar className="w-5 h-5" />
                     <span className="text-lg font-medium">
                       {format(new Date(event.date), "PPP")} at{" "}
                       {format(new Date(event.date), "p")}
@@ -385,36 +361,12 @@ export default function EventDetailsPage() {
           ) : (
             <div className="relative h-96 overflow-hidden border border-border bg-bg-secondary flex items-center justify-center rounded-lg">
               <div className="text-center">
-                <svg
-                  className="w-24 h-24 text-text-secondary mx-auto mb-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                  />
-                </svg>
+                <Calendar className="w-24 h-24 text-text-secondary mx-auto mb-4" />
                 <h1 className="text-4xl sm:text-5xl font-bold text-text-primary mb-2">
                   {event.title}
                 </h1>
                 <div className="flex items-center justify-center gap-2 text-text-secondary">
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                    />
-                  </svg>
+                  <Calendar className="w-5 h-5" />
                   <span className="text-lg font-medium">
                     {format(new Date(event.date), "PPP")} at{" "}
                     {format(new Date(event.date), "p")}
@@ -453,19 +405,7 @@ export default function EventDetailsPage() {
             <div className="bg-bg-primary border border-border p-6 rounded-lg">
               <h2 className="text-xl font-bold text-text-primary mb-4 flex items-center gap-3">
                 <div className="p-2 bg-bg-secondary border border-border rounded-lg">
-                  <svg
-                    className="w-5 h-5 text-primary"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                    />
-                  </svg>
+                  <Info className="w-5 h-5 text-primary" />
                 </div>
                 About This Event
               </h2>
@@ -482,19 +422,7 @@ export default function EventDetailsPage() {
               <div className="bg-bg-primary border border-border p-5 rounded-lg">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="p-2 bg-bg-secondary border border-border rounded-lg">
-                    <svg
-                      className="w-5 h-5 text-primary"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                      />
-                    </svg>
+                    <Calendar className="w-5 h-5 text-primary" />
                   </div>
                   <h3 className="text-lg font-bold text-text-primary">
                     Date & Time
@@ -520,25 +448,7 @@ export default function EventDetailsPage() {
               <div className="bg-bg-primary border border-border p-5 rounded-lg">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="p-2 bg-bg-secondary border border-border rounded-lg">
-                    <svg
-                      className="w-5 h-5 text-primary"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                      />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                      />
-                    </svg>
+                    <MapPin className="w-5 h-5 text-primary" />
                   </div>
                   <h3 className="text-lg font-bold text-text-primary">Location</h3>
                 </div>
@@ -559,19 +469,7 @@ export default function EventDetailsPage() {
             <div className="bg-bg-primary border border-border p-6 rounded-lg">
               <h2 className="text-xl font-bold text-text-primary mb-6 flex items-center gap-3">
                 <div className="p-2 bg-bg-secondary border border-border rounded-lg">
-                  <svg
-                    className="w-5 h-5 text-primary"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                    />
-                  </svg>
+                  <Info className="w-5 h-5 text-primary" />
                 </div>
                 Event Details
               </h2>
@@ -625,19 +523,7 @@ export default function EventDetailsPage() {
                 <div className="bg-bg-primary border border-border p-6 rounded-lg">
                   <h2 className="text-xl font-bold text-text-primary mb-6 flex items-center gap-3">
                     <div className="p-2 bg-bg-secondary border border-border rounded-lg">
-                      <svg
-                        className="w-5 h-5 text-primary"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 4m0 13V4m-6 3l6-3"
-                        />
-                      </svg>
+                      <MapPin className="w-5 h-5 text-primary" />
                     </div>
                     Venue Location
                   </h2>
@@ -652,19 +538,7 @@ export default function EventDetailsPage() {
               <div className="bg-bg-primary border border-border p-6 rounded-lg">
                 <h2 className="text-xl font-bold text-text-primary mb-6 flex items-center gap-3">
                   <div className="p-2 bg-bg-secondary border border-border rounded-lg">
-                    <svg
-                      className="w-5 h-5 text-primary"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-                      />
-                    </svg>
+                    <CheckCircle2 className="w-5 h-5 text-primary" />
                   </div>
                   Cancellation & Refund Policy
                 </h2>
@@ -784,19 +658,7 @@ export default function EventDetailsPage() {
               <div className="bg-bg-primary border border-error/20 p-6 rounded-lg">
                 <h2 className="text-xl font-bold text-text-primary mb-4 flex items-center gap-3">
                   <div className="p-2 bg-error/10 border border-error/20 rounded-lg">
-                    <svg
-                      className="w-5 h-5 text-error"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
+                    <AlertCircle className="w-5 h-5 text-error" />
                   </div>
                   Cancellation Notice
                 </h2>
@@ -815,19 +677,7 @@ export default function EventDetailsPage() {
               {isPastEvent ? (
                 <div className="bg-bg-primary border border-border p-6 text-center rounded-lg">
                   <div className="w-16 h-16 bg-bg-secondary border border-border flex items-center justify-center mx-auto mb-4 rounded-lg">
-                    <svg
-                      className="w-8 h-8 text-text-secondary"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                      />
-                    </svg>
+                    <Calendar className="w-8 h-8 text-text-secondary" />
                   </div>
                   <h3 className="text-xl font-bold text-text-primary mb-2">
                     Event Ended
@@ -846,19 +696,7 @@ export default function EventDetailsPage() {
               ) : event.cancelled ? (
                 <div className="bg-bg-primary border border-error/20 p-6 text-center rounded-lg">
                   <div className="w-16 h-16 bg-error/10 border border-error/20 flex items-center justify-center mx-auto mb-4 rounded-lg">
-                    <svg
-                      className="w-8 h-8 text-error"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
+                    <XCircle className="w-8 h-8 text-error" />
                   </div>
                   <h3 className="text-xl font-bold text-text-primary mb-2">
                     Event Cancelled
@@ -877,19 +715,7 @@ export default function EventDetailsPage() {
                 <div className="bg-bg-primary border border-border p-6 rounded-lg">
                   <div className="text-center mb-6">
                     <div className="w-16 h-16 bg-success/10 border border-success/20 flex items-center justify-center mx-auto mb-4 rounded-lg">
-                      <svg
-                        className="w-8 h-8 text-success"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
+                      <CheckCircle2 className="w-8 h-8 text-success" />
                     </div>
                     <h3 className="text-xl font-bold text-text-primary mb-2">
                       You're Registered!
@@ -977,38 +803,14 @@ export default function EventDetailsPage() {
                     <button
                       onClick={() => navigate(`/ticket/${userBookingId}`)}
                       className="w-full bg-primary text-bg-primary py-3 px-6 font-semibold hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 rounded-lg cursor-pointer">
-                      <svg
-                        className="w-5 h-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a1 1 0 001 1h1a1 1 0 001-1V7a2 2 0 00-2-2H5zM5 14a2 2 0 00-2-2v3a1 1 0 001 1h1a1 1 0 001-1v-3a2 2 0 00-2-2H5z"
-                        />
-                      </svg>
+                      <Tag className="w-5 h-5" />
                       View My Ticket
                     </button>
 
                     <button
                       onClick={handleUnregister}
                       className="w-full bg-bg-primary border-2 border-error/20 text-error py-3 px-6 font-semibold hover:bg-error/10 hover:border-error/30 transition-colors flex items-center justify-center gap-2 rounded-lg cursor-pointer">
-                      <svg
-                        className="w-5 h-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M6 18L18 6M6 6l12 12"
-                        />
-                      </svg>
+                      <XCircle className="w-5 h-5" />
                       Cancel Booking
                     </button>
                   </div>
@@ -1217,37 +1019,13 @@ export default function EventDetailsPage() {
                   <div className="space-y-4 mb-6">
                     <div className="bg-bg-secondary border border-border p-4 space-y-3 rounded-lg">
                       <div className="flex items-center gap-3">
-                        <svg
-                          className="w-5 h-5 text-success"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M5 13l4 4L19 7"
-                          />
-                        </svg>
+                        <CheckCircle2 className="w-5 h-5 text-success" />
                         <span className="text-sm text-text-primary">
                           Instant confirmation
                         </span>
                       </div>
                       <div className="flex items-center gap-3">
-                        <svg
-                          className="w-5 h-5 text-success"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-                          />
-                        </svg>
+                        <CheckCircle2 className="w-5 h-5 text-success" />
                         <span className="text-sm text-text-primary">
                           Secure payment
                         </span>
@@ -1373,9 +1151,7 @@ export default function EventDetailsPage() {
                     onClick={() => setShowContactOrganizer(true)}
                     className="w-full flex items-center justify-center gap-2 text-text-primary hover:text-primary py-3 px-4 border border-border hover:border-primary hover:bg-bg-secondary transition-colors text-sm font-medium rounded-lg cursor-pointer"
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                    </svg>
+                    <MessageCircle className="w-4 h-4" />
                     Contact Organizer
                   </button>
                 </div>
@@ -1388,9 +1164,7 @@ export default function EventDetailsPage() {
                     onClick={() => setShowReportModal(true)}
                     className="w-full flex items-center justify-center gap-2 text-error hover:text-error/80 py-3 px-4 border border-error/20 hover:border-error/30 hover:bg-error/10 transition-colors text-sm font-medium rounded-lg cursor-pointer"
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.268 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                    </svg>
+                    <AlertCircle className="w-4 h-4" />
                     Report Event
                   </button>
                 </div>

@@ -4,6 +4,7 @@ import apiClient from '../api/apiClient';
 import { toast } from 'react-hot-toast';
 import { io } from 'socket.io-client';
 import ConfirmModal from './ConfirmModal';
+import { Send, MessageCircle, RotateCcw, ChevronDown } from 'lucide-react';
 
 export default function TeamChat({ eventId, eventTitle }) {
   const { currentUser } = useAuth();
@@ -297,19 +298,7 @@ export default function TeamChat({ eventId, eventTitle }) {
             aria-label="Reset chat"
             title="Reset chat (delete all messages)"
           >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-              />
-            </svg>
+            <RotateCcw className="w-5 h-5" />
           </button>
         )}
       </div>
@@ -318,19 +307,7 @@ export default function TeamChat({ eventId, eventTitle }) {
       <div ref={messagesContainerRef} className="flex-1 overflow-y-auto p-6 space-y-4 bg-bg-secondary">
         {Object.keys(groupedMessages).length === 0 ? (
           <div className="text-center py-12">
-            <svg
-              className="w-16 h-16 text-text-secondary/50 mx-auto mb-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-              />
-            </svg>
+            <MessageCircle className="w-16 h-16 text-text-secondary/50 mx-auto mb-4" />
             <p className="text-text-primary font-medium">No messages yet</p>
             <p className="text-text-secondary text-sm">Start the conversation!</p>
           </div>
@@ -412,14 +389,7 @@ export default function TeamChat({ eventId, eventTitle }) {
                               } opacity-0 group-hover:opacity-100`}
                               title="Show options"
                             >
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M19 9l-7 7-7-7"
-                                />
-                              </svg>
+                              <ChevronDown className="w-4 h-4" />
                             </button>
                           )}
                         </div>
@@ -495,14 +465,7 @@ export default function TeamChat({ eventId, eventTitle }) {
             {sending ? (
               <div className="w-5 h-5 border-2 border-bg-primary/30 border-t-bg-primary rounded-full animate-spin"></div>
             ) : (
-              <svg className="w-5 h-5 rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-                />
-              </svg>
+              <Send className="w-5 h-5" />
             )}
           </button>
         </div>

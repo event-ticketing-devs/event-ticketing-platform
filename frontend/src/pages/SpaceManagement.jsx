@@ -4,6 +4,7 @@ import apiClient from "../api/apiClient";
 import toast from "react-hot-toast";
 import { STANDARD_AMENITIES, STANDARD_POLICY_ITEMS } from "../constants/venueConstants";
 import ConfirmModal from "../components/ConfirmModal";
+import { ArrowLeft, Plus, Building2, Users, X, Image, Maximize } from 'lucide-react';
 
 const SpaceManagement = () => {
   const { venueId } = useParams();
@@ -225,9 +226,7 @@ const SpaceManagement = () => {
             onClick={() => navigate("/venue-partner/dashboard")}
             className="text-primary hover:text-primary/80 mb-4 flex items-center gap-2 cursor-pointer transition-colors"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
+            <ArrowLeft className="w-5 h-5" />
             Back to Dashboard
           </button>
           
@@ -243,9 +242,7 @@ const SpaceManagement = () => {
                 onClick={() => setShowForm(true)}
                 className="inline-flex items-center gap-2 bg-primary text-bg-primary px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors cursor-pointer font-medium"
               >
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
+                <Plus className="w-5 h-5" />
                 Add New Space
               </button>
             )}
@@ -364,9 +361,7 @@ const SpaceManagement = () => {
                           onClick={() => removePhoto(index)}
                           className="absolute top-2 right-2 bg-error text-bg-primary p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
                         >
-                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                          </svg>
+                          <X className="w-4 h-4" />
                         </button>
                       </div>
                     ))}
@@ -387,9 +382,7 @@ const SpaceManagement = () => {
                     htmlFor="space-photos"
                     className="cursor-pointer inline-flex flex-col items-center"
                   >
-                    <svg className="w-12 h-12 text-text-secondary mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
+                    <Image className="w-12 h-12 text-text-secondary mb-3" />
                     <span className="text-sm text-text-primary font-medium mb-1">
                       Click to upload space photos
                     </span>
@@ -492,9 +485,7 @@ const SpaceManagement = () => {
                             })}
                             className="text-primary hover:text-primary/80"
                           >
-                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                            </svg>
+                            <X className="w-4 h-4" />
                           </button>
                         </span>
                       ))}
@@ -605,9 +596,7 @@ const SpaceManagement = () => {
                             })}
                             className="text-primary hover:text-primary/80"
                           >
-                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                            </svg>
+                            <X className="w-4 h-4" />
                           </button>
                         </span>
                       ))}
@@ -735,9 +724,7 @@ const SpaceManagement = () => {
                                 })}
                                 className="text-success hover:text-success/80"
                               >
-                                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                </svg>
+                                <X className="w-3.5 h-3.5" />
                               </button>
                             </span>
                           ))}
@@ -858,9 +845,7 @@ const SpaceManagement = () => {
                                 })}
                                 className="text-error hover:text-error/80"
                               >
-                                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                </svg>
+                                <X className="w-3.5 h-3.5" />
                               </button>
                             </span>
                           ))}
@@ -920,18 +905,14 @@ const SpaceManagement = () => {
         {/* Spaces Grid */}
         {spaces.length === 0 && !showForm ? (
           <div className="text-center py-16 bg-bg-primary border border-border rounded-lg">
-            <svg className="w-16 h-16 text-text-secondary mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-            </svg>
+            <Building2 className="w-16 h-16 text-text-secondary mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-text-primary mb-2">No Spaces Yet</h3>
             <p className="text-text-secondary mb-6">Add your first space to get started</p>
             <button
               onClick={() => setShowForm(true)}
               className="inline-flex items-center gap-2 bg-primary text-bg-primary px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors cursor-pointer font-medium"
             >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
+              <Plus className="w-5 h-5" />
               Add First Space
             </button>
           </div>
@@ -969,16 +950,12 @@ const SpaceManagement = () => {
 
                   <div className="space-y-2 mb-4">
                     <div className="flex items-center gap-2 text-sm text-text-secondary">
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                      </svg>
+                      <Users className="w-4 h-4" />
                       <span>Max Capacity: {space.maxPax} guests</span>
                     </div>
                     {space.areaSqFt && (
                       <div className="flex items-center gap-2 text-sm text-text-secondary">
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-                        </svg>
+                        <Maximize className="w-4 h-4" />
                         <span>{space.areaSqFt} sq ft</span>
                       </div>
                     )}

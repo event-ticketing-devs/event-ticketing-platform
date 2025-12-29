@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { GoogleLogin, googleLogout } from "@react-oauth/google";
+import { useState } from "react";
+import { GoogleLogin } from "@react-oauth/google";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
@@ -68,19 +68,7 @@ const GoogleLoginButton = () => {
         <div className="bg-error/10 border border-error rounded-lg p-4">
           <div className="flex items-center space-x-3">
             <div className="w-5 h-5 bg-error/20 border border-error rounded-md flex items-center justify-center flex-shrink-0">
-              <svg
-                className="w-3 h-3 text-error"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
+              <X className="w-3 h-3 text-error" />
             </div>
             <p className="text-error text-sm font-medium">{error}</p>
           </div>

@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import apiClient from "../api/apiClient";
 import toast from "react-hot-toast";
 import ConfirmModal from "../components/ConfirmModal";
+import { ArrowLeft, Plus, Calendar, X, Info } from 'lucide-react';
 
 export default function SpaceAvailabilityManagement() {
   const { spaceId } = useParams();
@@ -144,9 +145,7 @@ export default function SpaceAvailabilityManagement() {
             onClick={() => navigate(`/venue-partner/venues/${venue._id}/spaces`)}
             className="text-primary hover:text-primary/80 mb-4 flex items-center gap-2 cursor-pointer transition-colors"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
+            <ArrowLeft className="w-5 h-5" />
             Back to Spaces
           </button>
           
@@ -191,9 +190,7 @@ export default function SpaceAvailabilityManagement() {
             onClick={() => setShowBlockForm(true)}
             className="mb-6 inline-flex items-center gap-2 bg-primary text-bg-primary px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors cursor-pointer font-medium"
           >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-            </svg>
+            <Plus className="w-5 h-5" />
             Block Availability
           </button>
         )}
@@ -212,9 +209,7 @@ export default function SpaceAvailabilityManagement() {
                 }}
                 className="text-text-secondary hover:text-text-primary transition-colors"
               >
-                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
+                <X className="w-6 h-6" />
               </button>
             </div>
 
@@ -298,19 +293,7 @@ export default function SpaceAvailabilityManagement() {
 
           {blocks.length === 0 ? (
             <div className="text-center py-12">
-              <svg
-                className="mx-auto h-16 w-16 text-text-secondary mb-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                />
-              </svg>
+              <Calendar className="mx-auto h-16 w-16 text-text-secondary mb-4" />
               <p className="text-text-secondary text-lg">
                 No blocked dates. This space is fully available.
               </p>
@@ -332,19 +315,7 @@ export default function SpaceAvailabilityManagement() {
                       <div className="flex-1">
                         <div className="flex items-center gap-4 mb-2">
                           <div className="flex items-center gap-2 text-text-primary font-medium">
-                            <svg
-                              className="h-5 w-5 text-primary"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                              />
-                            </svg>
+                            <Calendar className="h-5 w-5 text-primary" />
                             {isValidStart && isValidEnd
                               ? `${formatDate(block.start)} - ${formatDate(block.end)}`
                               : "Invalid date range"}
@@ -380,19 +351,7 @@ export default function SpaceAvailabilityManagement() {
         {/* Info Box */}
         <div className="mt-6 bg-secondary/10 border border-secondary/30 rounded-lg p-4">
           <div className="flex items-start gap-3">
-            <svg
-              className="h-5 w-5 text-secondary mt-0.5 flex-shrink-0"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
+            <Info className="h-5 w-5 text-secondary mt-0.5 flex-shrink-0" />
             <div>
               <p className="text-sm text-text-primary font-medium mb-1">
                 About Availability Blocks

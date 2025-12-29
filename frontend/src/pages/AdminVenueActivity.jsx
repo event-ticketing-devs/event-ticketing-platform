@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import apiClient from "../api/apiClient";
 import toast from "react-hot-toast";
 import { format } from "date-fns";
+import { Building2, Calendar, CheckCircle2, XCircle, Clock, ChevronLeft, FileText, Users } from "lucide-react";
 
 export default function AdminVenueActivity() {
   const { id } = useParams();
@@ -69,9 +70,7 @@ export default function AdminVenueActivity() {
             onClick={() => navigate("/admin/venues")}
             className="text-primary hover:text-primary/80 mb-4 flex items-center gap-2 cursor-pointer transition-colors"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
+            <ChevronLeft className="w-5 h-5" />
             Back to Venues
           </button>
           
@@ -85,10 +84,14 @@ export default function AdminVenueActivity() {
                 venue.verificationStatus === 'verified' ? 'bg-success/10 text-success' :
                 venue.verificationStatus === 'suspended' ? 'bg-error/10 text-error' :
                 'bg-warning/10 text-warning'
-              }`}>
-                {venue.verificationStatus === 'verified' ? '✓ Verified' :
-                 venue.verificationStatus === 'suspended' ? '⊘ Suspended' :
-                 '⏳ Pending'}
+              } inline-flex items-center gap-1`}>
+                {venue.verificationStatus === 'verified' ? (
+                  <><CheckCircle2 className="w-3 h-3" /><span>Verified</span></>
+                ) : venue.verificationStatus === 'suspended' ? (
+                  <><XCircle className="w-3 h-3" /><span>Suspended</span></>
+                ) : (
+                  <><Clock className="w-3 h-3" /><span>Pending</span></>
+                )}
               </span>
             </div>
 
@@ -130,9 +133,7 @@ export default function AdminVenueActivity() {
           <div className="bg-bg-primary border border-border rounded-lg p-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-primary/10 rounded-lg">
-                <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                </svg>
+                <Building2 className="w-5 h-5 text-primary" />
               </div>
               <div>
                 <p className="text-2xl font-bold text-text-primary">{spaces.length}</p>
@@ -144,9 +145,7 @@ export default function AdminVenueActivity() {
           <div className="bg-bg-primary border border-border rounded-lg p-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-secondary/10 rounded-lg">
-                <svg className="w-5 h-5 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
+                <FileText className="w-5 h-5 text-secondary" />
               </div>
               <div>
                 <p className="text-2xl font-bold text-text-primary">{requests.length}</p>
@@ -157,10 +156,8 @@ export default function AdminVenueActivity() {
 
           <div className="bg-bg-primary border border-border rounded-lg p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-warning/10 rounded-lg">
-                <svg className="w-5 h-5 text-warning" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+              <div className="p-2 bg-warning/10 rounded-lg flex items-center justify-center">
+                <span className="w-5 h-5 flex items-center justify-center text-xl text-warning">₹</span>
               </div>
               <div>
                 <p className="text-2xl font-bold text-text-primary">{quotes.length}</p>
@@ -172,9 +169,7 @@ export default function AdminVenueActivity() {
           <div className="bg-bg-primary border border-border rounded-lg p-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-success/10 rounded-lg">
-                <svg className="w-5 h-5 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+                <CheckCircle2 className="w-5 h-5 text-success" />
               </div>
               <div>
                 <p className="text-2xl font-bold text-text-primary">
@@ -194,9 +189,7 @@ export default function AdminVenueActivity() {
           
           {spaces.length === 0 ? (
             <div className="text-center py-8">
-              <svg className="mx-auto h-12 w-12 text-text-secondary mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-              </svg>
+              <Building2 className="mx-auto h-12 w-12 text-text-secondary mb-3" />
               <p className="text-sm text-text-secondary">No spaces added</p>
             </div>
           ) : (
@@ -250,9 +243,7 @@ export default function AdminVenueActivity() {
           
           {requests.length === 0 ? (
             <div className="text-center py-12">
-              <svg className="mx-auto h-12 w-12 text-text-secondary mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
+              <FileText className="mx-auto h-12 w-12 text-text-secondary mb-3" />
               <p className="text-sm text-text-secondary">No requests yet</p>
             </div>
           ) : (
@@ -274,27 +265,19 @@ export default function AdminVenueActivity() {
 
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                     <div className="flex items-center gap-2 text-sm text-text-secondary">
-                      <svg className="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                      </svg>
+                      <Building2 className="w-4 h-4 flex-shrink-0" />
                       <span className="truncate">{request.space?.name || "N/A"}</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-text-secondary">
-                      <svg className="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
+                      <Calendar className="w-4 h-4 flex-shrink-0" />
                       <span>{format(new Date(request.eventDateStart), "MMM d, yyyy")}</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-text-secondary">
-                      <svg className="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                      </svg>
+                      <Users className="w-4 h-4 flex-shrink-0" />
                       <span>{request.expectedPax} guests</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-text-secondary">
-                      <svg className="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
+                      <Clock className="w-4 h-4 flex-shrink-0" />
                       <span>{format(new Date(request.createdAt), "MMM d")}</span>
                     </div>
                   </div>
@@ -302,9 +285,7 @@ export default function AdminVenueActivity() {
                   {request.status === "externally_booked" && request.bookedAt && (
                     <div className="mt-3 pt-3 border-t border-border">
                       <p className="text-sm text-success flex items-center gap-2">
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
+                        <CheckCircle2 className="w-4 h-4" />
                         Booked on {format(new Date(request.bookedAt), "MMM d, yyyy")}
                       </p>
                     </div>
@@ -313,9 +294,7 @@ export default function AdminVenueActivity() {
                   {request.status === "declined" && request.declineReason && (
                     <div className="mt-3 pt-3 border-t border-border">
                       <p className="text-sm text-error flex items-start gap-2">
-                        <svg className="w-4 h-4 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
+                        <XCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
                         <span>{request.declineReason}</span>
                       </p>
                     </div>

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { toast } from 'react-hot-toast';
 import apiClient from '../api/apiClient';
+import { X, Send, Calendar, Info } from 'lucide-react';
 
 const ContactOrganizer = ({ event, isOpen, onClose }) => {
   const [formData, setFormData] = useState({
@@ -59,9 +60,7 @@ const ContactOrganizer = ({ event, isOpen, onClose }) => {
             onClick={onClose}
             className="text-bg-primary/80 hover:text-bg-primary transition-colors p-2 cursor-pointer"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            <X className="w-6 h-6" />
           </button>
         </div>
 
@@ -69,9 +68,7 @@ const ContactOrganizer = ({ event, isOpen, onClose }) => {
         <div className="px-6 py-4 bg-bg-secondary border-b border-border">
           <div className="flex items-center space-x-4">
             <div className="w-16 h-16 bg-primary/10 border border-primary/20 rounded-lg flex items-center justify-center">
-              <svg className="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z" />
-              </svg>
+              <Calendar className="w-8 h-8 text-primary" />
             </div>
             <div>
               <h3 className="font-semibold text-text-primary">{event.title}</h3>
@@ -94,9 +91,7 @@ const ContactOrganizer = ({ event, isOpen, onClose }) => {
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           <div className="bg-secondary/10 border border-secondary/20 rounded-lg p-4">
             <div className="flex items-start space-x-3">
-              <svg className="w-5 h-5 text-secondary mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+              <Info className="w-5 h-5 text-secondary mt-0.5 flex-shrink-0" />
               <div>
                 <p className="text-sm font-medium text-text-primary">Direct Contact with Organizer</p>
                 <p className="text-xs text-text-secondary mt-1">
@@ -214,9 +209,7 @@ const ContactOrganizer = ({ event, isOpen, onClose }) => {
                 </>
               ) : (
                 <>
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                  </svg>
+                  <Send className="w-5 h-5" />
                   <span>Send Message</span>
                 </>
               )}

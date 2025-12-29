@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import apiClient from "../api/apiClient";
 import toast from "react-hot-toast";
 import { format } from "date-fns";
+import { ArrowLeft, Ticket, Download, CheckCircle2, Clock, AlertTriangle, Share2, FileText } from 'lucide-react';
 
 const TicketView = () => {
   const { bookingId } = useParams();
@@ -53,19 +54,7 @@ const TicketView = () => {
       <div className="min-h-screen bg-bg-primary flex items-center justify-center">
         <div className="bg-bg-primary border border-border rounded-lg p-12 text-center max-w-md mx-auto">
           <div className="w-20 h-20 bg-error/10 border border-error/20 rounded-lg flex items-center justify-center mx-auto mb-6">
-            <svg
-              className="w-10 h-10 text-error"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-              />
-            </svg>
+            <AlertTriangle className="w-10 h-10 text-error" />
           </div>
           <h2 className="text-2xl font-bold text-text-primary mb-2">
             Ticket Not Found
@@ -122,19 +111,7 @@ const TicketView = () => {
             onClick={() => navigate("/dashboard")}
             className="inline-flex items-center gap-2 text-text-secondary hover:text-text-primary transition-colors mb-4 cursor-pointer"
           >
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
+            <ArrowLeft className="w-4 h-4" />
             Back to Dashboard
           </button>
           <h1 className="text-2xl font-bold text-text-primary">Digital Ticket</h1>
@@ -147,19 +124,7 @@ const TicketView = () => {
           <div className="bg-primary p-6 text-bg-primary relative rounded-t-lg">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-12 h-12 bg-bg-primary/20 border border-bg-primary/30 rounded-lg flex items-center justify-center">
-                <svg
-                  className="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"
-                  />
-                </svg>
+                <Ticket className="w-6 h-6" />
               </div>
               <div className="flex-1">
                 <h2 className="text-xl font-bold">
@@ -177,38 +142,18 @@ const TicketView = () => {
               <span
                 className={`inline-flex items-center gap-1 px-3 py-1 rounded-md text-sm font-semibold border ${
                   ticket.verified
-                    ? "bg-success/10 text-success border-success/20"
-                    : "bg-warning/10 text-warning border-warning/20"
+                    ? "bg-success/60 text-bg-primary border-bg-primary/20"
+                    : "bg-warning/60 text-bg-primary border-bg-primary/20"
                 }`}
               >
                 {ticket.verified ? (
                   <>
-                    <svg
-                      className="w-4 h-4"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
+                    <CheckCircle2 className="w-4 h-4" />
                     Verified
                   </>
                 ) : (
                   <>
-                    <svg
-                      className="w-4 h-4"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
+                    <Clock className="w-4 h-4" />
                     Pending
                   </>
                 )}
@@ -237,19 +182,7 @@ const TicketView = () => {
           {/* Ticket Details */}
           <div className="p-6">
             <h3 className="font-semibold text-text-primary mb-4 flex items-center gap-2">
-              <svg
-                className="w-5 h-5 text-primary"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                />
-              </svg>
+              <FileText className="w-5 h-5 text-primary" />
               Ticket Details
             </h3>
 
@@ -319,19 +252,7 @@ const TicketView = () => {
               onClick={downloadQR}
               className="w-full flex items-center justify-center gap-2 bg-primary text-bg-primary py-3 px-4 rounded-lg font-semibold hover:bg-primary/90 transition-colors cursor-pointer"
             >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                />
-              </svg>
+              <Download className="w-5 h-5" />
               Download QR Code
             </button>
 
@@ -339,19 +260,7 @@ const TicketView = () => {
               onClick={shareTicket}
               className="w-full flex items-center justify-center gap-2 bg-bg-secondary text-text-primary py-3 px-4 rounded-lg font-semibold hover:bg-bg-secondary/80 transition-colors border border-border cursor-pointer"
             >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"
-                />
-              </svg>
+              <Share2 className="w-5 h-5" />
               Share Ticket
             </button>
           </div>
@@ -361,19 +270,7 @@ const TicketView = () => {
             <div className="bg-warning/10 border border-warning/20 rounded-lg p-4">
               <div className="flex gap-3">
                 <div className="w-6 h-6 bg-warning/20 border border-warning/30 rounded-md flex items-center justify-center flex-shrink-0">
-                  <svg
-                    className="w-4 h-4 text-warning"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                    />
-                  </svg>
+                  <AlertTriangle className="w-4 h-4 text-warning" />
                 </div>
                 <div>
                   <h4 className="font-semibold text-warning mb-1">

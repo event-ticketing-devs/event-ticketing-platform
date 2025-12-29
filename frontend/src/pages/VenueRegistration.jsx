@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Loader } from "@googlemaps/js-api-loader";
 import apiClient from "../api/apiClient";
 import toast from "react-hot-toast";
+import { Upload, X } from 'lucide-react';
 
 const VenueRegistration = () => {
   const navigate = useNavigate();
@@ -450,19 +451,7 @@ const VenueRegistration = () => {
                     className="flex flex-col items-center justify-center w-full h-48 border-2 border-border border-dashed rounded-lg cursor-pointer bg-bg-secondary hover:bg-bg-secondary transition-colors"
                   >
                     <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                      <svg
-                        className="w-10 h-10 mb-3 text-text-secondary/60"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                        />
-                      </svg>
+                      <Upload className="w-10 h-10 mb-3 text-text-secondary/60" />
                       <p className="mb-2 text-sm text-text-secondary">
                         <span className="font-semibold">Click to upload</span> or drag and drop
                       </p>
@@ -489,19 +478,7 @@ const VenueRegistration = () => {
                     onClick={removeImage}
                     className="absolute top-2 right-2 bg-error text-bg-primary p-2 rounded-full hover:bg-error/90 transition-colors"
                   >
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
+                    <X className="w-5 h-5" />
                   </button>
                 </div>
               )}

@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import apiClient from "../api/apiClient";
+import { Calendar, MapPin, ArrowRight, CheckCircle2, Sparkles, ChevronRight, Building, ShieldCheck } from "lucide-react";
 
 const Home = () => {
   const [featuredEvents, setFeaturedEvents] = useState([]);
@@ -94,9 +95,7 @@ const Home = () => {
                 to="/events"
                 className="inline-flex items-center justify-center gap-2 bg-white text-primary px-8 py-4 rounded-xl font-semibold hover:bg-white/90 transition-all shadow-lg hover:shadow-xl cursor-pointer"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
-                </svg>
+                <Calendar className="w-5 h-5" />
                 Browse Events
               </Link>
 
@@ -104,9 +103,7 @@ const Home = () => {
                 to="/venues"
                 className="inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-sm border-2 border-white/30 text-white px-8 py-4 rounded-xl font-semibold hover:bg-white/20 transition-all cursor-pointer"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                </svg>
+                <MapPin className="w-5 h-5" />
                 Explore Venues
               </Link>
             </div>
@@ -151,19 +148,7 @@ const Home = () => {
             /* Empty State */
             <div className="text-center py-16">
               <div className="w-16 h-16 mx-auto mb-6 bg-bg-secondary rounded-lg flex items-center justify-center">
-                <svg
-                  className="w-8 h-8 text-text-secondary"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                  />
-                </svg>
+                <Calendar className="w-8 h-8 text-text-secondary" />
               </div>
               <h3 className="text-xl font-bold text-text-primary mb-2">
                 No featured events yet
@@ -197,19 +182,7 @@ const Home = () => {
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
-                        <svg
-                          className="w-16 h-16 text-text-secondary/30"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={1.5}
-                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                          />
-                        </svg>
+                        <Calendar className="w-16 h-16 text-text-secondary/30" />
                       </div>
                     )}
 
@@ -244,19 +217,7 @@ const Home = () => {
                     {/* Event Date */}
                     <div className="flex items-center gap-3 text-text-secondary mb-3">
                       <div className="flex items-center justify-center w-10 h-10 bg-primary/10 rounded-lg">
-                        <svg
-                          className="w-5 h-5 text-primary"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                          />
-                        </svg>
+                        <Calendar className="w-5 h-5 text-primary" />
                       </div>
                       <div>
                         <div className="text-sm font-semibold text-text-primary">
@@ -278,25 +239,7 @@ const Home = () => {
                     {/* Venue */}
                     <div className="flex items-center gap-3 text-text-secondary mb-4">
                       <div className="flex items-center justify-center w-10 h-10 bg-secondary/10 rounded-lg">
-                        <svg
-                          className="w-5 h-5 text-secondary"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                          />
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                          />
-                        </svg>
+                        <MapPin className="w-5 h-5 text-secondary" />
                       </div>
                       <span className="text-sm truncate">
                         {event.venue?.name || event.venue}
@@ -311,9 +254,7 @@ const Home = () => {
                     <div className="flex items-center justify-between pt-4 border-t border-border">
                       <span className="text-primary font-semibold group-hover:gap-2 transition-all flex items-center gap-1">
                         View Details
-                        <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
+                        <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                       </span>
                     </div>
                   </div>
@@ -330,9 +271,7 @@ const Home = () => {
                 className="inline-flex items-center gap-2 text-primary hover:text-primary/90 font-semibold text-lg transition-colors group"
               >
                 View All Events
-                <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                </svg>
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
           )}
@@ -345,9 +284,7 @@ const Home = () => {
           {/* Section Header */}
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-secondary/10 border border-secondary/20 rounded-full mb-4">
-              <svg className="w-4 h-4 text-secondary" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z" />
-              </svg>
+              <Sparkles className="w-4 h-4 text-secondary" />
               <span className="text-sm font-semibold text-secondary uppercase tracking-wide">
                 Featured Venues
               </span>
@@ -394,28 +331,14 @@ const Home = () => {
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
-                        <svg
-                          className="w-16 h-16 text-text-secondary/30"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={1.5}
-                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-                          />
-                        </svg>
+                        <Building className="w-16 h-16 text-text-secondary/30" />
                       </div>
                     )}
 
                     {/* Verified Badge */}
                     <div className="absolute top-4 left-4">
                       <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-success/95 backdrop-blur-sm text-white rounded-full shadow-sm">
-                        <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                        </svg>
+                        <ShieldCheck className="w-3.5 h-3.5" />
                         Verified
                       </span>
                     </div>
@@ -430,10 +353,7 @@ const Home = () => {
 
                     {/* Location */}
                     <div className="flex items-center gap-2 text-text-secondary mb-4">
-                      <svg className="w-4 h-4 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                      </svg>
+                      <MapPin className="w-4 h-4 text-secondary" />
                       <span className="text-sm truncate">{venue.city}</span>
                     </div>
 
@@ -446,9 +366,7 @@ const Home = () => {
                       )}
                       {venue.totalCapacity && (
                         <div className="flex items-center gap-1.5 text-xs text-text-secondary">
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                          </svg>
+                          <Users className="w-4 h-4" />
                           <span className="font-medium">{venue.totalCapacity.toLocaleString()}</span>
                         </div>
                       )}
@@ -457,9 +375,7 @@ const Home = () => {
                     {/* Amenities Preview */}
                     {venue.amenities && venue.amenities.length > 0 && (
                       <div className="flex items-center gap-2 mb-4 text-xs text-text-secondary">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
+                        <CheckCircle2 className="w-4 h-4" />
                         <span className="truncate">
                           {venue.amenities.slice(0, 3).join(", ")}
                           {venue.amenities.length > 3 && ` +${venue.amenities.length - 3} more`}
@@ -474,9 +390,7 @@ const Home = () => {
                     <div className="flex items-center justify-between pt-4 border-t border-border">
                       <span className="text-secondary font-semibold group-hover:gap-2 transition-all flex items-center gap-1">
                         View Venue
-                        <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
+                        <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                       </span>
                     </div>
                   </div>
@@ -486,19 +400,7 @@ const Home = () => {
           ) : (
             /* Empty State */
             <div className="text-center py-16 bg-bg-primary border border-border rounded-2xl">
-              <svg
-                className="w-16 h-16 text-text-secondary/30 mx-auto mb-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1.5}
-                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-                />
-              </svg>
+              <Building className="w-16 h-16 text-text-secondary/30 mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-text-primary mb-2">No Venues Available</h3>
               <p className="text-text-secondary">Check back soon for featured venues</p>
             </div>
@@ -512,9 +414,7 @@ const Home = () => {
                 className="inline-flex items-center gap-2 text-secondary hover:text-secondary/90 font-semibold text-lg transition-colors group"
               >
                 View All Venues
-                <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                </svg>
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
           )}

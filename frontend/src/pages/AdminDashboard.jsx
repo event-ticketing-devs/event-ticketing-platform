@@ -5,6 +5,7 @@ import OrganizerActions from "../components/OrganizerActions";
 import apiClient from "../api/apiClient";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
+import { Building2, Mail, AlertCircle, Plus } from "lucide-react";
 
 export default function AdminDashboard() {
   const [events, setEvents] = useState([]);
@@ -149,27 +150,21 @@ export default function AdminDashboard() {
             onClick={() => navigate("/admin/venues")}
             className="bg-secondary hover:bg-secondary/90 text-bg-primary px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 cursor-pointer"
           >
-            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-            </svg>
+            <Building2 className="h-5 w-5" />
             Manage Venues
           </button>
           <button
             onClick={() => navigate("/admin/contacts")}
             className="inline-flex items-center gap-2 bg-primary text-bg-primary px-4 py-2 rounded-lg font-semibold hover:bg-primary/90 transition-colors cursor-pointer"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-            </svg>
+            <Mail className="w-4 h-4" />
             Manage Contacts
           </button>
           <button
             onClick={() => navigate("/admin/flagged-events")}
             className="inline-flex items-center gap-2 border border-border text-text-primary px-4 py-2 rounded-lg font-semibold hover:bg-bg-secondary transition-colors cursor-pointer"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.268 16.5c-.77.833.192 2.5 1.732 2.5z" />
-            </svg>
+            <AlertCircle className="w-4 h-4" />
             Flagged Events
           </button>
         </div>
@@ -205,9 +200,7 @@ export default function AdminDashboard() {
               onClick={() => setShowAddCategoryModal(true)}
               className="inline-flex items-center gap-2 bg-primary text-bg-primary px-4 py-2 rounded-lg font-semibold hover:bg-primary/90 transition-colors cursor-pointer"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
+              <Plus className="w-4 h-4" />
             Add Category
           </button>
         </div>

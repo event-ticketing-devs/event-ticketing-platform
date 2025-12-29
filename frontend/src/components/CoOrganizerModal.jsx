@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import apiClient from '../api/apiClient';
 import { toast } from 'react-hot-toast';
 import ConfirmModal from './ConfirmModal';
+import { Users, AlertTriangle } from 'lucide-react';
 
 const CoOrganizerModal = ({ isOpen, onClose, eventId, eventTitle }) => {
   const [coOrganizers, setCoOrganizers] = useState([]);
@@ -149,19 +150,7 @@ const CoOrganizerModal = ({ isOpen, onClose, eventId, eventTitle }) => {
                 </h3>
                 {coOrganizers.length === 0 ? (
                   <div className="text-center py-8 bg-bg-secondary border border-border rounded-lg">
-                    <svg
-                      className="mx-auto h-12 w-12 text-text-secondary"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                      />
-                    </svg>
+                    <Users className="mx-auto h-12 w-12 text-text-secondary" />
                     <p className="mt-2 text-text-primary">No co-organizers yet</p>
                     <p className="text-sm text-text-secondary">Add co-organizers to help manage this event</p>
                   </div>
@@ -191,17 +180,7 @@ const CoOrganizerModal = ({ isOpen, onClose, eventId, eventTitle }) => {
               {/* Info Box */}
               <div className="mt-6 bg-warning/10 border border-warning/30 rounded-lg p-4">
                 <div className="flex">
-                  <svg
-                    className="h-5 w-5 text-warning mt-0.5"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
+                  <AlertTriangle className="h-5 w-5 text-warning mt-0.5" />
                   <div className="ml-3">
                     <h4 className="text-sm font-medium text-text-primary">
                       Co-Organizer Permissions

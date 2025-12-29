@@ -6,6 +6,7 @@ import { useAuth } from "../context/AuthContext";
 import { useComparison } from "../context/ComparisonContext";
 import toast from "react-hot-toast";
 import { getAmenityLabel, getPolicyItemLabel } from "../constants/venueConstants";
+import { MapPin, CheckCircle2, ArrowLeft, ChevronDown, X } from "lucide-react";
 
 const VenueDetails = () => {
   const { id } = useParams();
@@ -80,9 +81,7 @@ const VenueDetails = () => {
             onClick={() => navigate("/venues")}
             className="flex items-center text-text-secondary hover:text-text-primary mb-4"
           >
-            <svg className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
+            <ArrowLeft className="h-5 w-5 mr-1" />
             Back to venues
           </button>
           
@@ -99,10 +98,7 @@ const VenueDetails = () => {
 
           <h1 className="text-3xl font-bold text-text-primary">{venue.name}</h1>
           <div className="flex items-center text-text-secondary mt-2">
-            <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
+            <MapPin className="h-5 w-5 mr-2" />
             {venue.city}
           </div>
         </div>
@@ -386,9 +382,7 @@ const SpaceDetailsModal = ({ space, onClose, onEnquire }) => {
               onClick={onClose}
               className="text-text-secondary/60 hover:text-text-secondary"
             >
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              <X className="h-6 w-6" />
             </button>
           </div>
         </div>
@@ -435,14 +429,7 @@ const SpaceDetailsModal = ({ space, onClose, onEnquire }) => {
                 className="flex items-center justify-between w-full mb-3"
               >
                 <h3 className="text-lg font-semibold text-text-primary">Supported Event Types</h3>
-                <svg
-                  className={`h-5 w-5 text-text-secondary transition-transform ${expandedSections.eventTypes ? 'rotate-180' : ''}`}
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
+                <ChevronDown className={`h-5 w-5 text-text-secondary transition-transform ${expandedSections.eventTypes ? 'rotate-180' : ''}`} />
               </button>
               {expandedSections.eventTypes && (
                 <div className="flex flex-wrap gap-2">
@@ -472,22 +459,13 @@ const SpaceDetailsModal = ({ space, onClose, onEnquire }) => {
                 className="flex items-center justify-between w-full mb-3"
               >
                 <h3 className="text-lg font-semibold text-text-primary">Amenities</h3>
-                <svg
-                  className={`h-5 w-5 text-text-secondary transition-transform ${expandedSections.amenities ? 'rotate-180' : ''}`}
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
+                <ChevronDown className={`h-5 w-5 text-text-secondary transition-transform ${expandedSections.amenities ? 'rotate-180' : ''}`} />
               </button>
               {expandedSections.amenities && (
                 <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
                   {allAmenities.map((amenity, idx) => (
                     <li key={idx} className="flex items-center text-text-primary">
-                      <svg className="h-5 w-5 text-success mr-2" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                      </svg>
+                      <CheckCircle2 className="h-5 w-5 text-success mr-2" />
                       {getAmenityLabel(amenity)}
                     </li>
                   ))}
@@ -504,20 +482,16 @@ const SpaceDetailsModal = ({ space, onClose, onEnquire }) => {
                 className="flex items-center justify-between w-full mb-3"
               >
                 <h3 className="text-lg font-semibold text-text-primary">Space Policies</h3>
-                <svg
-                  className={`h-5 w-5 text-text-secondary transition-transform ${expandedSections.policies ? 'rotate-180' : ''}`}
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
+                <ChevronDown className={`h-5 w-5 text-text-secondary transition-transform ${expandedSections.policies ? 'rotate-180' : ''}`} />
               </button>
               {expandedSections.policies && (
                 <div className="space-y-4">
                   {allAllowedItems.length > 0 && (
                     <div>
-                      <p className="text-sm font-medium text-text-primary mb-2">✓ Allowed Items:</p>
+                      <p className="text-sm font-medium text-text-primary mb-2 flex items-center gap-1">
+                        <CheckCircle2 className="w-4 h-4 text-success" />
+                        Allowed Items:
+                      </p>
                       <div className="flex flex-wrap gap-2">
                         {allAllowedItems.map((item, idx) => (
                           <span
@@ -533,7 +507,10 @@ const SpaceDetailsModal = ({ space, onClose, onEnquire }) => {
 
                   {allBannedItems.length > 0 && (
                     <div>
-                      <p className="text-sm font-medium text-text-primary mb-2">✗ Banned Items:</p>
+                      <p className="text-sm font-medium text-text-primary mb-2 flex items-center gap-1">
+                        <XCircle className="w-4 h-4 text-error" />
+                        Banned Items:
+                      </p>
                       <div className="flex flex-wrap gap-2">
                         {allBannedItems.map((item, idx) => (
                           <span
@@ -637,9 +614,7 @@ const EnquiryFormModal = ({ venue, space, onClose }) => {
               onClick={onClose}
               className="text-text-secondary/60 hover:text-text-secondary"
             >
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              <X className="h-6 w-6" />
             </button>
           </div>
 

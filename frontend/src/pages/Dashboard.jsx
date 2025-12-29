@@ -4,6 +4,7 @@ import apiClient from "../api/apiClient";
 import { useAuth } from "../context/AuthContext";
 import { Link } from "react-router-dom";
 import { format } from "date-fns";
+import { Calendar, XCircle, Clock, MapPin, AlertCircle, Search, CheckCircle2 } from "lucide-react";
 
 export default function DashboardPage() {
   const { currentUser } = useAuth();
@@ -59,63 +60,21 @@ export default function DashboardPage() {
       key: "upcoming",
       label: "Upcoming",
       data: upcoming,
-      icon: (
-        <svg
-          className="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-          />
-        </svg>
-      ),
+      icon: <Calendar className="w-5 h-5" />,
       color: "blue",
     },
     {
       key: "past",
       label: "Past",
       data: past,
-      icon: (
-        <svg
-          className="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
-      ),
+      icon: <Clock className="w-5 h-5" />,
       color: "slate",
     },
     {
       key: "cancelled",
       label: "Cancelled",
       data: cancelled,
-      icon: (
-        <svg
-          className="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M6 18L18 6M6 6l12 12"
-          />
-        </svg>
-      ),
+      icon: <XCircle className="w-5 h-5" />,
       color: "red",
     },
   ];
@@ -160,19 +119,7 @@ export default function DashboardPage() {
             </div>
           ) : (
             <div className="h-48 bg-bg-secondary flex items-center justify-center border-b border-border">
-              <svg
-                className="w-16 h-16 text-text-secondary"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                />
-              </svg>
+              <Calendar className="w-16 h-16 text-text-secondary" />
             </div>
           )}
 
@@ -191,8 +138,9 @@ export default function DashboardPage() {
                 Past Event
               </span>
             ) : verified ? (
-              <span className="inline-flex items-center px-3 py-1 text-sm font-semibold bg-success text-white rounded-md">
-                ✓ Verified
+              <span className="inline-flex items-center gap-1 px-3 py-1 text-sm font-semibold bg-success text-white rounded-md">
+                <CheckCircle2 className="w-4 h-4" />
+                <span>Verified</span>
               </span>
             ) : (
               <span className="inline-flex items-center px-3 py-1 text-sm font-semibold bg-warning text-white rounded-md">
@@ -214,37 +162,13 @@ export default function DashboardPage() {
           {/* Event Details */}
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div className="flex items-center gap-2 text-text-secondary">
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                />
-              </svg>
+              <Calendar className="w-4 h-4" />
               <span className="text-sm">
                 {format(new Date(eventId.date), "MMM dd, yyyy")}
               </span>
             </div>
             <div className="flex items-center gap-2 text-text-secondary">
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                />
-              </svg>
+              <MapPin className="w-4 h-4" />
               <span className="text-sm">{eventId.city}</span>
             </div>
           </div>
@@ -289,19 +213,7 @@ export default function DashboardPage() {
           {isCancelled && (
             <div className="bg-error/10 border border-error rounded-lg p-4 mb-4">
               <h4 className="font-semibold text-error mb-2 flex items-center gap-2">
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
+                <AlertCircle className="w-4 h-4" />
                 Cancellation Details
               </h4>
               {cancellationDate && (
@@ -411,19 +323,7 @@ export default function DashboardPage() {
                 to="/cancelled-bookings"
                 className="inline-flex items-center gap-2 px-6 py-3 bg-error/10 text-error hover:bg-error/20 transition-colors font-medium border border-error rounded-lg cursor-pointer"
               >
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
+                <XCircle className="w-5 h-5" />
                 View All Cancelled ({cancelled.length})
               </Link>
             )}
@@ -480,19 +380,7 @@ export default function DashboardPage() {
                   to="/events"
                   className="inline-flex items-center gap-2 bg-primary text-bg-primary px-6 py-3 font-semibold hover:bg-primary/90 transition-colors rounded-lg cursor-pointer"
                 >
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                    />
-                  </svg>
+                  <Search className="w-5 h-5" />
                   Browse Events
                 </Link>
               )}

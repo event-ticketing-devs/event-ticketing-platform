@@ -1,4 +1,4 @@
-import React from "react";
+import { AlertCircle, Info, AlertTriangle, X, Edit } from "lucide-react";
 
 export default function ConfirmModal({
   open,
@@ -24,21 +24,7 @@ export default function ConfirmModal({
           iconColor: "text-error",
           confirmBg: "bg-error",
           confirmHover: "hover:bg-error/90",
-          icon: (
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.35 16.5c-.77.833.192 2.5 1.732 2.5z"
-              />
-            </svg>
-          ),
+          icon: <AlertTriangle className="w-6 h-6" />,
         };
       case "warning":
         return {
@@ -46,21 +32,7 @@ export default function ConfirmModal({
           iconColor: "text-warning",
           confirmBg: "bg-warning",
           confirmHover: "hover:bg-warning/90",
-          icon: (
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.35 16.5c-.77.833.192 2.5 1.732 2.5z"
-              />
-            </svg>
-          ),
+          icon: <AlertCircle className="w-6 h-6" />,
         };
       default: // info
         return {
@@ -68,21 +40,7 @@ export default function ConfirmModal({
           iconColor: "text-text-primary",
           confirmBg: "bg-primary",
           confirmHover: "hover:bg-primary/90",
-          icon: (
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-          ),
+          icon: <Info className="w-6 h-6" />,
         };
     }
   };
@@ -104,19 +62,7 @@ export default function ConfirmModal({
             className="absolute top-4 right-4 w-8 h-8 bg-bg-secondary hover:bg-border text-text-secondary hover:text-text-primary rounded-lg flex items-center justify-center transition-colors cursor-pointer"
             aria-label="Close"
           >
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
+            <X className="w-4 h-4" />
           </button>
 
           <div className="flex items-start gap-4">
@@ -141,19 +87,7 @@ export default function ConfirmModal({
           <div className="px-6 pb-4">
             <div className="relative">
               <div className="absolute top-3 left-3 pointer-events-none">
-                <svg
-                  className="w-5 h-5 text-text-secondary"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                  />
-                </svg>
+                <Edit className="w-5 h-5 text-text-secondary" />
               </div>
               <textarea
                 className="w-full pl-10 pr-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary bg-bg-secondary transition-colors resize-none"

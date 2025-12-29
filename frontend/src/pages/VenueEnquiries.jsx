@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import apiClient from "../api/apiClient";
 import { format } from "date-fns";
 import toast from "react-hot-toast";
+import { FileText, CheckCircle2 } from 'lucide-react';
 
 const VenueEnquiriesPage = () => {
   const [enquiries, setEnquiries] = useState([]);
@@ -27,13 +28,13 @@ const VenueEnquiriesPage = () => {
 
   const getStatusColor = (status) => {
     const colors = {
-      open: "bg-primary/10 text-primary",
+      open: "bg-primary/10 text-primary border border-primary/20",
       quoted: "bg-warning/10 text-warning border border-warning/20",
-      declined: "bg-error/10 text-error",
-      externally_booked: "bg-success/10 text-success",
-      closed: "bg-bg-secondary text-text-primary",
+      declined: "bg-error/10 text-error border border-error/20",
+      externally_booked: "bg-success/10 text-success border border-success/20",
+      closed: "bg-bg-secondary text-text-primary border border-border",
     };
-    return colors[status] || "bg-bg-secondary text-text-primary";
+    return colors[status] || "bg-bg-secondary text-text-primary border border-border";
   };
 
   const filteredEnquiries = filter === "all" 
@@ -114,19 +115,7 @@ const VenueEnquiriesPage = () => {
           </div>
         ) : filteredEnquiries.length === 0 ? (
           <div className="bg-bg-primary border border-border rounded-lg p-8 text-center">
-            <svg
-              className="mx-auto h-12 w-12 text-text-secondary/60"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-              />
-            </svg>
+            <FileText className="mx-auto h-12 w-12 text-text-secondary/60" />
             <h3 className="mt-4 text-lg font-medium text-text-primary">
               No enquiries found
             </h3>
@@ -216,8 +205,9 @@ const VenueEnquiriesPage = () => {
                     View Details
                   </Link>
                   {enquiry.status === "externally_booked" && (
-                    <span className="flex-1 text-center bg-success/10 text-success px-4 py-2 rounded-lg font-medium">
-                      ✓ Booking Confirmed
+                    <span className="flex-1 text-center bg-success/10 text-success px-4 py-2 rounded-lg font-medium inline-flex items-center justify-center gap-1">
+                      <CheckCircle2 className="w-4 h-4" />
+                      <span>Booking Confirmed</span>
                     </span>
                   )}
                 </div>

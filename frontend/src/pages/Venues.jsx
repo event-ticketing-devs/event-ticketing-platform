@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import apiClient from "../api/apiClient";
-import { STANDARD_AMENITIES, STANDARD_POLICY_ITEMS, getAmenityLabel, getPolicyItemLabel } from "../constants/venueConstants";
 import { useComparison } from "../context/ComparisonContext";
+import { Search, X, RotateCcw, ArrowUpDown, Sliders, Building2, MapPin, ChevronRight, CheckCircle2 } from "lucide-react";
 
 const VenuesPage = () => {
   const { toggleSpace, isSelected, canAddMore } = useComparison();
@@ -156,9 +156,7 @@ const VenuesPage = () => {
           <div className="p-4 border-b border-border">
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg className="h-5 w-5 text-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
+                <Search className="h-5 w-5 text-text-secondary" />
               </div>
               <input
                 type="text"
@@ -174,9 +172,7 @@ const VenuesPage = () => {
                   onClick={() => setFilters({ ...filters, search: "" })}
                   className="absolute inset-y-0 right-0 pr-3 flex items-center text-text-secondary hover:text-text-primary"
                 >
-                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
+                  <X className="h-5 w-5" />
                 </button>
               )}
             </div>
@@ -266,9 +262,7 @@ const VenuesPage = () => {
                   onClick={clearFilters}
                   className="flex-1 lg:flex-none px-3 py-1.5 rounded-lg border border-border hover:bg-bg-secondary text-text-primary transition-colors cursor-pointer font-medium text-sm flex items-center justify-center gap-1.5"
                 >
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                  </svg>
+                  <RotateCcw className="w-3.5 h-3.5" />
                   Reset
                 </button>
                 <button
@@ -276,13 +270,7 @@ const VenuesPage = () => {
                   onClick={toggleSortOrder}
                   className="flex-1 lg:flex-none px-3 py-1.5 rounded-lg border border-border hover:bg-bg-secondary text-text-primary transition-colors cursor-pointer font-medium text-sm flex items-center justify-center gap-1.5"
                 >
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    {sortOrder === 'asc' ? (
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
-                    ) : (
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h9m5-4v12m0 0l-4-4m4 4l4-4" />
-                    )}
-                  </svg>
+                  <ArrowUpDown className="w-3.5 h-3.5" />
                   {sortOrder === 'asc' ? 'Asc' : 'Desc'}
                 </button>
                 <button
@@ -294,9 +282,7 @@ const VenuesPage = () => {
                       : 'border-border hover:bg-bg-secondary text-text-primary'
                   }`}
                 >
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-                  </svg>
+                  <Sliders className="w-3.5 h-3.5" />
                   {showAdvancedFilters ? 'Less' : 'More'}
                   {hasActiveFilters() && !showAdvancedFilters && (
                     <span className="bg-primary text-bg-primary text-xs font-bold px-1.5 rounded-full">
@@ -388,9 +374,7 @@ const VenuesPage = () => {
                   onClick={() => setShowAdvancedFilters(false)}
                   className="text-bg-primary hover:text-bg-primary/80 transition-colors cursor-pointer"
                 >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
+                  <X className="w-6 h-6" />
                 </button>
               </div>
 
@@ -506,19 +490,7 @@ const VenuesPage = () => {
           </div>
         ) : spaces.length === 0 ? (
           <div className="text-center py-12 bg-bg-secondary border border-border rounded-lg">
-            <svg
-              className="mx-auto h-12 w-12 text-text-secondary/50"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-              />
-            </svg>
+            <Building2 className="mx-auto h-12 w-12 text-text-secondary/50" />
             <h3 className="mt-4 text-lg font-medium text-text-primary">No spaces found</h3>
             <p className="mt-2 text-text-secondary">
               Try adjusting your search filters
@@ -580,8 +552,9 @@ const VenuesPage = () => {
                         </p>
                       </div>
                       <div className="ml-2 flex flex-col gap-1 items-end">
-                        <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-success/10 text-success border border-success/20">
-                          ✓ Verified
+                        <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium bg-success/10 text-success border border-success/20">
+                          <CheckCircle2 className="w-3 h-3" />
+                          Verified
                         </span>
                         {filters.startDate && filters.endDate && (
                           <span className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ${
@@ -596,25 +569,7 @@ const VenuesPage = () => {
                     </div>
                   
                   <div className="flex items-center text-text-secondary mb-4">
-                    <svg
-                      className="h-5 w-5 mr-2"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                      />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                      />
-                    </svg>
+                    <MapPin className="h-5 w-5 mr-2" />
                     {space.venue.city}
                   </div>
 
@@ -693,8 +648,9 @@ const VenuesPage = () => {
                   )}
 
                   <div className="mt-auto pt-4 border-t border-border">
-                    <span className="inline-flex items-center text-sm font-medium text-primary hover:text-primary/80">
-                      View Venue Details →
+                    <span className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:text-primary/80">
+                      View Venue Details
+                      <ChevronRight className="w-4 h-4" />
                     </span>
                   </div>
                 </Link>

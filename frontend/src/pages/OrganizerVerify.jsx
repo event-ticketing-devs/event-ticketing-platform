@@ -4,6 +4,7 @@ import apiClient from "../api/apiClient";
 import QRScanner from "../components/QRScanner";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
+import { QrCode, CheckCircle2, XCircle, AlertCircle, Calendar, Ticket, Camera, ArrowLeft, Shield, ChevronDown, Edit, Check } from 'lucide-react';
 
 export default function OrganizerVerify() {
   const { eventId } = useParams();
@@ -152,19 +153,7 @@ export default function OrganizerVerify() {
         <div className="max-w-4xl mx-auto px-6">
           <div className="text-center">
             <div className="inline-flex items-center justify-center w-16 h-16 bg-primary/80 border border-bg-primary/30 mb-4 rounded-lg">
-              <svg
-                className="w-8 h-8 text-bg-primary"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.031 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-                />
-              </svg>
+              <Shield className="w-8 h-8 text-bg-primary" />
             </div>
             <h1 className="text-4xl font-bold mb-2">Ticket Verification</h1>
             <p className="text-bg-primary/80 text-lg max-w-2xl mx-auto">
@@ -183,19 +172,7 @@ export default function OrganizerVerify() {
             <div className="p-8 border-b border-border">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 bg-primary border border-border flex items-center justify-center rounded-lg">
-                  <svg
-                    className="w-5 h-5 text-bg-primary"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                    />
-                  </svg>
+                  <Calendar className="w-5 h-5 text-bg-primary" />
                 </div>
                 <h3 className="text-xl font-bold text-text-primary">
                   Select Event
@@ -217,34 +194,10 @@ export default function OrganizerVerify() {
                   ))}
                 </select>
                 <div className="absolute left-4 top-1/2 -translate-y-1/2">
-                  <svg
-                    className="w-5 h-5 text-text-secondary"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                    />
-                  </svg>
+                  <Calendar className="w-5 h-5 text-text-secondary" />
                 </div>
                 <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                  <svg
-                    className="w-5 h-5 text-text-secondary"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
+                  <ChevronDown className="w-5 h-5 text-text-secondary" />
                 </div>
               </div>
             </div>
@@ -265,19 +218,7 @@ export default function OrganizerVerify() {
                 }`}
               >
                 <div className="flex items-center justify-center gap-3">
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"
-                    />
-                  </svg>
+                  <QrCode className="w-5 h-5" />
                   <span>QR Scanner</span>
                 </div>
               </button>
@@ -290,19 +231,7 @@ export default function OrganizerVerify() {
                 }`}
               >
                 <div className="flex items-center justify-center gap-3">
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                    />
-                  </svg>
+                  <Edit className="w-5 h-5" />
                   <span>Manual Entry</span>
                 </div>
               </button>
@@ -314,19 +243,7 @@ export default function OrganizerVerify() {
             <div className="p-8">
               <div className="text-center">
                 <div className="inline-flex items-center justify-center w-20 h-20 bg-bg-secondary border border-border mb-6 rounded-lg">
-                  <svg
-                    className="w-10 h-10 text-primary"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"
-                    />
-                  </svg>
+                  <QrCode className="w-10 h-10 text-primary" />
                 </div>
                 <h4 className="text-xl font-semibold text-text-primary mb-2">
                   QR Code Scanner
@@ -340,42 +257,12 @@ export default function OrganizerVerify() {
                   onClick={startScanning}
                   disabled={!selectedEvent}
                 >
-                  <svg
-                    className="w-6 h-6"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
-                    />
-                  </svg>
+                  <Camera className="w-6 h-6" />
                   Start QR Scanner
                 </button>
                 {!selectedEvent && (
                   <p className="text-amber-600 text-sm mt-3 flex items-center justify-center gap-2">
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.664-.833-2.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"
-                      />
-                    </svg>
+                    <AlertCircle className="w-4 h-4" />
                     Please select an event first
                   </p>
                 )}
@@ -388,19 +275,7 @@ export default function OrganizerVerify() {
             <div className="p-8">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-12 h-12 bg-bg-secondary border border-border flex items-center justify-center rounded-lg">
-                  <svg
-                    className="w-6 h-6 text-primary"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                    />
-                  </svg>
+                  <Edit className="w-6 h-6 text-primary" />
                 </div>
                 <div>
                   <h4 className="text-xl font-semibold text-text-primary">
@@ -421,19 +296,7 @@ export default function OrganizerVerify() {
                   placeholder="Enter ticket ID (e.g., abc123...) or paste QR code data (JSON format)"
                 />
                 <div className="absolute left-4 top-4">
-                  <svg
-                    className="w-5 h-5 text-text-secondary"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 7a2 2 0 012 2m0 0a2 2 0 012 2m-2-2a2 2 0 00-2 2m2-2a2 2 0 012 2M9 7a2 2 0 00-2 2m0 0a2 2 0 00-2 2m2-2a2 2 0 012 2m-2-2a2 2 0 00-2 2"
-                    />
-                  </svg>
+                  <Ticket className="w-5 h-5 text-text-secondary" />
                 </div>
               </div>
 
@@ -442,19 +305,7 @@ export default function OrganizerVerify() {
                 onClick={handleManualVerify}
                 disabled={!selectedEvent || !manualInput.trim()}
               >
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
+                <CheckCircle2 className="w-5 h-5" />
                 Verify Ticket
               </button>
             </div>
@@ -479,33 +330,9 @@ export default function OrganizerVerify() {
                     }`}
                   >
                     {result.success ? (
-                      <svg
-                        className="w-6 h-6"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
+                      <Check className="w-6 h-6" />
                     ) : (
-                      <svg
-                        className="w-6 h-6"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M6 18L18 6M6 6l12 12"
-                        />
-                      </svg>
+                      <XCircle className="w-6 h-6" />
                     )}
                   </div>
                   <div>
@@ -558,19 +385,7 @@ export default function OrganizerVerify() {
               className="text-primary hover:text-primary/80 font-semibold transition-colors flex items-center justify-center gap-2 mx-auto cursor-pointer"
               onClick={() => navigate(-1)}
             >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                />
-              </svg>
+              <ArrowLeft className="w-5 h-5" />
               Back to Dashboard
             </button>
           </div>

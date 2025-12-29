@@ -5,6 +5,7 @@ import OrganizerActions from "../components/OrganizerActions";
 import apiClient from "../api/apiClient";
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { Check, X } from 'lucide-react';
 
 const REPORT_REASON_LABELS = {
   inappropriate_content: "Inappropriate Content",
@@ -137,9 +138,7 @@ export default function FlaggedEventsPage() {
         {flaggedEvents.length === 0 ? (
           <div className="bg-bg-primary border border-border rounded-lg p-8 text-center">
             <div className="w-16 h-16 bg-bg-secondary rounded-lg flex items-center justify-center mx-auto mb-4">
-              <svg className="w-8 h-8 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
+              <Check className="w-8 h-8 text-success" />
             </div>
             <h3 className="text-xl font-bold text-text-primary mb-2">No Flagged Events</h3>
             <p className="text-text-secondary">Great! There are currently no events with reports.</p>
@@ -298,9 +297,7 @@ export default function FlaggedEventsPage() {
                   }}
                   className="text-text-secondary hover:text-text-primary transition-colors cursor-pointer"
                 >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
+                  <X className="w-6 h-6" />
                 </button>
               </div>
 

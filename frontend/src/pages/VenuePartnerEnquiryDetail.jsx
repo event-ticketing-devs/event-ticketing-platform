@@ -4,6 +4,7 @@ import { format } from "date-fns";
 import apiClient from "../api/apiClient";
 import toast from "react-hot-toast";
 import VenueEnquiryChat from "../components/VenueEnquiryChat";
+import { ArrowLeft, Calendar, Users, User, Tag, Clock, CheckCircle2, XCircle, Lock } from 'lucide-react';
 
 const VenuePartnerEnquiryDetail = () => {
   const { id } = useParams();
@@ -108,11 +109,11 @@ const VenuePartnerEnquiryDetail = () => {
 
   const getStatusConfig = (status) => {
     const configs = {
-      open: { bg: "bg-primary/10", text: "text-primary", border: "border-primary/20", label: "Open", icon: "⏳" },
-      quoted: { bg: "bg-warning/10", text: "text-warning", border: "border-warning/20", label: "Quoted", icon: "💰" },
-      declined: { bg: "bg-error/10", text: "text-error", border: "border-error/20", label: "Declined", icon: "❌" },
-      externally_booked: { bg: "bg-success/10", text: "text-success", border: "border-success/20", label: "Confirmed", icon: "✅" },
-      closed: { bg: "bg-bg-secondary", text: "text-text-primary", border: "border-border", label: "Closed", icon: "🔒" },
+      open: { bg: "bg-primary/10", text: "text-primary", border: "border-primary/20", label: "Open", icon: <Clock className="w-4 h-4" /> },
+      quoted: { bg: "bg-warning/10", text: "text-warning", border: "border-warning/20", label: "Quoted", icon: <span className="w-4 h-4 flex items-center justify-center text-sm">₹</span> },
+      declined: { bg: "bg-error/10", text: "text-error", border: "border-error/20", label: "Declined", icon: <XCircle className="w-4 h-4" /> },
+      externally_booked: { bg: "bg-success/10", text: "text-success", border: "border-success/20", label: "Confirmed", icon: <CheckCircle2 className="w-4 h-4" /> },
+      closed: { bg: "bg-bg-secondary", text: "text-text-primary", border: "border-border", label: "Closed", icon: <Lock className="w-4 h-4" /> },
     };
     return configs[status] || configs.open;
   };
@@ -128,9 +129,7 @@ const VenuePartnerEnquiryDetail = () => {
             onClick={() => navigate("/venue-partner/dashboard")}
             className="text-primary hover:text-primary/80 mb-4 flex items-center gap-2 cursor-pointer transition-colors"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
+            <ArrowLeft className="w-5 h-5" />
             Back to Dashboard
           </button>
           
@@ -152,9 +151,7 @@ const VenuePartnerEnquiryDetail = () => {
             {/* Customer Info */}
             <div className="bg-bg-primary border border-border rounded-lg p-6">
               <h2 className="text-xl font-semibold text-text-primary mb-4 flex items-center gap-2">
-                <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
+                <User className="w-5 h-5 text-primary" />
                 Customer Information
               </h2>
               <div className="grid grid-cols-2 gap-4">
@@ -177,9 +174,7 @@ const VenuePartnerEnquiryDetail = () => {
               <div className="grid grid-cols-2 gap-6">
                 <div>
                   <div className="flex items-center gap-2 mb-2">
-                    <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                    </svg>
+                    <Tag className="w-5 h-5 text-primary" />
                     <span className="text-sm text-text-secondary">Event Type</span>
                   </div>
                   <p className="font-medium text-text-primary capitalize">
@@ -191,9 +186,7 @@ const VenuePartnerEnquiryDetail = () => {
 
                 <div>
                   <div className="flex items-center gap-2 mb-2">
-                    <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
+                    <Users className="w-5 h-5 text-primary" />
                     <span className="text-sm text-text-secondary">Expected Guests</span>
                   </div>
                   <p className="font-medium text-text-primary">{enquiry.expectedPax} people</p>
@@ -201,9 +194,7 @@ const VenuePartnerEnquiryDetail = () => {
 
                 <div>
                   <div className="flex items-center gap-2 mb-2">
-                    <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
+                    <Calendar className="w-5 h-5 text-primary" />
                     <span className="text-sm text-text-secondary">Event Dates</span>
                   </div>
                   <p className="font-medium text-text-primary">
@@ -216,9 +207,7 @@ const VenuePartnerEnquiryDetail = () => {
 
                 <div>
                   <div className="flex items-center gap-2 mb-2">
-                    <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
+                    <span className="w-5 h-5 flex items-center justify-center text-lg text-primary">₹</span>
                     <span className="text-sm text-text-secondary">Customer Budget</span>
                   </div>
                   <p className="font-medium text-text-primary">₹{enquiry.budgetMax?.toLocaleString()}</p>

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import apiClient from "../api/apiClient";
 import { format } from "date-fns";
+import { Search, X, RotateCcw, ArrowUpDown, Calendar as CalendarIcon, MapPin } from "lucide-react";
 
 const EventListPage = () => {
   const [events, setEvents] = useState([]);
@@ -178,9 +179,7 @@ const EventListPage = () => {
           <div className="p-4 border-b border-border">
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg className="h-5 w-5 text-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
+                <Search className="h-5 w-5 text-text-secondary" />
               </div>
               <input
                 type="text"
@@ -195,9 +194,7 @@ const EventListPage = () => {
                   onClick={() => handleFilterChange('search', '')}
                   className="absolute inset-y-0 right-0 pr-3 flex items-center text-text-secondary hover:text-text-primary"
                 >
-                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
+                  <X className="h-5 w-5" />
                 </button>
               )}
             </div>
@@ -276,9 +273,7 @@ const EventListPage = () => {
                   onClick={resetFilters}
                   className="flex-1 lg:flex-none px-3 py-1.5 rounded-lg border border-border hover:bg-bg-secondary text-text-primary transition-colors cursor-pointer font-medium text-sm flex items-center justify-center gap-1.5"
                 >
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                  </svg>
+                  <RotateCcw className="w-3.5 h-3.5" />
                   Reset
                 </button>
                 <button
@@ -286,13 +281,7 @@ const EventListPage = () => {
                   onClick={() => handleSortChange(sorting.sortBy, sorting.sortOrder === 'asc' ? 'desc' : 'asc')}
                   className="flex-1 lg:flex-none px-3 py-1.5 rounded-lg border border-border hover:bg-bg-secondary text-text-primary transition-colors cursor-pointer font-medium text-sm flex items-center justify-center gap-1.5"
                 >
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    {sorting.sortOrder === 'asc' ? (
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
-                    ) : (
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h9m5-4v12m0 0l-4-4m4 4l4-4" />
-                    )}
-                  </svg>
+                  <ArrowUpDown className="w-3.5 h-3.5" />
                   {sorting.sortOrder === 'asc' ? 'Asc' : 'Desc'}
                 </button>
               </div>
@@ -347,19 +336,7 @@ const EventListPage = () => {
             // No Events State
             <div className="text-center py-16">
               <div className="mx-auto w-16 h-16 mb-6 bg-bg-secondary rounded-lg flex items-center justify-center">
-                <svg
-                  className="w-8 h-8 text-text-secondary"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                  />
-                </svg>
+                <CalendarIcon className="w-8 h-8 text-text-secondary" />
               </div>
               <h3 className="text-xl font-semibold text-text-primary mb-2">
                 No events found
@@ -399,19 +376,7 @@ const EventListPage = () => {
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
-                        <svg
-                          className="w-12 h-12 text-text-secondary/30"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                          />
-                        </svg>
+                        <CalendarIcon className="w-12 h-12 text-text-secondary/30" />
                       </div>
                     )}
                     
@@ -440,9 +405,7 @@ const EventListPage = () => {
                     
                     {/* Date and Time */}
                     <div className="flex items-center gap-2 text-text-secondary mb-2">
-                      <svg className="w-4 h-4 text-text-secondary/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
+                      <CalendarIcon className="w-4 h-4 text-text-secondary/60" />
                       <span className="text-sm">
                         {format(new Date(event.date), "MMM dd, yyyy 'at' h:mm a")}
                       </span>
@@ -450,10 +413,7 @@ const EventListPage = () => {
 
                     {/* Location */}
                     <div className="flex items-center gap-2 text-text-secondary mb-4">
-                      <svg className="w-4 h-4 text-text-secondary/60 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                      </svg>
+                      <MapPin className="w-4 h-4 text-text-secondary/60 flex-shrink-0" />
                       <span className="text-sm truncate">
                         {event.venue?.name || event.venue}, {event.city}
                       </span>

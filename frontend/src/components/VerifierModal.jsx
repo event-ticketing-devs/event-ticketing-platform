@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import apiClient from '../api/apiClient';
 import { toast } from 'react-hot-toast';
 import ConfirmModal from './ConfirmModal';
+import { CheckCircle2 } from 'lucide-react';
 
 const VerifierModal = ({ isOpen, onClose, eventId, eventTitle }) => {
   const [verifiers, setVerifiers] = useState([]);
@@ -129,19 +130,7 @@ const VerifierModal = ({ isOpen, onClose, eventId, eventTitle }) => {
                 </h3>
                 {verifiers.length === 0 ? (
                   <div className="text-center py-8 bg-bg-secondary border border-border rounded-lg">
-                    <svg
-                      className="mx-auto h-12 w-12 text-text-secondary"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
+                    <CheckCircle2 className="mx-auto h-12 w-12 text-text-secondary" />
                     <p className="mt-2 text-text-primary">No verifiers yet</p>
                     <p className="text-sm text-text-secondary">Add verifiers to help check tickets at the venue</p>
                   </div>
@@ -171,17 +160,7 @@ const VerifierModal = ({ isOpen, onClose, eventId, eventTitle }) => {
               {/* Info Box */}
               <div className="mt-6 bg-secondary/10 border border-secondary/20 rounded-lg p-4">
                 <div className="flex">
-                  <svg
-                    className="h-5 text-secondary mt-0.5"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
+                  <AlertCircle className="h-5 text-secondary mt-0.5" />
                   <div className="ml-3">
                     <h4 className="text-sm font-medium text-text-primary">
                       Verifier Permissions

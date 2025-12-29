@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import {
   Elements,
@@ -7,8 +7,8 @@ import {
   useElements,
 } from "@stripe/react-stripe-js";
 import apiClient from "../api/apiClient";
+import { CreditCard, Lock,  Check, X } from 'lucide-react';
 
-// Place your Stripe publishable key in your .env as VITE_STRIPE_PUBLISHABLE_KEY
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
 // Custom Stripe element styling
@@ -100,19 +100,7 @@ function CheckoutForm({ amount, onSuccess }) {
       <div className="bg-primary px-6 py-4 rounded-t-lg">
         <div className="flex items-center space-x-3">
           <div className="w-8 h-8 bg-bg-primary/20 rounded-lg flex items-center justify-center">
-            <svg
-              className="w-5 h-5 text-bg-primary"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
-              />
-            </svg>
+            <CreditCard className="w-5 h-5 text-bg-primary" />
           </div>
           <div>
             <h2 className="text-xl font-bold text-bg-primary">Secure Payment</h2>
@@ -148,19 +136,7 @@ function CheckoutForm({ amount, onSuccess }) {
             {cardComplete && (
               <div className="absolute top-4 right-4">
                 <div className="w-5 h-5 bg-success/10 border border-success/20 rounded-md flex items-center justify-center">
-                  <svg
-                    className="w-3 h-3 text-success"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
+                  <Check className="w-3 h-3 text-success" />
                 </div>
               </div>
             )}
@@ -172,19 +148,7 @@ function CheckoutForm({ amount, onSuccess }) {
           <div className="bg-error/10 border border-error/20 rounded-lg p-4">
             <div className="flex items-center space-x-3">
               <div className="w-5 h-5 bg-error/10 border border-error/20 rounded-md flex items-center justify-center flex-shrink-0">
-                <svg
-                  className="w-3 h-3 text-error"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
+                <X className="w-3 h-3 text-error" />
               </div>
               <p className="text-error text-sm font-medium">{error}</p>
             </div>
@@ -195,19 +159,7 @@ function CheckoutForm({ amount, onSuccess }) {
         <div className="bg-secondary/10 border border-secondary/20 rounded-lg p-4">
           <div className="flex items-start space-x-3">
             <div className="w-5 h-5 bg-secondary/10 border border-secondary/20 rounded-md flex items-center justify-center flex-shrink-0 mt-0.5">
-              <svg
-                className="w-3 h-3 text-secondary"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                />
-              </svg>
+              <Lock className="w-3 h-3 text-secondary" />
             </div>
             <div>
               <p className="text-text-primary text-sm font-medium">
@@ -237,19 +189,7 @@ function CheckoutForm({ amount, onSuccess }) {
             </>
           ) : (
             <>
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                />
-              </svg>
+              <Lock className="w-5 h-5" />
               <span>Pay ₹{amount?.toLocaleString()}</span>
             </>
           )}

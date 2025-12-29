@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
 import apiClient from '../api/apiClient';
+import { Mail, Phone, X, CheckCircle2, Clock, AlertCircle, Inbox } from 'lucide-react';
 
 const AdminContacts = () => {
   const [contacts, setContacts] = useState([]);
@@ -60,29 +61,13 @@ const AdminContacts = () => {
   const getStatusIcon = (status) => {
     switch (status) {
       case 'pending':
-        return (
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-        );
+        return <Clock className="w-4 h-4" />;
       case 'in-progress':
-        return (
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-          </svg>
-        );
+        return <AlertCircle className="w-4 h-4" />;
       case 'resolved':
-        return (
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-          </svg>
-        );
+        return <CheckCircle2 className="w-4 h-4" />;
       case 'closed':
-        return (
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        );
+        return <X className="w-4 h-4" />;
       default:
         return null;
     }
@@ -129,9 +114,7 @@ const AdminContacts = () => {
             </div>
           ) : contacts.length === 0 ? (
             <div className="text-center py-12">
-              <svg className="w-12 h-12 text-text-secondary mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-              </svg>
+              <Inbox className="w-12 h-12 text-text-secondary mx-auto mb-4" />
               <h3 className="text-lg font-medium text-text-primary mb-2">No contacts found</h3>
               <p className="text-slate-500">No contact inquiries match your current filter.</p>
             </div>
@@ -265,9 +248,7 @@ const ContactDetailModal = ({ contact, onClose, onUpdateStatus }) => {
             onClick={onClose}
             className="text-bg-primary/80 hover:text-bg-primary transition-colors p-2 cursor-pointer rounded-lg"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
+            <X className="w-6 h-6" />
           </button>
         </div>
 
@@ -281,9 +262,7 @@ const ContactDetailModal = ({ contact, onClose, onUpdateStatus }) => {
                   onClick={() => window.open(`mailto:${contact.email}?subject=Re: ${contact.subject}&body=Hi ${contact.name},%0D%0A%0D%0AThank you for contacting us regarding "${contact.subject}".%0D%0A%0D%0A`, '_blank')}
                   className="flex items-center gap-2 px-3 py-2 bg-primary text-bg-primary hover:bg-primary/90 transition-colors text-sm cursor-pointer rounded-lg"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                  </svg>
+                  <Mail className="w-4 h-4" />
                   Email
                 </button>
                 {contact.phone && (
@@ -291,9 +270,7 @@ const ContactDetailModal = ({ contact, onClose, onUpdateStatus }) => {
                     onClick={() => window.open(`tel:${contact.phone}`, '_self')}
                     className="flex items-center gap-2 px-3 py-2 border border-border text-text-primary hover:bg-bg-secondary transition-colors text-sm cursor-pointer rounded-lg"
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21L8.27 10.98a11.042 11.042 0 006.02 6.02l1.592-1.956a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                    </svg>
+                    <Phone className="w-4 h-4" />
                     Call
                   </button>
                 )}

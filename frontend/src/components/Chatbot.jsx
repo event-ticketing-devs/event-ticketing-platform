@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import chatbotService from "../services/chatbotService";
 import toast from "react-hot-toast";
+import { MessageCircle, X, Send, RotateCcw } from 'lucide-react';
 
 export default function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
@@ -119,19 +120,7 @@ export default function Chatbot() {
           className="fixed bottom-6 right-6 z-50 rounded-lg bg-primary text-bg-primary p-4 hover:bg-primary/90 transition-colors group shadow-lg cursor-pointer border border-primary/20"
           aria-label="Open chatbot"
         >
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
-            />
-          </svg>
+          <MessageCircle className="w-6 h-6" />
         </button>
       )}
 
@@ -142,19 +131,7 @@ export default function Chatbot() {
           <div className="bg-primary text-bg-primary p-4 flex items-center justify-between rounded-t-lg">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-bg-primary/20 rounded-lg flex items-center justify-center">
-                <svg
-                  className="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
-                  />
-                </svg>
+                <MessageCircle className="w-6 h-6" />
               </div>
               <div>
                 <h3 className="font-semibold text-lg">Event Assistant</h3>
@@ -168,38 +145,14 @@ export default function Chatbot() {
                 aria-label="Reset chat"
                 title="Reset chat"
               >
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                  />
-                </svg>
+                <RotateCcw className="w-5 h-5" />
               </button>
               <button
                 onClick={() => setIsOpen(false)}
                 className="p-2 hover:bg-white/20 transition-colors"
                 aria-label="Close chatbot"
               >
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
+                <X className="w-5 h-5" />
               </button>
             </div>
           </div>
@@ -300,19 +253,7 @@ export default function Chatbot() {
                 className="px-5 py-3 bg-primary text-bg-primary rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center cursor-pointer"
                 aria-label="Send message"
               >
-                <svg
-                  className="w-5 h-5 rotate-90"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-                  />
-                </svg>
+                <Send className="w-5 h-5" />
               </button>
             </div>
             <div className="flex justify-between items-center mt-2">

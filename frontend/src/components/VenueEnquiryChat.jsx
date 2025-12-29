@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { io } from "socket.io-client";
 import apiClient from "../api/apiClient";
 import toast from "react-hot-toast";
+import { MessageCircle } from "lucide-react";
 
 export default function VenueEnquiryChat({ requestId }) {
   const [messages, setMessages] = useState([]);
@@ -200,19 +201,7 @@ export default function VenueEnquiryChat({ requestId }) {
       <div className="border border-border rounded-lg h-96 overflow-y-auto p-4 mb-4 bg-bg-secondary">
         {messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center">
-            <svg
-              className="h-12 w-12 text-text-secondary/50 mb-3"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-              />
-            </svg>
+            <MessageCircle className="h-12 w-12 text-text-secondary/50 mb-3" />
             <p className="text-text-primary">No messages yet</p>
             <p className="text-sm text-text-secondary mt-1">
               Start a conversation to discuss venue details

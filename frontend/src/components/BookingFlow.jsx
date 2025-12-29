@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import StripeCheckout from "../components/StripeCheckout";
 import apiClient from "../api/apiClient";
 import toast from "react-hot-toast";
+import { Ticket, Check, ChevronDown, Lock } from 'lucide-react';
 
 export default function BookingFlow({ event, onBookingSuccess }) {
   const [step, setStep] = useState("payment");
@@ -34,9 +35,7 @@ export default function BookingFlow({ event, onBookingSuccess }) {
           {/* Success Header */}
           <div className="bg-success px-6 py-8 text-center rounded-t-lg">
             <div className="w-16 h-16 bg-bg-primary/20 rounded-lg flex items-center justify-center mx-auto mb-4">
-              <svg className="w-8 h-8 text-bg-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
+              <Check className="w-8 h-8 text-bg-primary" />
             </div>
             <h2 className="text-2xl font-bold text-bg-primary mb-2">Booking Confirmed!</h2>
             <p className="text-bg-primary/80">Your tickets have been successfully booked</p>
@@ -47,9 +46,7 @@ export default function BookingFlow({ event, onBookingSuccess }) {
             <div className="bg-success/10 rounded-lg p-4 border border-success/20 mb-6">
               <div className="flex items-center space-x-3 mb-3">
                 <div className="w-8 h-8 bg-success/20 rounded-lg flex items-center justify-center">
-                  <svg className="w-5 h-5 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a1 1 0 001 1h1a1 1 0 001-1V7a2 2 0 00-2-2H5zM5 14a2 2 0 00-2-2v3a1 1 0 001 1h1a1 1 0 001-1v-3a2 2 0 00-2-2H5z" />
-                  </svg>
+                  <Ticket className="w-5 h-5 text-success" />
                 </div>
                 <h3 className="text-lg font-bold text-success">{event.title}</h3>
               </div>
@@ -86,9 +83,7 @@ export default function BookingFlow({ event, onBookingSuccess }) {
         <div className="bg-primary px-6 py-6 rounded-t-lg">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 bg-bg-primary/20 rounded-lg flex items-center justify-center">
-              <svg className="w-6 h-6 text-bg-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a1 1 0 001 1h1a1 1 0 001-1V7a2 2 0 00-2-2H5zM5 14a2 2 0 00-2-2v3a1 1 0 001 1h1a1 1 0 001-1v-3a2 2 0 00-2-2H5z" />
-              </svg>
+              <Ticket className="w-6 h-6 text-bg-primary" />
             </div>
             <div>
               <h2 className="text-xl font-bold text-bg-primary">Book Tickets</h2>
@@ -133,9 +128,7 @@ export default function BookingFlow({ event, onBookingSuccess }) {
                 ))}
               </select>
               <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                <svg className="w-5 h-5 text-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
+                <ChevronDown className="w-5 h-5 text-text-secondary" />
               </div>
             </div>
           </div>
@@ -174,9 +167,7 @@ export default function BookingFlow({ event, onBookingSuccess }) {
           <div className="bg-secondary/10 rounded-lg p-4 border border-secondary/20">
             <div className="flex items-start space-x-3">
               <div className="w-5 h-5 bg-secondary/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
-                <svg className="w-3 h-3 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                </svg>
+                <Lock className="w-3 h-3 text-secondary" />
               </div>
               <div>
                 <p className="text-text-primary text-sm font-medium">Secure Transaction</p>

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Loader } from "@googlemaps/js-api-loader";
+import { MapPin, Navigation, AlertCircle, Building2 } from "lucide-react";
 
 const VenueMap = ({ venue, height = "300px", showDirections = true }) => {
   const mapRef = useRef(null);
@@ -98,25 +99,7 @@ const VenueMap = ({ venue, height = "300px", showDirections = true }) => {
     return (
       <div className="bg-bg-secondary border border-border rounded-lg p-8 text-center">
         <div className="w-16 h-16 bg-bg-primary border border-border rounded-lg flex items-center justify-center mx-auto mb-4">
-          <svg
-            className="w-8 h-8 text-text-secondary"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-            />
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-            />
-          </svg>
+          <MapPin className="w-8 h-8 text-text-secondary" />
         </div>
         <h3 className="text-lg font-semibold text-text-primary mb-2">
           Location Not Available
@@ -132,19 +115,7 @@ const VenueMap = ({ venue, height = "300px", showDirections = true }) => {
     return (
       <div className="bg-error/10 border border-error/30 rounded-lg p-8 text-center">
         <div className="w-16 h-16 bg-bg-primary border border-error rounded-lg flex items-center justify-center mx-auto mb-4">
-          <svg
-            className="w-8 h-8 text-error"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.664-.833-2.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"
-            />
-          </svg>
+          <AlertCircle className="w-8 h-8 text-error" />
         </div>
         <h3 className="text-lg font-semibold text-error mb-2">
           Map Loading Error
@@ -179,44 +150,14 @@ const VenueMap = ({ venue, height = "300px", showDirections = true }) => {
             onClick={openInGoogleMaps}
             className="flex-1 bg-primary hover:bg-primary/90 text-bg-primary px-6 py-3 rounded-lg font-semibold transition-colors flex items-center justify-center gap-3"
           >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-              />
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-              />
-            </svg>
+            <MapPin className="w-5 h-5" />
             View on Google Maps
           </button>
           <button
             onClick={getDirections}
             className="flex-1 bg-primary hover:bg-primary/90 text-bg-primary px-6 py-3 rounded-lg font-semibold transition-colors flex items-center justify-center gap-3"
           >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"
-              />
-            </svg>
+            <Navigation className="w-5 h-5" />
             Get Directions
           </button>
         </div>
@@ -226,44 +167,14 @@ const VenueMap = ({ venue, height = "300px", showDirections = true }) => {
       <div className="bg-bg-secondary border border-border rounded-lg p-6">
         <div className="flex items-start gap-4">
           <div className="w-12 h-12 bg-bg-primary border border-border rounded-lg flex items-center justify-center flex-shrink-0">
-            <svg
-              className="w-6 h-6 text-primary"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-              />
-            </svg>
+            <Building2 className="w-6 h-6 text-primary" />
           </div>
           <div className="flex-1">
             <h4 className="text-xl font-bold text-text-primary mb-2">
               {venue.name}
             </h4>
             <div className="flex items-start gap-2">
-              <svg
-                className="w-5 h-5 text-text-secondary mt-0.5 flex-shrink-0"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-              </svg>
+              <MapPin className="w-5 h-5 text-text-secondary mt-0.5 flex-shrink-0" />
               <p className="text-text-secondary leading-relaxed">{venue.address}</p>
             </div>
           </div>
