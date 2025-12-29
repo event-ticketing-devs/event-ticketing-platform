@@ -486,7 +486,7 @@ export const cancelBooking = async (req, res) => {
         html: `
           <div style="font-family: Arial, sans-serif; background: #f9f9f9; padding: 24px;">
             <div style="max-width: 500px; margin: auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); padding: 24px;">
-              <h1 style="color: #e74c3c; text-align: center;">🚫 Booking Cancelled</h1>
+              <h1 style="color: #e74c3c; text-align: center;">Booking Cancelled</h1>
               <hr style="margin: 16px 0;">
               <p style="font-size: 1.1em;">Your booking for <strong>${
                 event.title
