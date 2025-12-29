@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Loader } from "@googlemaps/js-api-loader";
 import apiClient from "../api/apiClient";
 import toast from "react-hot-toast";
+import { Upload, X, CheckCircle2, AlertTriangle } from 'lucide-react';
 
 const VenueEdit = () => {
   const navigate = useNavigate();
@@ -360,34 +361,68 @@ const VenueEdit = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-lg text-gray-600">Loading venue data...</div>
+      <div className="min-h-screen bg-bg-secondary flex items-center justify-center">
+        <div className="text-lg text-text-secondary">Loading venue data...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-bg-secondary py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-6">
           <button
             onClick={() => navigate("/venue-partner")}
-            className="text-blue-600 hover:text-blue-700 mb-4 flex items-center gap-2"
+            className="text-primary hover:text-primary/80 mb-4 flex items-center gap-2"
           >
             ← Back to Dashboard
           </button>
-          <h1 className="text-3xl font-bold text-gray-900">Edit Venue</h1>
-          <p className="text-gray-600 mt-2">Update your venue information</p>
+          <h1 className="text-3xl font-bold text-text-primary">Edit Venue</h1>
+          <p className="text-text-secondary mt-2">Update your venue information</p>
+        </div>
+
+        {/* Listing Status Toggle */}
+        <div className="bg-bg-primary border border-border rounded-lg p-6 mb-6">
+          <div className="flex items-center justify-between">
+            <div className="flex-1">
+              <div className="flex items-center gap-3">
+                <h2 className="text-xl font-semibold text-text-primary">Venue Listing Status</h2>
+                <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                  form.isListed 
+                    ? "bg-success/10 text-success border border-success/20" 
+                    : "bg-error/10 text-error border border-error/20"
+                }`}>
+                  {form.isListed ? "Listed" : "Unlisted"}
+                </span>
+              </div>
+              <p className="text-sm text-text-secondary mt-2 flex items-center gap-2">
+                {form.isListed ? (
+                  <><CheckCircle2 className="w-4 h-4 text-success" /><span>Your venue appears in search results</span></>
+                ) : (
+                  <><AlertTriangle className="w-4 h-4 text-warning" /><span>Your venue is hidden from search results</span></>
+                )}
+              </p>
+            </div>
+            <label className="relative inline-flex items-center cursor-pointer ml-6">
+              <input
+                type="checkbox"
+                checked={form.isListed}
+                onChange={(e) => setForm(prev => ({ ...prev, isListed: e.target.checked }))}
+                className="sr-only peer"
+              />
+              <div className="w-16 h-8 bg-bg-secondary peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-8 peer-checked:after:border-white after:content-[''] after:absolute after:top-1 after:left-[4px] after:bg-white after:border-border after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-primary shadow-inner"></div>
+            </label>
+          </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Basic Information */}
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">Basic Information</h2>
+          <div className="bg-bg-primary border border-border rounded-lg p-6">
+            <h2 className="text-xl font-semibold text-text-primary mb-4">Basic Information</h2>
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-text-primary mb-1">
                   Venue Name *
                 </label>
                 <input
@@ -395,14 +430,14 @@ const VenueEdit = () => {
                   name="name"
                   value={form.name}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-transparent"
                   placeholder="E.g., Grand Palace Banquet Hall"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-text-primary mb-1">
                   City *
                 </label>
                 <input
@@ -410,7 +445,7 @@ const VenueEdit = () => {
                   name="city"
                   value={form.city}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-transparent"
                   placeholder="E.g., Mumbai"
                   required
                 />
@@ -419,9 +454,9 @@ const VenueEdit = () => {
           </div>
 
           {/* Location */}
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">Location</h2>
-            <p className="text-sm text-gray-600 mb-4">
+          <div className="bg-bg-primary border border-border rounded-lg p-6">
+            <h2 className="text-xl font-semibold text-text-primary mb-4">Location</h2>
+            <p className="text-sm text-text-secondary mb-4">
               Search for your venue or click on the map to select location
             </p>
             
@@ -430,17 +465,17 @@ const VenueEdit = () => {
                 ref={inputRef}
                 type="text"
                 placeholder="Type to search for your venue location..."
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white"
               />
             </div>
 
             <div
               ref={mapRef}
-              className="w-full h-96 rounded-lg border border-gray-300 mb-4"
+              className="w-full h-96 rounded-lg border border-border mb-4"
             ></div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-text-primary mb-1">
                 Full Address *
               </label>
               <input
@@ -448,7 +483,7 @@ const VenueEdit = () => {
                 name="fullAddress"
                 value={form.fullAddress}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-transparent"
                 placeholder="Full address will be populated when you select a location"
                 readOnly
               />
@@ -456,12 +491,12 @@ const VenueEdit = () => {
           </div>
 
           {/* Primary Contact */}
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">Primary Contact</h2>
+          <div className="bg-bg-primary border border-border rounded-lg p-6">
+            <h2 className="text-xl font-semibold text-text-primary mb-4">Primary Contact</h2>
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-text-primary mb-1">
                   Contact Name *
                 </label>
                 <input
@@ -469,13 +504,13 @@ const VenueEdit = () => {
                   name="primaryContact.name"
                   value={form.primaryContact.name}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-transparent"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-text-primary mb-1">
                   Phone Number *
                 </label>
                 <input
@@ -483,14 +518,14 @@ const VenueEdit = () => {
                   name="primaryContact.phone"
                   value={form.primaryContact.phone}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-transparent"
                   placeholder="10-digit number"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-text-primary mb-1">
                   Email *
                 </label>
                 <input
@@ -498,7 +533,7 @@ const VenueEdit = () => {
                   name="primaryContact.email"
                   value={form.primaryContact.email}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-transparent"
                   required
                 />
               </div>
@@ -506,9 +541,9 @@ const VenueEdit = () => {
           </div>
 
           {/* Team Members */}
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">Team Members</h2>
-            <p className="text-sm text-gray-600 mb-4">
+          <div className="bg-bg-primary border border-border rounded-lg p-6">
+            <h2 className="text-xl font-semibold text-text-primary mb-4">Team Members</h2>
+            <p className="text-sm text-text-secondary mb-4">
               Add team members who can manage spaces and respond to enquiries
             </p>
 
@@ -518,13 +553,13 @@ const VenueEdit = () => {
                 value={teamMemberEmail}
                 onChange={(e) => setTeamMemberEmail(e.target.value)}
                 onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addTeamMember())}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="flex-1 px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-transparent"
                 placeholder="team@example.com"
               />
               <button
                 type="button"
                 onClick={addTeamMember}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                className="bg-primary text-bg-primary px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors"
               >
                 Add
               </button>
@@ -535,13 +570,13 @@ const VenueEdit = () => {
                 {form.teamMembers.map((email, index) => (
                   <span
                     key={index}
-                    className="inline-flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm"
+                    className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3 py-1 rounded-full text-sm"
                   >
                     {email}
                     <button
                       type="button"
                       onClick={() => removeTeamMember(index)}
-                      className="text-blue-600 hover:text-blue-800"
+                      className="text-primary hover:text-primary"
                     >
                       ✕
                     </button>
@@ -552,8 +587,8 @@ const VenueEdit = () => {
           </div>
 
           {/* Parking Information */}
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">Parking Information</h2>
+          <div className="bg-bg-primary border border-border rounded-lg p-6">
+            <h2 className="text-xl font-semibold text-text-primary mb-4">Parking Information</h2>
             <div className="space-y-3">
               <label className="flex items-center gap-2">
                 <input
@@ -563,9 +598,9 @@ const VenueEdit = () => {
                     ...prev,
                     parking: { ...prev.parking, available: e.target.checked }
                   }))}
-                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  className="rounded border-border text-primary focus:ring-primary/20"
                 />
-                <span className="text-gray-700">Parking available</span>
+                <span className="text-text-primary">Parking available</span>
               </label>
               
               {form.parking.available && (
@@ -577,40 +612,28 @@ const VenueEdit = () => {
                   }))}
                   rows={3}
                   placeholder="Describe parking facilities (e.g., capacity, valet service, charges)..."
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-transparent"
                 />
               )}
             </div>
           </div>
 
           {/* Venue Photo */}
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">Venue Photo</h2>
+          <div className="bg-bg-primary border border-border rounded-lg p-6">
+            <h2 className="text-xl font-semibold text-text-primary mb-4">Venue Photo</h2>
             <div className="space-y-4">
               {!imagePreview ? (
                 <div>
                   <label
                     htmlFor="photo-upload"
-                    className="flex flex-col items-center justify-center w-full h-48 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors"
+                    className="flex flex-col items-center justify-center w-full h-48 border-2 border-border border-dashed rounded-lg cursor-pointer bg-bg-secondary hover:bg-bg-secondary transition-colors"
                   >
                     <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                      <svg
-                        className="w-10 h-10 mb-3 text-gray-400"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                        />
-                      </svg>
-                      <p className="mb-2 text-sm text-gray-500">
+                      <Upload className="w-10 h-10 mb-3 text-text-secondary/60" />
+                      <p className="mb-2 text-sm text-text-secondary">
                         <span className="font-semibold">Click to upload</span> or drag and drop
                       </p>
-                      <p className="text-xs text-gray-500">PNG, JPG or WEBP (MAX. 5MB)</p>
+                      <p className="text-xs text-text-secondary">PNG, JPG or WEBP (MAX. 5MB)</p>
                     </div>
                     <input
                       id="photo-upload"
@@ -631,48 +654,12 @@ const VenueEdit = () => {
                   <button
                     type="button"
                     onClick={removeImage}
-                    className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors"
+                    className="absolute top-2 right-2 bg-error text-bg-primary p-2 rounded-full hover:bg-error/90 transition-colors"
                   >
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
+                    <X className="w-5 h-5" />
                   </button>
                 </div>
               )}
-            </div>
-          </div>
-
-          {/* Listing Status */}
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">Listing Status</h2>
-            <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-              <div>
-                <p className="font-medium text-gray-900">Venue Listed</p>
-                <p className="text-sm text-gray-600 mt-1">
-                  {form.isListed 
-                    ? "Your venue is visible to event organizers" 
-                    : "Your venue is hidden from search results"}
-                </p>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={form.isListed}
-                  onChange={(e) => setForm(prev => ({ ...prev, isListed: e.target.checked }))}
-                  className="sr-only peer"
-                />
-                <div className="w-14 h-7 bg-gray-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-blue-600"></div>
-              </label>
             </div>
           </div>
 
@@ -681,14 +668,14 @@ const VenueEdit = () => {
             <button
               type="submit"
               disabled={submitting}
-              className="flex-1 bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed text-lg font-semibold"
+              className="flex-1 bg-primary text-bg-primary py-3 px-6 rounded-lg hover:bg-primary/90 transition-colors disabled:bg-border disabled:cursor-not-allowed text-lg font-semibold"
             >
               {submitting ? "Updating..." : "Update Venue"}
             </button>
             <button
               type="button"
               onClick={() => navigate("/venue-partner")}
-              className="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              className="px-6 py-3 border border-border rounded-lg hover:bg-bg-secondary transition-colors"
             >
               Cancel
             </button>

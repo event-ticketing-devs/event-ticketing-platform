@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Loader } from "@googlemaps/js-api-loader";
 import apiClient from "../api/apiClient";
 import toast from "react-hot-toast";
+import { Upload, X } from 'lucide-react';
 
 const VenueRegistration = () => {
   const navigate = useNavigate();
@@ -288,22 +289,22 @@ const VenueRegistration = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-bg-secondary py-8">
       <div className="max-w-5xl mx-auto px-4">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Register Your Venue</h1>
-          <p className="text-gray-600 mt-2">
+          <h1 className="text-3xl font-bold text-text-primary">Register Your Venue</h1>
+          <p className="text-text-secondary mt-2">
             Join our platform and start receiving event enquiries
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Basic Information */}
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="bg-bg-primary border border-border rounded-lg p-6">
             <h2 className="text-xl font-semibold mb-4">Basic Information</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-text-primary mb-2">
                   Venue Name *
                 </label>
                 <input
@@ -311,13 +312,13 @@ const VenueRegistration = () => {
                   name="name"
                   value={form.name}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-text-primary mb-2">
                   City *
                 </label>
                 <input
@@ -325,7 +326,7 @@ const VenueRegistration = () => {
                   name="city"
                   value={form.city}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20"
                   required
                 />
               </div>
@@ -333,9 +334,9 @@ const VenueRegistration = () => {
           </div>
 
           {/* Location */}
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="bg-bg-primary border border-border rounded-lg p-6">
             <h2 className="text-xl font-semibold mb-4">Location *</h2>
-            <p className="text-sm text-gray-600 mb-4">
+            <p className="text-sm text-text-secondary mb-4">
               Search for your venue or click on the map to select location
             </p>
             <div className="mb-4">
@@ -343,26 +344,26 @@ const VenueRegistration = () => {
                 ref={inputRef}
                 type="text"
                 placeholder="Type to search for your venue location..."
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white"
               />
             </div>
             
-            <div ref={mapRef} className="w-full h-80 rounded-lg bg-gray-100" />
+            <div ref={mapRef} className="w-full h-80 rounded-lg bg-bg-secondary" />
 
             {form.fullAddress && (
-              <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <p className="text-sm font-medium text-gray-700">Selected Address:</p>
-                <p className="text-gray-900">{form.fullAddress}</p>
+              <div className="mt-4 p-4 bg-primary/10 border border-primary/20 rounded-lg">
+                <p className="text-sm font-medium text-text-primary">Selected Address:</p>
+                <p className="text-text-primary">{form.fullAddress}</p>
               </div>
             )}
           </div>
 
           {/* Primary Contact */}
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="bg-bg-primary border border-border rounded-lg p-6">
             <h2 className="text-xl font-semibold mb-4">Primary Contact *</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-text-primary mb-2">
                   Contact Person Name *
                 </label>
                 <input
@@ -370,13 +371,13 @@ const VenueRegistration = () => {
                   name="primaryContact.name"
                   value={form.primaryContact.name}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-text-primary mb-2">
                   Phone Number * (10 digits)
                 </label>
                 <input
@@ -386,13 +387,13 @@ const VenueRegistration = () => {
                   onChange={handleChange}
                   pattern="\d{10}"
                   maxLength="10"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-text-primary mb-2">
                   Email Address *
                 </label>
                 <input
@@ -400,7 +401,7 @@ const VenueRegistration = () => {
                   name="primaryContact.email"
                   value={form.primaryContact.email}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20"
                   required
                 />
               </div>
@@ -408,7 +409,7 @@ const VenueRegistration = () => {
           </div>
 
           {/* Parking Information */}
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="bg-bg-primary border border-border rounded-lg p-6">
             <h2 className="text-xl font-semibold mb-4">Parking Information</h2>
             <div className="space-y-3">
               <label className="flex items-center gap-2">
@@ -419,9 +420,9 @@ const VenueRegistration = () => {
                     ...prev,
                     parking: { ...prev.parking, available: e.target.checked }
                   }))}
-                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  className="rounded border-border text-primary focus:ring-primary/20"
                 />
-                <span className="text-gray-700">Parking available</span>
+                <span className="text-text-primary">Parking available</span>
               </label>
               
               {form.parking.available && (
@@ -433,40 +434,28 @@ const VenueRegistration = () => {
                   }))}
                   rows={3}
                   placeholder="Describe parking facilities (e.g., capacity, valet service, charges)..."
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20"
                 />
               )}
             </div>
           </div>
 
           {/* Venue Photo */}
-          <div className="bg-white rounded-lg shadow-md p-6">
+          <div className="bg-bg-primary border border-border rounded-lg p-6">
             <h2 className="text-xl font-semibold mb-4">Venue Photo</h2>
             <div className="space-y-4">
               {!imagePreview ? (
                 <div>
                   <label
                     htmlFor="photo-upload"
-                    className="flex flex-col items-center justify-center w-full h-48 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors"
+                    className="flex flex-col items-center justify-center w-full h-48 border-2 border-border border-dashed rounded-lg cursor-pointer bg-bg-secondary hover:bg-bg-secondary transition-colors"
                   >
                     <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                      <svg
-                        className="w-10 h-10 mb-3 text-gray-400"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                        />
-                      </svg>
-                      <p className="mb-2 text-sm text-gray-500">
+                      <Upload className="w-10 h-10 mb-3 text-text-secondary/60" />
+                      <p className="mb-2 text-sm text-text-secondary">
                         <span className="font-semibold">Click to upload</span> or drag and drop
                       </p>
-                      <p className="text-xs text-gray-500">PNG, JPG or WEBP (MAX. 5MB)</p>
+                      <p className="text-xs text-text-secondary">PNG, JPG or WEBP (MAX. 5MB)</p>
                     </div>
                     <input
                       id="photo-upload"
@@ -487,21 +476,9 @@ const VenueRegistration = () => {
                   <button
                     type="button"
                     onClick={removeImage}
-                    className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors"
+                    className="absolute top-2 right-2 bg-error text-bg-primary p-2 rounded-full hover:bg-error/90 transition-colors"
                   >
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
+                    <X className="w-5 h-5" />
                   </button>
                 </div>
               )}
@@ -513,14 +490,14 @@ const VenueRegistration = () => {
             <button
               type="submit"
               disabled={submitting}
-              className="flex-1 bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 font-medium"
+              className="flex-1 bg-primary text-bg-primary py-3 rounded-lg hover:bg-primary/90 disabled:bg-border font-medium"
             >
               {submitting ? "Registering..." : "Register Venue"}
             </button>
             <button
               type="button"
               onClick={() => navigate("/venue-partner")}
-              className="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50"
+              className="px-6 py-3 border border-border rounded-lg hover:bg-bg-secondary"
             >
               Cancel
             </button>

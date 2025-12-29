@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import {
   Elements,
@@ -7,8 +7,8 @@ import {
   useElements,
 } from "@stripe/react-stripe-js";
 import apiClient from "../api/apiClient";
+import { CreditCard, Lock,  Check, X } from 'lucide-react';
 
-// Place your Stripe publishable key in your .env as VITE_STRIPE_PUBLISHABLE_KEY
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
 // Custom Stripe element styling
@@ -95,28 +95,16 @@ function CheckoutForm({ amount, onSuccess }) {
   };
 
   return (
-    <div className="bg-white border border-slate-200 overflow-hidden">
+    <div className="bg-bg-primary border border-border rounded-lg overflow-hidden">
       {/* Header */}
-      <div className="bg-slate-900 px-6 py-4">
+      <div className="bg-primary px-6 py-4 rounded-t-lg">
         <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 bg-slate-100 border border-slate-200 flex items-center justify-center">
-            <svg
-              className="w-5 h-5 text-slate-900"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
-              />
-            </svg>
+          <div className="w-8 h-8 bg-bg-primary/20 rounded-lg flex items-center justify-center">
+            <CreditCard className="w-5 h-5 text-bg-primary" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-white">Secure Payment</h2>
-            <p className="text-slate-300 text-sm">Powered by Stripe</p>
+            <h2 className="text-xl font-bold text-bg-primary">Secure Payment</h2>
+            <p className="text-bg-primary/80 text-sm">Powered by Stripe</p>
           </div>
         </div>
       </div>
@@ -124,10 +112,10 @@ function CheckoutForm({ amount, onSuccess }) {
       {/* Payment Form */}
       <form onSubmit={handleSubmit} className="p-6 space-y-6">
         {/* Amount Summary */}
-        <div className="bg-slate-50 p-4 border border-slate-200">
+        <div className="bg-bg-secondary p-4 border border-border rounded-lg">
           <div className="flex items-center justify-between">
-            <span className="text-slate-600 font-medium">Total Amount</span>
-            <span className="text-2xl font-bold text-slate-900">
+            <span className="text-text-secondary font-medium">Total Amount</span>
+            <span className="text-2xl font-bold text-text-primary">
               ₹{amount?.toLocaleString()}
             </span>
           </div>
@@ -135,11 +123,11 @@ function CheckoutForm({ amount, onSuccess }) {
 
         {/* Card Input */}
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-slate-700">
+          <label className="block text-sm font-medium text-text-primary">
             Card Information
           </label>
           <div className="relative">
-            <div className="border border-slate-300 p-4 focus-within:ring-1 focus-within:ring-slate-900 focus-within:border-slate-900 transition-colors bg-white">
+            <div className="border border-border rounded-lg p-4 focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary transition-colors bg-bg-primary">
               <CardElement
                 options={cardElementOptions}
                 onChange={handleCardChange}
@@ -147,20 +135,8 @@ function CheckoutForm({ amount, onSuccess }) {
             </div>
             {cardComplete && (
               <div className="absolute top-4 right-4">
-                <div className="w-5 h-5 bg-green-50 border border-green-200 flex items-center justify-center">
-                  <svg
-                    className="w-3 h-3 text-green-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
+                <div className="w-5 h-5 bg-success/10 border border-success/20 rounded-md flex items-center justify-center">
+                  <Check className="w-3 h-3 text-success" />
                 </div>
               </div>
             )}
@@ -169,51 +145,27 @@ function CheckoutForm({ amount, onSuccess }) {
 
         {/* Error Message */}
         {error && (
-          <div className="bg-red-50 border border-red-200 p-4">
+          <div className="bg-error/10 border border-error/20 rounded-lg p-4">
             <div className="flex items-center space-x-3">
-              <div className="w-5 h-5 bg-red-50 border border-red-200 flex items-center justify-center flex-shrink-0">
-                <svg
-                  className="w-3 h-3 text-red-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
+              <div className="w-5 h-5 bg-error/10 border border-error/20 rounded-md flex items-center justify-center flex-shrink-0">
+                <X className="w-3 h-3 text-error" />
               </div>
-              <p className="text-red-700 text-sm font-medium">{error}</p>
+              <p className="text-error text-sm font-medium">{error}</p>
             </div>
           </div>
         )}
 
         {/* Security Notice */}
-        <div className="bg-slate-50 border border-slate-200 p-4">
+        <div className="bg-secondary/10 border border-secondary/20 rounded-lg p-4">
           <div className="flex items-start space-x-3">
-            <div className="w-5 h-5 bg-slate-100 border border-slate-200 flex items-center justify-center flex-shrink-0 mt-0.5">
-              <svg
-                className="w-3 h-3 text-slate-900"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                />
-              </svg>
+            <div className="w-5 h-5 bg-secondary/10 border border-secondary/20 rounded-md flex items-center justify-center flex-shrink-0 mt-0.5">
+              <Lock className="w-3 h-3 text-secondary" />
             </div>
             <div>
-              <p className="text-slate-900 text-sm font-medium">
+              <p className="text-text-primary text-sm font-medium">
                 Your payment is secure
               </p>
-              <p className="text-slate-600 text-xs mt-1">
+              <p className="text-text-secondary text-xs mt-1">
                 Your card information is never stored on our servers
               </p>
             </div>
@@ -224,39 +176,27 @@ function CheckoutForm({ amount, onSuccess }) {
         <button
           type="submit"
           disabled={!stripe || !cardComplete || loading}
-          className={`w-full py-4 px-6 font-semibold text-white transition-colors flex items-center justify-center space-x-2 ${
+          className={`w-full py-4 px-6 rounded-lg font-semibold text-bg-primary transition-colors flex items-center justify-center space-x-2 cursor-pointer ${
             !stripe || !cardComplete || loading
-              ? "bg-slate-300 cursor-not-allowed"
-              : "bg-slate-900 hover:bg-slate-800"
+              ? "bg-primary/40 cursor-not-allowed"
+              : "bg-primary hover:bg-primary/90"
           }`}
         >
           {loading ? (
             <>
-              <div className="w-5 h-5 border-2 rounded-full border-white/30 border-t-white animate-spin"></div>
+              <div className="w-5 h-5 border-2 rounded-full border-bg-primary/30 border-t-bg-primary animate-spin"></div>
               <span>Processing Payment...</span>
             </>
           ) : (
             <>
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                />
-              </svg>
+              <Lock className="w-5 h-5" />
               <span>Pay ₹{amount?.toLocaleString()}</span>
             </>
           )}
         </button>
 
         {/* Powered by Stripe */}
-        <div className="flex items-center justify-center space-x-2 text-slate-500 text-xs">
+        <div className="flex items-center justify-center space-x-2 text-text-secondary text-xs">
           <span>Powered by Stripe</span>
         </div>
       </form>

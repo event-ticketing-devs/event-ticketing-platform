@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import apiClient from "../api/apiClient";
 import toast from "react-hot-toast";
+import ConfirmModal from "../components/ConfirmModal";
+import { ArrowLeft, Plus, Calendar, X, Info } from 'lucide-react';
 
 export default function SpaceAvailabilityManagement() {
   const { spaceId } = useParams();
@@ -16,6 +18,7 @@ export default function SpaceAvailabilityManagement() {
     endDate: "",
     reason: "",
   });
+  const [unblockConfirm, setUnblockConfirm] = useState({ open: false, blockId: null, isBooking: false });
 
   useEffect(() => {
     fetchData();
@@ -80,16 +83,12 @@ export default function SpaceAvailabilityManagement() {
   };
 
   const handleUnblock = async (blockId, isBooking) => {
-    const message = isBooking
-      ? "This block is linked to a booking. Removing it will cancel the booking and return the enquiry to 'quoted' status. Continue?"
-      : "Are you sure you want to remove this block?";
-    
-    if (!window.confirm(message)) {
-      return;
-    }
+    setUnblockConfirm({ open: true, blockId, isBooking });
+  };
 
+  const confirmUnblock = async () => {
     try {
-      const response = await apiClient.delete(`/spaces/${spaceId}/unblock/${blockId}`);
+      const response = await apiClient.delete(`/spaces/${spaceId}/unblock/${unblockConfirm.blockId}`);
       
       if (response.data.wasBooking) {
         toast.success("Booking cancelled and block removed successfully");
@@ -97,6 +96,7 @@ export default function SpaceAvailabilityManagement() {
         toast.success("Block removed successfully");
       }
       
+      setUnblockConfirm({ open: false, blockId: null, isBooking: false });
       fetchData();
     } catch (err) {
       toast.error(err.response?.data?.message || "Failed to remove block");
@@ -122,58 +122,62 @@ export default function SpaceAvailabilityManagement() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-lg text-gray-600">Loading...</div>
+      <div className="min-h-screen bg-bg-secondary flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
       </div>
     );
   }
 
   if (!space || !venue) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-lg text-red-600">Space not found</div>
+      <div className="min-h-screen bg-bg-secondary flex items-center justify-center">
+        <div className="text-lg text-error">Space not found</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-bg-secondary py-8">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="mb-6">
+        <div className="mb-8">
           <button
             onClick={() => navigate(`/venue-partner/venues/${venue._id}/spaces`)}
-            className="text-blue-600 hover:text-blue-700 mb-4 flex items-center gap-2"
+            className="text-primary hover:text-primary/80 mb-4 flex items-center gap-2 cursor-pointer transition-colors"
           >
-            ← Back to Spaces
+            <ArrowLeft className="w-5 h-5" />
+            Back to Spaces
           </button>
-          <h1 className="text-3xl font-bold text-gray-900">
-            Availability Management
-          </h1>
-          <p className="text-gray-600 mt-2">
-            {space.name} - {venue.name}
-          </p>
+          
+          <div>
+            <h1 className="text-3xl font-bold text-text-primary">
+              Availability Management
+            </h1>
+            <p className="text-text-secondary mt-2">
+              {space.name} - {venue.name}
+            </p>
+          </div>
         </div>
 
         {/* Space Info Card */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">
+        <div className="bg-bg-primary border border-border rounded-lg p-6 mb-6">
+          <h2 className="text-lg font-semibold text-text-primary mb-4">
             Space Details
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <p className="text-sm text-gray-500">Type</p>
-              <p className="text-gray-900 font-medium capitalize">
+              <p className="text-sm text-text-secondary mb-1">Type</p>
+              <p className="text-text-primary font-medium capitalize">
                 {space.type}
               </p>
             </div>
             <div>
-              <p className="text-sm text-gray-500">Capacity</p>
-              <p className="text-gray-900 font-medium">{space.maxPax} guests</p>
+              <p className="text-sm text-text-secondary mb-1">Capacity</p>
+              <p className="text-text-primary font-medium">{space.maxPax} guests</p>
             </div>
             <div>
-              <p className="text-sm text-gray-500">Booking Unit</p>
-              <p className="text-gray-900 font-medium capitalize">
+              <p className="text-sm text-text-secondary mb-1">Booking Unit</p>
+              <p className="text-text-primary font-medium capitalize">
                 {space.bookingUnit}
               </p>
             </div>
@@ -184,17 +188,18 @@ export default function SpaceAvailabilityManagement() {
         {!showBlockForm && (
           <button
             onClick={() => setShowBlockForm(true)}
-            className="mb-6 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+            className="mb-6 inline-flex items-center gap-2 bg-primary text-bg-primary px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors cursor-pointer font-medium"
           >
-            + Block Availability
+            <Plus className="w-5 h-5" />
+            Block Availability
           </button>
         )}
 
         {/* Block Form */}
         {showBlockForm && (
-          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold text-gray-800">
+          <div className="bg-bg-primary border border-border rounded-lg p-6 mb-6">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-semibold text-text-primary">
                 Block Availability
               </h2>
               <button
@@ -202,17 +207,17 @@ export default function SpaceAvailabilityManagement() {
                   setShowBlockForm(false);
                   setBlockForm({ startDate: "", endDate: "", reason: "" });
                 }}
-                className="text-gray-500 hover:text-gray-700"
+                className="text-text-secondary hover:text-text-primary transition-colors"
               >
-                ✕
+                <X className="w-6 h-6" />
               </button>
             </div>
 
-            <form onSubmit={handleBlockSubmit} className="space-y-4">
+            <form onSubmit={handleBlockSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Start Date *
+                  <label className="block text-sm font-medium text-text-primary mb-2">
+                    Start Date <span className="text-error">*</span>
                   </label>
                   <input
                     type="date"
@@ -221,14 +226,14 @@ export default function SpaceAvailabilityManagement() {
                     onChange={(e) =>
                       setBlockForm({ ...blockForm, startDate: e.target.value })
                     }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    End Date *
+                  <label className="block text-sm font-medium text-text-primary mb-2">
+                    End Date <span className="text-error">*</span>
                   </label>
                   <input
                     type="date"
@@ -237,14 +242,14 @@ export default function SpaceAvailabilityManagement() {
                     onChange={(e) =>
                       setBlockForm({ ...blockForm, endDate: e.target.value })
                     }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                     required
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-text-primary mb-2">
                   Reason (Optional)
                 </label>
                 <textarea
@@ -254,14 +259,14 @@ export default function SpaceAvailabilityManagement() {
                   }
                   placeholder="E.g., Maintenance, Private event, etc."
                   rows={3}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary resize-none"
                 />
               </div>
 
               <div className="flex gap-3">
                 <button
                   type="submit"
-                  className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                  className="bg-primary text-bg-primary px-6 py-2 rounded-lg hover:bg-primary/90 transition-colors cursor-pointer font-medium"
                 >
                   Block Dates
                 </button>
@@ -271,7 +276,7 @@ export default function SpaceAvailabilityManagement() {
                     setShowBlockForm(false);
                     setBlockForm({ startDate: "", endDate: "", reason: "" });
                   }}
-                  className="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-300 transition-colors"
+                  className="bg-bg-secondary border border-border text-text-primary px-6 py-2 rounded-lg hover:bg-bg-secondary/80 transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -281,27 +286,15 @@ export default function SpaceAvailabilityManagement() {
         )}
 
         {/* Blocks List */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">
+        <div className="bg-bg-primary border border-border rounded-lg p-6">
+          <h2 className="text-xl font-semibold text-text-primary mb-6">
             Blocked Dates
           </h2>
 
           {blocks.length === 0 ? (
             <div className="text-center py-12">
-              <svg
-                className="mx-auto h-12 w-12 text-gray-400"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                />
-              </svg>
-              <p className="mt-4 text-gray-500">
+              <Calendar className="mx-auto h-16 w-16 text-text-secondary mb-4" />
+              <p className="text-text-secondary text-lg">
                 No blocked dates. This space is fully available.
               </p>
             </div>
@@ -316,38 +309,26 @@ export default function SpaceAvailabilityManagement() {
                 return (
                   <div
                     key={block._id}
-                    className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+                    className="border border-border rounded-lg p-4 hover:border-primary/30 hover:shadow-md transition-all"
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="flex items-center gap-4 mb-2">
-                          <div className="flex items-center gap-2 text-gray-900 font-medium">
-                            <svg
-                              className="h-5 w-5 text-blue-600"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                              />
-                            </svg>
+                          <div className="flex items-center gap-2 text-text-primary font-medium">
+                            <Calendar className="h-5 w-5 text-primary" />
                             {isValidStart && isValidEnd
                               ? `${formatDate(block.start)} - ${formatDate(block.end)}`
                               : "Invalid date range"}
                           </div>
                           {block.status === "booked" && (
-                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            <span className="inline-flex items-center px-3 py-1 rounded-md text-xs font-medium bg-success/10 text-success">
                               Booking
                             </span>
                           )}
                         </div>
 
                         {block.reason && (
-                          <p className="text-sm text-gray-600 mt-2">
+                          <p className="text-sm text-text-secondary mt-2">
                             <span className="font-medium">Reason:</span> {block.reason}
                           </p>
                         )}
@@ -355,7 +336,7 @@ export default function SpaceAvailabilityManagement() {
 
                       <button
                         onClick={() => handleUnblock(block._id, block.status === "booked")}
-                        className="ml-4 text-red-600 hover:text-red-700 hover:bg-red-50 px-3 py-1 rounded transition-colors text-sm font-medium"
+                        className="ml-4 text-error hover:text-error/80 hover:bg-error/10 px-4 py-2 rounded-lg transition-colors text-sm font-medium cursor-pointer"
                       >
                         {block.status === "booked" ? "Cancel Booking" : "Remove"}
                       </button>
@@ -368,26 +349,14 @@ export default function SpaceAvailabilityManagement() {
         </div>
 
         {/* Info Box */}
-        <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <div className="mt-6 bg-secondary/10 border border-secondary/30 rounded-lg p-4">
           <div className="flex items-start gap-3">
-            <svg
-              className="h-5 w-5 text-blue-600 mt-0.5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
+            <Info className="h-5 w-5 text-secondary mt-0.5 flex-shrink-0" />
             <div>
-              <p className="text-sm text-blue-900 font-medium">
+              <p className="text-sm text-text-primary font-medium mb-1">
                 About Availability Blocks
               </p>
-              <p className="text-sm text-blue-700 mt-1">
+              <p className="text-sm text-text-secondary">
                 When you block dates, this space won't appear in search results
                 for those dates. Use this for maintenance, private bookings, or
                 any other reason you need to make the space unavailable.
@@ -396,6 +365,22 @@ export default function SpaceAvailabilityManagement() {
           </div>
         </div>
       </div>
+
+      {/* Unblock Confirmation Modal */}
+      <ConfirmModal
+        open={unblockConfirm.open}
+        title={unblockConfirm.isBooking ? "Cancel Booking & Remove Block" : "Remove Block"}
+        description={
+          unblockConfirm.isBooking
+            ? "This block is linked to a booking. Removing it will cancel the booking and return the enquiry to 'quoted' status. Are you sure you want to continue?"
+            : "Are you sure you want to remove this availability block? This space will become available for bookings during this period."
+        }
+        onClose={() => setUnblockConfirm({ open: false, blockId: null, isBooking: false })}
+        onConfirm={confirmUnblock}
+        confirmText="Remove"
+        cancelText="Cancel"
+        variant={unblockConfirm.isBooking ? "danger" : "warning"}
+      />
     </div>
   );
 }

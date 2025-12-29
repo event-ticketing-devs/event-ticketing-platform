@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import apiClient from "../api/apiClient";
 import toast from "react-hot-toast";
-import { getAmenityLabel, getPolicyItemLabel } from "../constants/venueConstants";
+import { getAmenityLabel } from "../constants/venueConstants";
+import ConfirmModal from "../components/ConfirmModal";
+import { Building2, X, CheckCircle2, Clock, XCircle } from "lucide-react";
 
 export default function AdminVenues() {
   const navigate = useNavigate();
@@ -16,6 +18,9 @@ export default function AdminVenues() {
   const [viewingVenue, setViewingVenue] = useState(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [venueSpaces, setVenueSpaces] = useState([]);
+  const [verifyConfirm, setVerifyConfirm] = useState({ open: false, venueId: null });
+  const [suspendConfirm, setSuspendConfirm] = useState({ open: false, venueId: null, reason: "" });
+  const [unsuspendConfirm, setUnsuspendConfirm] = useState({ open: false, venueId: null });
 
   useEffect(() => {
     fetchVenues();
@@ -39,13 +44,14 @@ export default function AdminVenues() {
   };
 
   const handleVerify = async (venueId) => {
-    if (!window.confirm("Are you sure you want to verify this venue?")) {
-      return;
-    }
+    setVerifyConfirm({ open: true, venueId });
+  };
 
+  const confirmVerify = async () => {
     try {
-      await apiClient.patch(`/admin/venues/${venueId}/verify`);
+      await apiClient.patch(`/admin/venues/${verifyConfirm.venueId}/verify`);
       toast.success("Venue verified successfully");
+      setVerifyConfirm({ open: false, venueId: null });
       fetchVenues();
     } catch (err) {
       toast.error(err.response?.data?.message || "Failed to verify venue");
@@ -53,19 +59,19 @@ export default function AdminVenues() {
   };
 
   const handleSuspend = async (venueId) => {
-    const reason = window.prompt("Enter suspension reason:");
-    if (!reason || !reason.trim()) {
+    setSuspendConfirm({ open: true, venueId, reason: "" });
+  };
+
+  const confirmSuspend = async () => {
+    if (!suspendConfirm.reason.trim()) {
       toast.error("Suspension reason is required");
       return;
     }
 
-    if (!window.confirm("Are you sure you want to suspend this venue?")) {
-      return;
-    }
-
     try {
-      await apiClient.patch(`/admin/venues/${venueId}/suspend`, { reason });
+      await apiClient.patch(`/admin/venues/${suspendConfirm.venueId}/suspend`, { reason: suspendConfirm.reason });
       toast.success("Venue suspended successfully");
+      setSuspendConfirm({ open: false, venueId: null, reason: "" });
       fetchVenues();
     } catch (err) {
       console.error("Suspend error:", err);
@@ -74,13 +80,14 @@ export default function AdminVenues() {
   };
 
   const handleUnsuspend = async (venueId) => {
-    if (!window.confirm("Are you sure you want to reinstate this venue?")) {
-      return;
-    }
+    setUnsuspendConfirm({ open: true, venueId });
+  };
 
+  const confirmUnsuspend = async () => {
     try {
-      await apiClient.patch(`/admin/venues/${venueId}/unsuspend`);
+      await apiClient.patch(`/admin/venues/${unsuspendConfirm.venueId}/unsuspend`);
       toast.success("Venue reinstated successfully");
+      setUnsuspendConfirm({ open: false, venueId: null });
       fetchVenues();
     } catch (err) {
       console.error("Unsuspend error:", err);
@@ -92,10 +99,9 @@ export default function AdminVenues() {
     setViewingVenue(venue);
     setShowDetailsModal(true);
     
-    // Fetch spaces for this venue using the search endpoint
+    // Fetch spaces for this venue
     try {
       const res = await apiClient.get(`/spaces/search?venueId=${venue._id}`);
-      // Filter to only this venue's spaces (in case backend doesn't filter)
       const filteredSpaces = res.data.filter(space => 
         (space.venue._id === venue._id || space.venue === venue._id)
       );
@@ -108,49 +114,78 @@ export default function AdminVenues() {
 
   const getStatusBadge = (status) => {
     const config = {
-      verified: { bg: "bg-green-100", text: "text-green-800", label: "Verified" },
-      unverified: { bg: "bg-yellow-100", text: "text-yellow-800", label: "Unverified" },
-      suspended: { bg: "bg-red-100", text: "text-red-800", label: "Suspended" },
+      verified: { bg: "bg-success/10", text: "text-success", icon: <CheckCircle2 className="w-3 h-3" />, label: "Verified" },
+      unverified: { bg: "bg-warning/10", text: "text-warning", icon: <Clock className="w-3 h-3" />, label: "Pending" },
+      suspended: { bg: "bg-error/10", text: "text-error", icon: <XCircle className="w-3 h-3" />, label: "Suspended" },
     };
-    const { bg, text, label } = config[status] || config.unverified;
+    const { bg, text, icon, label } = config[status] || config.unverified;
     return (
-      <span className={`px-3 py-1 rounded-full text-xs font-medium ${bg} ${text}`}>
-        {label}
+      <span className={`px-3 py-1 rounded-md text-xs font-medium ${bg} ${text} inline-flex items-center gap-1`}>
+        {icon}
+        <span>{label}</span>
       </span>
     );
   };
 
+  const stats = venues.reduce((acc, v) => {
+    acc[v.verificationStatus] = (acc[v.verificationStatus] || 0) + 1;
+    return acc;
+  }, {});
+
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-bg-secondary py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900">Venue Management</h1>
-          <p className="text-gray-600 mt-2">Manage and verify venues on the platform</p>
+        <div className="mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-text-primary">Venue Management</h1>
+            <p className="mt-1 text-text-secondary">Manage and verify venues on the platform</p>
+          </div>
         </div>
 
+        {/* Stats Cards */}
+        {!loading && venues.length > 0 && (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div className="bg-bg-primary border border-border rounded-lg p-6 text-center">
+              <p className="text-3xl font-bold text-text-primary">{venues.length}</p>
+              <p className="text-sm text-text-secondary mt-1">Total Venues</p>
+            </div>
+            <div className="bg-bg-primary border border-border rounded-lg p-6 text-center">
+              <p className="text-3xl font-bold text-success">{stats.verified || 0}</p>
+              <p className="text-sm text-text-secondary mt-1">Verified</p>
+            </div>
+            <div className="bg-bg-primary border border-border rounded-lg p-6 text-center">
+              <p className="text-3xl font-bold text-warning">{stats.unverified || 0}</p>
+              <p className="text-sm text-text-secondary mt-1">Pending</p>
+            </div>
+            <div className="bg-bg-primary border border-border rounded-lg p-6 text-center">
+              <p className="text-3xl font-bold text-error">{stats.suspended || 0}</p>
+              <p className="text-sm text-text-secondary mt-1">Suspended</p>
+            </div>
+          </div>
+        )}
+
         {/* Filters */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">Filters</h2>
+        <div className="bg-bg-primary border border-border rounded-lg p-6 mb-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-text-primary mb-2">
                 Status
               </label>
               <select
                 value={filters.status}
                 onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
               >
                 <option value="">All Statuses</option>
                 <option value="verified">Verified</option>
-                <option value="unverified">Unverified</option>
+                <option value="unverified">Pending</option>
                 <option value="suspended">Suspended</option>
               </select>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-text-primary mb-2">
                 City
               </label>
               <input
@@ -158,20 +193,20 @@ export default function AdminVenues() {
                 value={filters.city}
                 onChange={(e) => setFilters({ ...filters, city: e.target.value })}
                 placeholder="Filter by city..."
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-text-primary mb-2">
                 Search
               </label>
               <input
                 type="text"
                 value={filters.search}
                 onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-                placeholder="Search by name or address..."
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Search by name..."
+                className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
               />
             </div>
           </div>
@@ -180,59 +215,60 @@ export default function AdminVenues() {
         {/* Venues List */}
         {loading ? (
           <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
           </div>
         ) : venues.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-md p-12 text-center">
-            <svg
-              className="mx-auto h-12 w-12 text-gray-400"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-              />
-            </svg>
-            <p className="mt-4 text-gray-500">No venues found</p>
+          <div className="bg-bg-primary border border-border rounded-lg p-12 text-center">
+            <Building2 className="mx-auto h-16 w-16 text-text-secondary mb-4" />
+            <p className="text-text-secondary text-lg">No venues found</p>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 gap-6">
             {venues.map((venue) => (
-              <div key={venue._id} className="bg-white rounded-lg shadow-md p-6">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <h3 className="text-xl font-semibold text-gray-900">
-                        {venue.name}
-                      </h3>
-                      {getStatusBadge(venue.verificationStatus)}
-                      {venue.owner?.isBanned && (
-                        <span className="px-3 py-1 rounded-full text-xs font-medium bg-gray-800 text-white">
-                          Owner Banned
-                        </span>
-                      )}
-                    </div>
+              <div 
+                key={venue._id} 
+                className="bg-bg-primary border border-border rounded-lg p-6 hover:border-primary/30 hover:shadow-md transition-all"
+              >
+                <div className="flex gap-6">
+                  {/* Venue Photo */}
+                  {venue.photo && (
+                    <img
+                      src={venue.photo}
+                      alt={venue.name}
+                      className="w-32 h-32 rounded-lg object-cover flex-shrink-0"
+                    />
+                  )}
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                  {/* Main Content */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between mb-3">
                       <div>
-                        <p className="text-sm text-gray-600">
-                          <span className="font-medium">City:</span> {venue.city}
-                        </p>
-                        <p className="text-sm text-gray-600">
-                          <span className="font-medium">Address:</span> {venue.fullAddress}
+                        <div className="flex items-center gap-3 mb-2">
+                          <h3 className="text-xl font-semibold text-text-primary">
+                            {venue.name}
+                          </h3>
+                          {getStatusBadge(venue.verificationStatus)}
+                          {venue.owner?.isBanned && (
+                            <span className="px-3 py-1 rounded-md text-xs font-medium bg-text-primary text-bg-primary">
+                              Owner Banned
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-sm text-text-secondary">
+                          {venue.city} • {venue.fullAddress}
                         </p>
                       </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
                       <div>
-                        <p className="text-sm text-gray-600">
-                          <span className="font-medium">Owner:</span>{" "}
-                          {venue.owner?.name || "N/A"} ({venue.owner?.email || "N/A"})
-                        </p>
-                        <p className="text-sm text-gray-600">
-                          <span className="font-medium">Registered:</span>{" "}
+                        <p className="text-xs text-text-secondary">Owner</p>
+                        <p className="text-sm font-medium text-text-primary">{venue.owner?.name || "N/A"}</p>
+                        <p className="text-xs text-text-secondary">{venue.owner?.email}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-text-secondary">Registered</p>
+                        <p className="text-sm font-medium text-text-primary">
                           {new Date(venue.createdAt).toLocaleDateString("en-US", {
                             year: "numeric",
                             month: "short",
@@ -240,86 +276,61 @@ export default function AdminVenues() {
                           })}
                         </p>
                       </div>
-                    </div>
-
-                    {/* Statistics */}
-                    <div className="flex gap-6 mb-4">
-                      <div className="text-sm">
-                        <span className="text-gray-600">Spaces:</span>{" "}
-                        <span className="font-semibold text-gray-900">
+                      <div>
+                        <p className="text-xs text-text-secondary">Spaces</p>
+                        <p className="text-sm font-medium text-text-primary">
                           {venue.statistics?.totalSpaces || 0}
-                        </span>
+                        </p>
                       </div>
-                      <div className="text-sm">
-                        <span className="text-gray-600">Total Requests:</span>{" "}
-                        <span className="font-semibold text-gray-900">
-                          {venue.statistics?.totalRequests || 0}
-                        </span>
-                      </div>
-                      <div className="text-sm">
-                        <span className="text-gray-600">Bookings:</span>{" "}
-                        <span className="font-semibold text-gray-900">
-                          {venue.statistics?.externallyBooked || 0}
-                        </span>
+                      <div>
+                        <p className="text-xs text-text-secondary">Bookings</p>
+                        <p className="text-sm font-medium text-text-primary">
+                          {venue.statistics?.externallyBooked || 0} / {venue.statistics?.totalRequests || 0}
+                        </p>
                       </div>
                     </div>
 
-                    {/* Primary Contact */}
-                    {venue.primaryContact && (
-                      <div className="text-sm text-gray-600 border-t pt-3">
-                        <span className="font-medium">Primary Contact:</span>{" "}
-                        {venue.primaryContact.name || "N/A"} |{" "}
-                        {venue.primaryContact.phone || "N/A"} |{" "}
-                        {venue.primaryContact.email || "N/A"}
-                      </div>
-                    )}
-                    {!venue.primaryContact && (
-                      <div className="text-sm text-gray-500 border-t pt-3 italic">
-                        No primary contact information available
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Actions */}
-                  <div className="ml-4 flex flex-col gap-2">
-                    <button
-                      onClick={() => handleViewDetails(venue)}
-                      className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors text-sm whitespace-nowrap"
-                    >
-                      View Details
-                    </button>
-
-                    <button
-                      onClick={() => navigate(`/admin/venues/${venue._id}/activity`)}
-                      className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm whitespace-nowrap"
-                    >
-                      View Activity
-                    </button>
-
-                    {venue.verificationStatus === "unverified" && (
+                    {/* Actions */}
+                    <div className="flex gap-2">
                       <button
-                        onClick={() => handleVerify(venue._id)}
-                        className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm whitespace-nowrap"
+                        onClick={() => handleViewDetails(venue)}
+                        className="px-4 py-2 bg-secondary/10 text-secondary rounded-lg hover:bg-secondary/20 transition-colors cursor-pointer text-sm font-medium"
                       >
-                        Verify
+                        View Details
                       </button>
-                    )}
 
-                    {venue.verificationStatus === "suspended" ? (
                       <button
-                        onClick={() => handleUnsuspend(venue._id)}
-                        className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm whitespace-nowrap"
+                        onClick={() => navigate(`/admin/venues/${venue._id}/activity`)}
+                        className="px-4 py-2 bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition-colors cursor-pointer text-sm font-medium"
                       >
-                        Reinstate
+                        Activity Log
                       </button>
-                    ) : (
-                      <button
-                        onClick={() => handleSuspend(venue._id)}
-                        className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm whitespace-nowrap"
-                      >
-                        Suspend
-                      </button>
-                    )}
+
+                      {venue.verificationStatus === "unverified" && (
+                        <button
+                          onClick={() => handleVerify(venue._id)}
+                          className="px-4 py-2 bg-success text-bg-primary rounded-lg hover:bg-success/90 transition-colors cursor-pointer text-sm font-medium"
+                        >
+                          Verify
+                        </button>
+                      )}
+
+                      {venue.verificationStatus === "suspended" ? (
+                        <button
+                          onClick={() => handleUnsuspend(venue._id)}
+                          className="px-4 py-2 bg-success text-bg-primary rounded-lg hover:bg-success/90 transition-colors cursor-pointer text-sm font-medium"
+                        >
+                          Reinstate
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => handleSuspend(venue._id)}
+                          className="px-4 py-2 bg-error text-bg-primary rounded-lg hover:bg-error/90 transition-colors cursor-pointer text-sm font-medium"
+                        >
+                          Suspend
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -327,54 +338,21 @@ export default function AdminVenues() {
           </div>
         )}
 
-        {/* Summary Stats */}
-        {!loading && venues.length > 0 && (
-          <div className="mt-6 bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-lg font-semibold text-gray-800 mb-3">Summary</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="text-center">
-                <p className="text-2xl font-bold text-gray-900">{venues.length}</p>
-                <p className="text-sm text-gray-600">Total Venues</p>
-              </div>
-              <div className="text-center">
-                <p className="text-2xl font-bold text-green-600">
-                  {venues.filter((v) => v.verificationStatus === "verified").length}
-                </p>
-                <p className="text-sm text-gray-600">Verified</p>
-              </div>
-              <div className="text-center">
-                <p className="text-2xl font-bold text-yellow-600">
-                  {venues.filter((v) => v.verificationStatus === "unverified").length}
-                </p>
-                <p className="text-sm text-gray-600">Unverified</p>
-              </div>
-              <div className="text-center">
-                <p className="text-2xl font-bold text-red-600">
-                  {venues.filter((v) => v.verificationStatus === "suspended").length}
-                </p>
-                <p className="text-sm text-gray-600">Suspended</p>
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* Venue Details Modal */}
         {showDetailsModal && viewingVenue && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-lg max-w-5xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div className="bg-bg-primary rounded-lg max-w-6xl w-full max-h-[90vh] overflow-y-auto">
               {/* Modal Header */}
-              <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
+              <div className="sticky top-0 bg-bg-primary border-b border-border px-6 py-4 flex justify-between items-center z-10">
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900">{viewingVenue.name}</h2>
-                  <p className="text-gray-600 mt-1">{viewingVenue.city}</p>
+                  <h2 className="text-2xl font-bold text-text-primary">{viewingVenue.name}</h2>
+                  <p className="text-text-secondary mt-1">{viewingVenue.city}</p>
                 </div>
                 <button
                   onClick={() => setShowDetailsModal(false)}
-                  className="text-gray-400 hover:text-gray-600"
+                  className="text-text-secondary hover:text-text-primary transition-colors"
                 >
-                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
+                  <X className="h-6 w-6" />
                 </button>
               </div>
 
@@ -382,7 +360,6 @@ export default function AdminVenues() {
                 {/* Venue Photo */}
                 {viewingVenue.photo && (
                   <div className="mb-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-3">Venue Photo</h3>
                     <img
                       src={viewingVenue.photo}
                       alt={viewingVenue.name}
@@ -391,109 +368,137 @@ export default function AdminVenues() {
                   </div>
                 )}
 
-                {/* Venue Information */}
-                <div className="mb-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3">Venue Information</h3>
-                  <div className="grid grid-cols-2 gap-4 bg-gray-50 p-4 rounded-lg">
-                    <div>
-                      <p className="text-sm text-gray-600">Full Address</p>
-                      <p className="font-medium text-gray-900">{viewingVenue.fullAddress}</p>
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                  {/* Venue Information */}
+                  <div className="lg:col-span-2 bg-bg-secondary p-6 rounded-lg">
+                    <h3 className="text-lg font-semibold text-text-primary mb-4">Venue Information</h3>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-sm text-text-secondary">Full Address</p>
+                        <p className="font-medium text-text-primary">{viewingVenue.fullAddress}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-text-secondary">City</p>
+                        <p className="font-medium text-text-primary">{viewingVenue.city}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-text-secondary">Status</p>
+                        <p className="font-medium text-text-primary capitalize">{viewingVenue.verificationStatus}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-text-secondary">Listed</p>
+                        <p className="font-medium text-text-primary">{viewingVenue.isListed ? "Yes" : "No"}</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-sm text-gray-600">City</p>
-                      <p className="font-medium text-gray-900">{viewingVenue.city}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-600">Status</p>
-                      <p className="font-medium text-gray-900 capitalize">{viewingVenue.verificationStatus}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-600">Listed</p>
-                      <p className="font-medium text-gray-900">{viewingVenue.isListed ? "Yes" : "No"}</p>
-                    </div>
+
+                    {/* Parking */}
+                    {viewingVenue.parking && (
+                      <div className="mt-4 pt-4 border-t border-border">
+                        <p className="text-sm text-text-secondary mb-2">Parking</p>
+                        <p className="text-sm font-medium text-text-primary inline-flex items-center gap-1">
+                          {viewingVenue.parking.available ? (
+                            <><CheckCircle2 className="w-4 h-4 text-success" /><span>Available</span></>
+                          ) : (
+                            <><XCircle className="w-4 h-4 text-error" /><span>Not Available</span></>
+                          )}
+                        </p>
+                        {viewingVenue.parking.notes && (
+                          <p className="text-xs text-text-secondary mt-1">{viewingVenue.parking.notes}</p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Contact & Owner */}
+                  <div className="space-y-6">
+                    {/* Primary Contact */}
+                    {viewingVenue.primaryContact && (
+                      <div className="bg-bg-secondary p-6 rounded-lg">
+                        <h3 className="text-lg font-semibold text-text-primary mb-4">Primary Contact</h3>
+                        <div className="space-y-2">
+                          <div>
+                            <p className="text-xs text-text-secondary">Name</p>
+                            <p className="text-sm font-medium text-text-primary">{viewingVenue.primaryContact.name}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-text-secondary">Phone</p>
+                            <p className="text-sm font-medium text-text-primary">{viewingVenue.primaryContact.phone}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-text-secondary">Email</p>
+                            <p className="text-sm font-medium text-text-primary">{viewingVenue.primaryContact.email}</p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Owner Information */}
+                    {viewingVenue.owner && (
+                      <div className="bg-bg-secondary p-6 rounded-lg">
+                        <h3 className="text-lg font-semibold text-text-primary mb-4">Owner</h3>
+                        <div className="space-y-2">
+                          <div>
+                            <p className="text-xs text-text-secondary">Name</p>
+                            <p className="text-sm font-medium text-text-primary">{viewingVenue.owner.name}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-text-secondary">Email</p>
+                            <p className="text-sm font-medium text-text-primary">{viewingVenue.owner.email}</p>
+                          </div>
+                          {viewingVenue.owner.isBanned && (
+                            <div className="pt-2">
+                              <span className="px-3 py-1 rounded-md text-xs font-medium bg-error/10 text-error inline-flex items-center gap-1">
+                                <XCircle className="w-3 h-3" />
+                                <span>Owner Banned</span>
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 
-                {/* Parking */}
-                {viewingVenue.parking && (
-                  <div className="mb-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-3">Parking</h3>
-                    <div className="bg-gray-50 p-4 rounded-lg">
-                      <p className="text-sm text-gray-600">Available: <span className="font-medium text-gray-900">{viewingVenue.parking.available ? "Yes" : "No"}</span></p>
-                      {viewingVenue.parking.notes && (
-                        <p className="text-sm text-gray-600 mt-2">Notes: <span className="font-medium text-gray-900">{viewingVenue.parking.notes}</span></p>
-                      )}
+                {/* Statistics */}
+                {viewingVenue.statistics && (
+                  <div className="grid grid-cols-3 gap-4 mb-6">
+                    <div className="bg-secondary/10 p-4 rounded-lg text-center">
+                      <p className="text-2xl font-bold text-secondary">{viewingVenue.statistics.totalRequests || 0}</p>
+                      <p className="text-sm text-text-secondary">Total Requests</p>
                     </div>
-                  </div>
-                )}
-
-                {/* Primary Contact */}
-                {viewingVenue.primaryContact && (
-                  <div className="mb-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-3">Primary Contact</h3>
-                    <div className="grid grid-cols-3 gap-4 bg-gray-50 p-4 rounded-lg">
-                      <div>
-                        <p className="text-sm text-gray-600">Name</p>
-                        <p className="font-medium text-gray-900">{viewingVenue.primaryContact.name}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-600">Phone</p>
-                        <p className="font-medium text-gray-900">{viewingVenue.primaryContact.phone}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-600">Email</p>
-                        <p className="font-medium text-gray-900">{viewingVenue.primaryContact.email}</p>
-                      </div>
+                    <div className="bg-success/10 p-4 rounded-lg text-center">
+                      <p className="text-2xl font-bold text-success">{viewingVenue.statistics.externallyBooked || 0}</p>
+                      <p className="text-sm text-text-secondary">Bookings</p>
                     </div>
-                  </div>
-                )}
-
-                {/* Owner Information */}
-                {viewingVenue.owner && (
-                  <div className="mb-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-3">Owner Information</h3>
-                    <div className="grid grid-cols-2 gap-4 bg-gray-50 p-4 rounded-lg">
-                      <div>
-                        <p className="text-sm text-gray-600">Name</p>
-                        <p className="font-medium text-gray-900">{viewingVenue.owner.name}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-gray-600">Email</p>
-                        <p className="font-medium text-gray-900">{viewingVenue.owner.email}</p>
-                      </div>
-                      {viewingVenue.owner.isBanned && (
-                        <div className="col-span-2">
-                          <span className="px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                            Owner is Banned
-                          </span>
-                        </div>
-                      )}
+                    <div className="bg-primary/10 p-4 rounded-lg text-center">
+                      <p className="text-2xl font-bold text-primary">{viewingVenue.statistics.totalSpaces || 0}</p>
+                      <p className="text-sm text-text-secondary">Total Spaces</p>
                     </div>
                   </div>
                 )}
 
                 {/* Spaces */}
-                <div className="mb-6">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                <div>
+                  <h3 className="text-lg font-semibold text-text-primary mb-4">
                     Spaces ({venueSpaces.length})
                   </h3>
                   {venueSpaces.length === 0 ? (
-                    <div className="bg-gray-50 p-8 rounded-lg text-center">
-                      <p className="text-gray-500">No spaces added yet</p>
+                    <div className="bg-bg-secondary p-8 rounded-lg text-center">
+                      <p className="text-text-secondary">No spaces added yet</p>
                     </div>
                   ) : (
-                    <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       {venueSpaces.map((space) => (
-                        <div key={space._id} className="border border-gray-200 rounded-lg overflow-hidden">
+                        <div key={space._id} className="border border-border rounded-lg overflow-hidden">
                           {/* Space Photos */}
                           {space.photos && space.photos.length > 0 && (
-                            <div className="grid grid-cols-3 gap-2 p-2 bg-gray-50">
-                              {space.photos.map((photo, idx) => (
+                            <div className="grid grid-cols-3 gap-2 p-2 bg-bg-secondary">
+                              {space.photos.slice(0, 3).map((photo, idx) => (
                                 <img
                                   key={idx}
                                   src={photo}
-                                  alt={`${space.name} - ${idx + 1}`}
-                                  className="w-full h-32 object-cover rounded"
+                                  alt={`${space.name} ${idx + 1}`}
+                                  className="w-full h-24 object-cover rounded"
                                 />
                               ))}
                             </div>
@@ -502,98 +507,43 @@ export default function AdminVenues() {
                           <div className="p-4">
                             <div className="flex justify-between items-start mb-3">
                               <div>
-                                <h4 className="text-lg font-semibold text-gray-900">{space.name}</h4>
-                                <p className="text-sm text-gray-600 capitalize">{space.type} • {space.indoorOutdoor}</p>
+                                <h4 className="font-semibold text-text-primary">{space.name}</h4>
+                                <p className="text-sm text-text-secondary capitalize">{space.type} • {space.indoorOutdoor}</p>
                               </div>
-                              <span className={`px-2 py-1 rounded text-xs font-medium ${
-                                space.isActive ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+                              <span className={`px-2 py-1 rounded-md text-xs font-medium ${
+                                space.isActive ? "bg-success/10 text-success" : "bg-error/10 text-error"
                               }`}>
                                 {space.isActive ? "Active" : "Inactive"}
                               </span>
                             </div>
 
-                            <div className="grid grid-cols-4 gap-3 text-sm mb-3">
+                            <div className="grid grid-cols-2 gap-3 text-sm">
                               <div>
-                                <span className="text-gray-600">Capacity:</span>
-                                <p className="font-medium">{space.maxPax} people</p>
+                                <span className="text-text-secondary text-xs">Capacity</span>
+                                <p className="font-medium text-text-primary">{space.maxPax} people</p>
                               </div>
-                              <div>
-                                <span className="text-gray-600">Area:</span>
-                                <p className="font-medium">{space.areaSqFt} sq ft</p>
-                              </div>
-                              <div>
-                                <span className="text-gray-600">Booking:</span>
-                                <p className="font-medium capitalize">{space.bookingUnit}</p>
-                              </div>
-                              <div>
-                                <span className="text-gray-600">Event Types:</span>
-                                <p className="font-medium">{space.supportedEventTypes?.length || 0}</p>
-                              </div>
+                              {space.areaSqFt && (
+                                <div>
+                                  <span className="text-text-secondary text-xs">Area</span>
+                                  <p className="font-medium text-text-primary">{space.areaSqFt} sq ft</p>
+                                </div>
+                              )}
                             </div>
 
                             {/* Amenities */}
-                            {((space.amenities?.standard && space.amenities.standard.length > 0) || 
-                              (space.amenities?.custom && space.amenities.custom.length > 0)) && (
-                              <div className="mb-3">
-                                <span className="text-sm text-gray-600 font-medium">Amenities: </span>
-                                <div className="flex flex-wrap gap-1 mt-1">
-                                  {space.amenities.standard?.map((item, idx) => (
-                                    <span key={idx} className="px-2 py-1 bg-green-50 text-green-700 rounded text-xs">
+                            {space.amenities?.standard && space.amenities.standard.length > 0 && (
+                              <div className="mt-3 pt-3 border-t border-border">
+                                <p className="text-xs text-text-secondary mb-2">Amenities</p>
+                                <div className="flex flex-wrap gap-1">
+                                  {space.amenities.standard.slice(0, 3).map((item, idx) => (
+                                    <span key={idx} className="px-2 py-0.5 bg-success/10 text-success rounded-md text-xs">
                                       {getAmenityLabel(item)}
                                     </span>
                                   ))}
-                                  {space.amenities.custom?.map((item, idx) => (
-                                    <span key={idx} className="px-2 py-1 bg-blue-50 text-blue-700 rounded text-xs">
-                                      {item}
+                                  {space.amenities.standard.length > 3 && (
+                                    <span className="text-xs text-text-secondary">
+                                      +{space.amenities.standard.length - 3} more
                                     </span>
-                                  ))}
-                                </div>
-                              </div>
-                            )}
-
-                            {/* Policies */}
-                            {((space.policies?.allowedItems?.standard && space.policies.allowedItems.standard.length > 0) ||
-                              (space.policies?.allowedItems?.custom && space.policies.allowedItems.custom.length > 0) ||
-                              (space.policies?.bannedItems?.standard && space.policies.bannedItems.standard.length > 0) ||
-                              (space.policies?.bannedItems?.custom && space.policies.bannedItems.custom.length > 0)) && (
-                              <div className="border-t pt-3">
-                                <span className="text-sm text-gray-600 font-medium">Policies:</span>
-                                <div className="grid grid-cols-2 gap-3 mt-2">
-                                  {((space.policies?.allowedItems?.standard && space.policies.allowedItems.standard.length > 0) ||
-                                    (space.policies?.allowedItems?.custom && space.policies.allowedItems.custom.length > 0)) && (
-                                    <div>
-                                      <p className="text-xs text-green-700 font-medium mb-1">✓ Allowed</p>
-                                      <div className="flex flex-wrap gap-1">
-                                        {space.policies.allowedItems.standard?.map((item, idx) => (
-                                          <span key={idx} className="px-2 py-0.5 bg-green-50 text-green-700 rounded text-xs">
-                                            {getPolicyItemLabel(item)}
-                                          </span>
-                                        ))}
-                                        {space.policies.allowedItems.custom?.map((item, idx) => (
-                                          <span key={idx} className="px-2 py-0.5 bg-green-50 text-green-700 rounded text-xs">
-                                            {item}
-                                          </span>
-                                        ))}
-                                      </div>
-                                    </div>
-                                  )}
-                                  {((space.policies?.bannedItems?.standard && space.policies.bannedItems.standard.length > 0) ||
-                                    (space.policies?.bannedItems?.custom && space.policies.bannedItems.custom.length > 0)) && (
-                                    <div>
-                                      <p className="text-xs text-red-700 font-medium mb-1">✗ Not Allowed</p>
-                                      <div className="flex flex-wrap gap-1">
-                                        {space.policies.bannedItems.standard?.map((item, idx) => (
-                                          <span key={idx} className="px-2 py-0.5 bg-red-50 text-red-700 rounded text-xs">
-                                            {getPolicyItemLabel(item)}
-                                          </span>
-                                        ))}
-                                        {space.policies.bannedItems.custom?.map((item, idx) => (
-                                          <span key={idx} className="px-2 py-0.5 bg-red-50 text-red-700 rounded text-xs">
-                                            {item}
-                                          </span>
-                                        ))}
-                                      </div>
-                                    </div>
                                   )}
                                 </div>
                               </div>
@@ -604,34 +554,13 @@ export default function AdminVenues() {
                     </div>
                   )}
                 </div>
-
-                {/* Statistics */}
-                {viewingVenue.statistics && (
-                  <div className="mb-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-3">Statistics</h3>
-                    <div className="grid grid-cols-3 gap-4">
-                      <div className="bg-blue-50 p-4 rounded-lg text-center">
-                        <p className="text-2xl font-bold text-blue-600">{viewingVenue.statistics.totalRequests || 0}</p>
-                        <p className="text-sm text-gray-600">Total Requests</p>
-                      </div>
-                      <div className="bg-green-50 p-4 rounded-lg text-center">
-                        <p className="text-2xl font-bold text-green-600">{viewingVenue.statistics.externallyBooked || 0}</p>
-                        <p className="text-sm text-gray-600">Bookings</p>
-                      </div>
-                      <div className="bg-purple-50 p-4 rounded-lg text-center">
-                        <p className="text-2xl font-bold text-purple-600">{viewingVenue.statistics.totalSpaces || 0}</p>
-                        <p className="text-sm text-gray-600">Total Spaces</p>
-                      </div>
-                    </div>
-                  </div>
-                )}
               </div>
 
               {/* Modal Footer */}
-              <div className="sticky bottom-0 bg-gray-50 border-t border-gray-200 px-6 py-4 flex justify-between">
+              <div className="sticky bottom-0 bg-bg-secondary border-t border-border px-6 py-4 flex justify-between">
                 <button
                   onClick={() => setShowDetailsModal(false)}
-                  className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                  className="px-6 py-2 bg-bg-primary border border-border text-text-primary rounded-lg hover:bg-bg-secondary transition-colors cursor-pointer"
                 >
                   Close
                 </button>
@@ -642,7 +571,7 @@ export default function AdminVenues() {
                         setShowDetailsModal(false);
                         handleVerify(viewingVenue._id);
                       }}
-                      className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+                      className="px-6 py-2 bg-success text-bg-primary rounded-lg hover:bg-success/90 transition-colors cursor-pointer"
                     >
                       Verify Venue
                     </button>
@@ -653,7 +582,7 @@ export default function AdminVenues() {
                         setShowDetailsModal(false);
                         handleUnsuspend(viewingVenue._id);
                       }}
-                      className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+                      className="px-6 py-2 bg-success text-bg-primary rounded-lg hover:bg-success/90 transition-colors cursor-pointer"
                     >
                       Reinstate Venue
                     </button>
@@ -663,7 +592,7 @@ export default function AdminVenues() {
                         setShowDetailsModal(false);
                         handleSuspend(viewingVenue._id);
                       }}
-                      className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+                      className="px-6 py-2 bg-error text-bg-primary rounded-lg hover:bg-error/90 transition-colors cursor-pointer"
                     >
                       Suspend Venue
                     </button>
@@ -674,6 +603,45 @@ export default function AdminVenues() {
           </div>
         )}
       </div>
+
+      {/* Verify Confirmation Modal */}
+      <ConfirmModal
+        open={verifyConfirm.open}
+        title="Verify Venue"
+        description="Are you sure you want to verify this venue? Once verified, it will be visible to users for booking."
+        onClose={() => setVerifyConfirm({ open: false, venueId: null })}
+        onConfirm={confirmVerify}
+        confirmText="Verify"
+        cancelText="Cancel"
+        variant="info"
+      />
+
+      {/* Suspend Confirmation Modal */}
+      <ConfirmModal
+        open={suspendConfirm.open}
+        title="Suspend Venue"
+        description="Please provide a reason for suspending this venue. This information will be shared with the venue owner."
+        onClose={() => setSuspendConfirm({ open: false, venueId: null, reason: "" })}
+        onConfirm={confirmSuspend}
+        confirmText="Suspend"
+        cancelText="Cancel"
+        variant="danger"
+        showInput={true}
+        inputValue={suspendConfirm.reason}
+        setInputValue={(value) => setSuspendConfirm(prev => ({ ...prev, reason: value }))}
+      />
+
+      {/* Unsuspend Confirmation Modal */}
+      <ConfirmModal
+        open={unsuspendConfirm.open}
+        title="Reinstate Venue"
+        description="Are you sure you want to reinstate this venue? It will become active and visible to users again."
+        onClose={() => setUnsuspendConfirm({ open: false, venueId: null })}
+        onConfirm={confirmUnsuspend}
+        confirmText="Reinstate"
+        cancelText="Cancel"
+        variant="info"
+      />
     </div>
   );
 }

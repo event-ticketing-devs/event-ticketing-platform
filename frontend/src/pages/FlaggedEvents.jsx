@@ -5,6 +5,7 @@ import OrganizerActions from "../components/OrganizerActions";
 import apiClient from "../api/apiClient";
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { Check, X } from 'lucide-react';
 
 const REPORT_REASON_LABELS = {
   inappropriate_content: "Inappropriate Content",
@@ -17,10 +18,10 @@ const REPORT_REASON_LABELS = {
 };
 
 const STATUS_COLORS = {
-  pending: "bg-yellow-100 text-yellow-800",
-  reviewed: "bg-blue-100 text-blue-800",
-  resolved: "bg-green-100 text-green-800",
-  dismissed: "bg-gray-100 text-gray-800",
+  pending: "bg-warning/10 text-warning border-warning/20",
+  reviewed: "bg-primary/10 text-primary border-primary/20",
+  resolved: "bg-success/10 text-success border-success/20",
+  dismissed: "bg-bg-secondary text-text-secondary border-border",
 };
 
 export default function FlaggedEventsPage() {
@@ -109,7 +110,7 @@ export default function FlaggedEventsPage() {
       <div className="min-h-screen bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full w-12 h-12 border-slate-900 border-b-2"></div>
+            <div className="animate-spin rounded-full w-12 h-12 border-primary border-b-2"></div>
           </div>
         </div>
       </div>
@@ -117,17 +118,17 @@ export default function FlaggedEventsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-bg-primary">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-slate-900 mb-2">Flagged Events</h1>
-              <p className="text-slate-600">Review and manage reported events</p>
+              <h1 className="text-3xl font-bold text-text-primary">Flagged Events</h1>
+              <p className="mt-1 text-text-secondary">Review and manage reported events</p>
             </div>
             <button
               onClick={() => navigate("/admin")}
-              className="border border-slate-700 text-slate-900 px-4 py-2 font-semibold hover:bg-slate-100 transition-colors cursor-pointer"
+              className="inline-flex items-center gap-2 border border-border text-text-primary px-6 py-3 rounded-lg font-medium hover:bg-bg-secondary transition-colors cursor-pointer"
             >
               Back to Admin Dashboard
             </button>
@@ -135,76 +136,74 @@ export default function FlaggedEventsPage() {
         </div>
 
         {flaggedEvents.length === 0 ? (
-          <div className="bg-white border border-slate-200 p-8 text-center">
-            <div className="w-16 h-16 bg-slate-100 flex items-center justify-center mx-auto mb-4">
-              <svg className="w-8 h-8 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
+          <div className="bg-bg-primary border border-border rounded-lg p-8 text-center">
+            <div className="w-16 h-16 bg-bg-secondary rounded-lg flex items-center justify-center mx-auto mb-4">
+              <Check className="w-8 h-8 text-success" />
             </div>
-            <h3 className="text-xl font-bold text-slate-900 mb-2">No Flagged Events</h3>
-            <p className="text-slate-600">Great! There are currently no events with reports.</p>
+            <h3 className="text-xl font-bold text-text-primary mb-2">No Flagged Events</h3>
+            <p className="text-text-secondary">Great! There are currently no events with reports.</p>
           </div>
         ) : (
-          <div className="bg-white border border-slate-200 overflow-hidden">
+          <div className="bg-bg-primary border border-border rounded-lg overflow-hidden">
             <div className="overflow-x-auto">
               <table className="min-w-full">
-                <thead className="bg-white border-b border-slate-200">
+                <thead className="bg-bg-secondary border-b border-border">
                   <tr>
-                    <th className="py-3 px-6 text-left text-xs font-medium text-slate-600 uppercase tracking-wider">
+                    <th className="py-3 px-6 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
                       Event
                     </th>
-                    <th className="py-3 px-6 text-left text-xs font-medium text-slate-600 uppercase tracking-wider">
+                    <th className="py-3 px-6 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
                       Reports
                     </th>
-                    <th className="py-3 px-6 text-left text-xs font-medium text-slate-600 uppercase tracking-wider">
+                    <th className="py-3 px-6 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
                       Organizer
                     </th>
-                    <th className="py-3 px-6 text-left text-xs font-medium text-slate-600 uppercase tracking-wider">
+                    <th className="py-3 px-6 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
                       Date
                     </th>
-                    <th className="py-3 px-6 text-left text-xs font-medium text-slate-600 uppercase tracking-wider">
+                    <th className="py-3 px-6 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
                       Status
                     </th>
-                    <th className="py-3 px-6 text-left text-xs font-medium text-slate-600 uppercase tracking-wider">
+                    <th className="py-3 px-6 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
                       Event Actions
                     </th>
-                    <th className="py-3 px-6 text-left text-xs font-medium text-slate-600 uppercase tracking-wider">
+                    <th className="py-3 px-6 text-left text-xs font-medium text-text-secondary uppercase tracking-wider">
                       Organizer Actions
                     </th>
                   </tr>
                 </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-bg-primary divide-y divide-border">
                 {flaggedEvents.map((event) => (
-                  <tr key={event._id} className="hover:bg-gray-50 transition-colors">
+                  <tr key={event._id} className="hover:bg-bg-secondary transition-colors">
                     <td className="py-4 px-6">
                       <div>
-                        <div className="text-sm font-medium text-gray-900">{event.title}</div>
-                        <div className="text-sm text-gray-500">{event.venue?.name || event.venue}</div>
+                        <div className="text-sm font-medium text-text-primary">{event.title}</div>
+                        <div className="text-sm text-text-secondary">{event.venue?.name || event.venue}</div>
                       </div>
                     </td>
                     <td className="py-4 px-6">
                       <div className="flex items-center">
-                        <span className="inline-flex px-3 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
+                        <span className="inline-flex px-3 py-1 text-xs font-semibold rounded-md bg-error/10 text-error border border-error/20">
                           {event.reportCount} reports
                         </span>
                       </div>
                     </td>
                     <td className="py-4 px-6">
-                      <div className="text-sm text-gray-900">{event.organizerId?.name}</div>
-                      <div className="text-sm text-gray-500">{event.organizerId?.email}</div>
+                      <div className="text-sm text-text-primary">{event.organizerId?.name}</div>
+                      <div className="text-sm text-text-secondary">{event.organizerId?.email}</div>
                     </td>
                     <td className="py-4 px-6">
-                      <div className="text-sm text-gray-900">
+                      <div className="text-sm text-text-primary">
                         {new Date(event.date).toLocaleDateString()}
                       </div>
                     </td>
                     <td className="py-4 px-6">
                       {event.cancelled ? (
-                        <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
+                        <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-md bg-error/10 text-error border border-error/20">
                           Cancelled
                         </span>
                       ) : (
-                        <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                        <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-md bg-success/10 text-success border border-success/20">
                           Active
                         </span>
                       )}
@@ -213,26 +212,26 @@ export default function FlaggedEventsPage() {
                       <div className="flex gap-2">
                         <button
                           onClick={() => viewEvent(event)}
-                          className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-md text-xs font-medium transition-colors cursor-pointer"
+                          className="bg-primary hover:bg-primary/90 text-bg-primary px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer"
                           title="View detailed event statistics"
                         >
                           Details
                         </button>
                         <button
                           onClick={() => viewReports(event)}
-                          className="bg-purple-600 hover:bg-purple-700 text-white px-3 py-1.5 rounded-md text-xs font-medium transition-colors cursor-pointer"
+                          className="bg-secondary hover:bg-secondary/90 text-bg-primary px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer"
                         >
                           Reports
                         </button>
                         <button
                           onClick={() => navigate(`/events/edit/${event._id}`)}
-                          className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded-md text-sm transition-colors cursor-pointer"
+                          className="bg-warning hover:bg-warning/90 text-bg-primary px-3 py-1 rounded-lg text-sm transition-colors cursor-pointer"
                         >
                           Edit
                         </button>
                         <button
                           onClick={() => handleDelete(event._id)}
-                          className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md text-sm transition-colors cursor-pointer"
+                          className="bg-error hover:bg-error/90 text-bg-primary px-3 py-1 rounded-lg text-sm transition-colors cursor-pointer"
                         >
                           Delete
                         </button>
@@ -284,11 +283,11 @@ export default function FlaggedEventsPage() {
 
       {/* Reports Modal */}
       {showReportsModal && selectedEvent && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white border border-slate-200 max-w-4xl w-full max-h-screen overflow-y-auto">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-bg-primary border border-border rounded-lg max-w-4xl w-full max-h-screen overflow-y-auto">
             <div className="p-6">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold text-slate-900">
+                <h3 className="text-lg font-semibold text-text-primary">
                   Reports for: {selectedEvent.title}
                 </h3>
                 <button
@@ -296,31 +295,29 @@ export default function FlaggedEventsPage() {
                     setShowReportsModal(false);
                     setSelectedEvent(null);
                   }}
-                  className="text-slate-400 hover:text-slate-600 transition-colors cursor-pointer"
+                  className="text-text-secondary hover:text-text-primary transition-colors cursor-pointer"
                 >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
+                  <X className="w-6 h-6" />
                 </button>
               </div>
 
               <div className="space-y-4">
                 {selectedEvent.reports?.map((report) => (
-                  <div key={report._id} className="border border-slate-200 p-4">
+                  <div key={report._id} className="border-2 border-border rounded-lg p-4">
                     <div className="flex justify-between items-start mb-3">
                       <div>
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="font-medium text-slate-900">
+                          <span className="font-medium text-text-primary">
                             {REPORT_REASON_LABELS[report.reason]}
                           </span>
-                          <span className={`inline-flex px-2 py-1 text-xs font-medium ${STATUS_COLORS[report.status]}`}>
+                          <span className={`inline-flex px-2 py-1 text-xs font-medium border rounded-md ${STATUS_COLORS[report.status]}`}>
                             {report.status}
                           </span>
                         </div>
-                        <div className="text-sm text-slate-600">
+                        <div className="text-sm text-text-secondary">
                           Reported by: {report.userId?.name} ({report.userId?.email})
                         </div>
-                        <div className="text-xs text-slate-500">
+                        <div className="text-xs text-text-secondary">
                           {new Date(report.createdAt).toLocaleString()}
                         </div>
                       </div>
@@ -328,7 +325,7 @@ export default function FlaggedEventsPage() {
 
                     {report.description && (
                       <div className="mb-3">
-                        <p className="text-sm text-slate-700 bg-slate-50 p-3">
+                        <p className="text-sm text-text-primary bg-bg-secondary rounded-lg p-3">
                           {report.description}
                         </p>
                       </div>
@@ -338,19 +335,19 @@ export default function FlaggedEventsPage() {
                       <div className="flex gap-2">
                         <button
                           onClick={() => updateReportStatus(report._id, "reviewed")}
-                          className="bg-slate-900 hover:bg-slate-800 text-white px-3 py-1 text-sm transition-colors cursor-pointer"
+                          className="bg-primary hover:bg-primary/90 text-bg-primary px-3 py-1 rounded-lg text-sm transition-colors cursor-pointer"
                         >
                           Mark as Reviewed
                         </button>
                         <button
                           onClick={() => updateReportStatus(report._id, "resolved")}
-                          className="border border-slate-700 text-slate-900 px-3 py-1 text-sm hover:bg-slate-100 transition-colors cursor-pointer"
+                          className="bg-success hover:bg-success/90 text-bg-primary px-3 py-1 rounded-lg text-sm transition-colors cursor-pointer"
                         >
                           Resolve
                         </button>
                         <button
                           onClick={() => updateReportStatus(report._id, "dismissed")}
-                          className="border border-slate-300 text-slate-600 px-3 py-1 text-sm hover:bg-slate-50 transition-colors cursor-pointer"
+                          className="border border-border bg-bg-secondary text-text-primary px-3 py-1 rounded-lg text-sm hover:bg-bg-secondary/80 transition-colors cursor-pointer"
                         >
                           Dismiss
                         </button>
@@ -358,9 +355,9 @@ export default function FlaggedEventsPage() {
                     )}
 
                     {report.adminNotes && (
-                      <div className="mt-3 bg-slate-50 p-3">
-                        <div className="text-xs text-slate-600 font-medium">Admin Notes:</div>
-                        <p className="text-sm text-slate-900">{report.adminNotes}</p>
+                      <div className="mt-3 bg-bg-secondary rounded-lg p-3">
+                        <div className="text-xs text-text-secondary font-medium">Admin Notes:</div>
+                        <p className="text-sm text-text-primary">{report.adminNotes}</p>
                       </div>
                     )}
                   </div>

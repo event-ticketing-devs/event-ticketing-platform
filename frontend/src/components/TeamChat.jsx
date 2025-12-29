@@ -4,6 +4,7 @@ import apiClient from '../api/apiClient';
 import { toast } from 'react-hot-toast';
 import { io } from 'socket.io-client';
 import ConfirmModal from './ConfirmModal';
+import { Send, MessageCircle, RotateCcw, ChevronDown } from 'lucide-react';
 
 export default function TeamChat({ eventId, eventTitle }) {
   const { currentUser } = useAuth();
@@ -273,8 +274,8 @@ export default function TeamChat({ eventId, eventTitle }) {
     return (
       <div className="flex items-center justify-center h-96">
         <div className="text-center">
-          <div className="w-12 h-12 border-t-transparent border-b-2 rounded-full border-slate-900 animate-spin mx-auto mb-4"></div>
-          <p className="text-slate-600">Loading chat...</p>
+          <div className="w-12 h-12 border-t-transparent border-b-2 rounded-full border-primary animate-spin mx-auto mb-4"></div>
+          <p className="text-text-secondary">Loading chat...</p>
         </div>
       </div>
     );
@@ -283,64 +284,40 @@ export default function TeamChat({ eventId, eventTitle }) {
   const groupedMessages = groupMessagesByDate();
 
   return (
-    <div className="flex flex-col h-[750px] bg-white border border-slate-200">
+    <div className="flex flex-col h-[750px] bg-bg-primary border border-border">
       {/* Chat Header */}
-      <div className="bg-slate-900 px-6 py-4 border-t-2 border-slate-200 flex justify-between items-center">
+      <div className="bg-primary px-6 py-4 border-t-2 border-border flex justify-between items-center">
         <div>
-          <h3 className="text-xl font-bold text-white">{eventTitle}</h3>
-          <p className="text-slate-300 text-sm">Team Chat</p>
+          <h3 className="text-xl font-bold text-bg-primary">{eventTitle}</h3>
+          <p className="text-bg-primary/80 text-sm">Team Chat</p>
         </div>
         {isMainOrganizer && (
           <button
             onClick={() => setShowResetModal(true)}
-            className="p-2 hover:bg-white/20 border border-slate-200 transition-colors text-white"
+            className="p-2 hover:bg-bg-primary/20 border border-bg-primary/30 rounded-lg transition-colors text-bg-primary"
             aria-label="Reset chat"
             title="Reset chat (delete all messages)"
           >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-              />
-            </svg>
+            <RotateCcw className="w-5 h-5" />
           </button>
         )}
       </div>
 
       {/* Messages Container */}
-      <div ref={messagesContainerRef} className="flex-1 overflow-y-auto p-6 space-y-4 bg-slate-50">
+      <div ref={messagesContainerRef} className="flex-1 overflow-y-auto p-6 space-y-4 bg-bg-secondary">
         {Object.keys(groupedMessages).length === 0 ? (
           <div className="text-center py-12">
-            <svg
-              className="w-16 h-16 text-slate-300 mx-auto mb-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-              />
-            </svg>
-            <p className="text-slate-500 font-medium">No messages yet</p>
-            <p className="text-slate-400 text-sm">Start the conversation!</p>
+            <MessageCircle className="w-16 h-16 text-text-secondary/50 mx-auto mb-4" />
+            <p className="text-text-primary font-medium">No messages yet</p>
+            <p className="text-text-secondary text-sm">Start the conversation!</p>
           </div>
         ) : (
           Object.entries(groupedMessages).map(([date, dateMessages]) => (
             <div key={date}>
               {/* Date Separator */}
               <div className="flex items-center justify-center my-4">
-                <div className="bg-white px-4 py-1 border border-slate-200">
-                  <span className="text-xs font-medium text-slate-600">{date}</span>
+                <div className="bg-bg-primary px-4 py-1 border border-border rounded-md">
+                  <span className="text-xs font-medium text-text-secondary">{date}</span>
                 </div>
               </div>
 
@@ -352,8 +329,8 @@ export default function TeamChat({ eventId, eventTitle }) {
                 if (isSystemMessage) {
                   return (
                     <div key={message._id} className="flex justify-center my-2">
-                      <div className="bg-slate-200 px-4 py-1 border border-slate-200">
-                        <p className="text-xs text-slate-600">{message.message}</p>
+                      <div className="bg-secondary/10 px-4 py-1 border border-secondary/30 rounded-md">
+                        <p className="text-xs text-text-secondary">{message.message}</p>
                       </div>
                     </div>
                   );
@@ -367,24 +344,24 @@ export default function TeamChat({ eventId, eventTitle }) {
                   >
                     <div className={`max-w-[70%] ${isOwnMessage ? 'order-2' : 'order-1'}`}>
                       {!isOwnMessage && (
-                        <p className="text-xs text-slate-600 font-medium mb-1 px-1">
+                        <p className="text-xs text-text-secondary font-medium mb-1 px-1">
                           {message.senderId?.name}
                         </p>
                       )}
                       <div className="relative">
                         <div
-                          className={`px-4 py-3 relative ${
+                          className={`px-4 py-3 relative rounded-lg ${
                             isOwnMessage
-                              ? 'bg-slate-900 text-white border-2 border-slate-900'
-                              : 'bg-white border-2 border-slate-200 text-slate-800'
+                              ? 'bg-primary text-bg-primary border-2 border-primary'
+                              : 'bg-bg-primary border-2 border-border text-text-primary'
                           }`}
                         >
                           {/* Message tail/arrow at bottom */}
                           <div
                             className={`absolute bottom-0 w-0 h-0 ${
                               isOwnMessage
-                                ? 'right-0 translate-x-full border-l-[12px] border-l-slate-900 border-b-[12px] border-b-transparent'
-                                : 'left-0 -translate-x-full border-r-[12px] border-r-slate-200 border-b-[12px] border-b-transparent'
+                                ? 'right-0 translate-x-full border-l-[12px] border-l-primary border-b-[12px] border-b-transparent'
+                                : 'left-0 -translate-x-full border-r-[12px] border-r-border border-b-[12px] border-b-transparent'
                             }`}
                           ></div>
                           {message.messageType === 'text' && (
@@ -395,7 +372,7 @@ export default function TeamChat({ eventId, eventTitle }) {
 
                           <p
                             className={`text-xs mt-2 ${
-                              isOwnMessage ? 'text-slate-300' : 'text-slate-500'
+                              isOwnMessage ? 'text-bg-primary/80' : 'text-text-secondary'
                             }`}
                           >
                             {formatTime(message.createdAt)}
@@ -405,21 +382,14 @@ export default function TeamChat({ eventId, eventTitle }) {
                           {isMainOrganizer && expandedMessageId !== message._id && (
                             <button
                               onClick={() => setExpandedMessageId(message._id)}
-                              className={`absolute top-2 right-2 p-1.5 border border-slate-200 transition-colors ${
+                              className={`absolute top-2 right-2 p-1.5 border rounded-md transition-colors ${
                                 isOwnMessage
-                                  ? 'hover:bg-white/20 text-white'
-                                  : 'hover:bg-slate-100 text-slate-600'
+                                  ? 'border-bg-primary/30 hover:bg-bg-primary/20 text-bg-primary'
+                                  : 'border-border hover:bg-bg-secondary text-text-secondary'
                               } opacity-0 group-hover:opacity-100`}
                               title="Show options"
                             >
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M19 9l-7 7-7-7"
-                                />
-                              </svg>
+                              <ChevronDown className="w-4 h-4" />
                             </button>
                           )}
                         </div>
@@ -432,7 +402,7 @@ export default function TeamChat({ eventId, eventTitle }) {
                               setShowDeleteModal(true);
                               setExpandedMessageId(null);
                             }}
-                            className="absolute top-2 right-2 px-3 py-1.5 text-xs font-semibold border border-slate-200  transition-all opacity-0 group-hover:opacity-100 bg-red-500 hover:bg-red-600 text-white whitespace-nowrap z-10 transform translate-x-1/2"
+                            className="absolute top-2 right-2 px-3 py-1.5 text-xs font-semibold border border-error rounded-md transition-all opacity-0 group-hover:opacity-100 bg-error hover:bg-error/90 text-bg-primary whitespace-nowrap z-10 transform translate-x-1/2"
                           >
                             Delete
                           </button>
@@ -448,15 +418,15 @@ export default function TeamChat({ eventId, eventTitle }) {
 
         {/* Typing Indicator */}
         {typingUsers.length > 0 && (
-          <div className="flex items-center gap-2 text-sm text-slate-600 px-4">
+          <div className="flex items-center gap-2 text-sm text-text-secondary px-4">
             <div className="flex gap-1">
-              <span className="w-2 h-2 bg-slate-400 border border-slate-200 animate-bounce"></span>
+              <span className="w-2 h-2 bg-secondary border border-border rounded-full animate-bounce"></span>
               <span
-                className="w-2 h-2 bg-slate-400 border border-slate-200 animate-bounce"
+                className="w-2 h-2 bg-secondary border border-border rounded-full animate-bounce"
                 style={{ animationDelay: '0.2s' }}
               ></span>
               <span
-                className="w-2 h-2 bg-slate-400 border border-slate-200 animate-bounce"
+                className="w-2 h-2 bg-secondary border border-border rounded-full animate-bounce"
                 style={{ animationDelay: '0.4s' }}
               ></span>
             </div>
@@ -468,7 +438,7 @@ export default function TeamChat({ eventId, eventTitle }) {
       </div>
 
       {/* Input Area */}
-      <form onSubmit={handleSendMessage} className="p-4 bg-white border-t border-slate-200">
+      <form onSubmit={handleSendMessage} className="p-4 bg-bg-primary border-t border-border">
         <div className="flex items-center gap-2">
           <input
             type="text"
@@ -485,28 +455,21 @@ export default function TeamChat({ eventId, eventTitle }) {
             }}
             placeholder="Type a message..."
             disabled={sending}
-            className="flex-1 px-4 py-3 border border-slate-200 focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-colors disabled:bg-slate-100"
+            className="flex-1 px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-colors disabled:bg-bg-secondary"
           />
           <button
             type="submit"
             disabled={!newMessage.trim() || sending}
-            className="h-[50px] px-6 bg-slate-900 text-white border border-slate-200 font-semibold hover:bg-slate-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="h-[50px] px-6 bg-primary text-bg-primary rounded-lg font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {sending ? (
-              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded animate-spin"></div>
+              <div className="w-5 h-5 border-2 border-bg-primary/30 border-t-bg-primary rounded-full animate-spin"></div>
             ) : (
-              <svg className="w-5 h-5 rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-                />
-              </svg>
+              <Send className="w-5 h-5" />
             )}
           </button>
         </div>
-        <p className="text-xs text-slate-500 mt-2">
+        <p className="text-xs text-text-secondary mt-2">
           Press Enter to send, Shift + Enter for new line
         </p>
       </form>

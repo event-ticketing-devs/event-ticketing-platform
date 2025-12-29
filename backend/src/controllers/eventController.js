@@ -31,7 +31,7 @@ const notifyUsersAboutDateChange = async (eventId, oldDate, newDate) => {
           html: `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
               <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
-                <h2 style="color: #856404; margin: 0 0 15px 0;">⚠️ Event Date Change Notice</h2>
+                <h2 style="color: #856404; margin: 0 0 15px 0;">Event Date Change Notice</h2>
                 <p style="color: #856404; margin: 0;"><strong>Your booked event has a new date!</strong></p>
               </div>
               
@@ -1119,7 +1119,7 @@ export const addCoOrganizer = async (req, res) => {
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
             <div style="background: #d4edda; border: 1px solid #c3e6cb; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
-              <h2 style="color: #155724; margin: 0 0 15px 0;">🎉 You're now a Co-Organizer!</h2>
+              <h2 style="color: #155724; margin: 0 0 15px 0;">You're now a Co-Organizer!</h2>
             </div>
             
             <p>Hello ${userToAdd.name},</p>
@@ -1373,7 +1373,7 @@ export const addVerifier = async (req, res) => {
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
             <div style="background: #dbeafe; border: 1px solid #93c5fd; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
-              <h2 style="color: #1e40af; margin: 0 0 15px 0;">🎫 You're now a Verifier!</h2>
+              <h2 style="color: #1e40af; margin: 0 0 15px 0;">You're now a Verifier!</h2>
             </div>
             
             <p>Hello ${userToAdd.name},</p>

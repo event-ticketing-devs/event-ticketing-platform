@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import apiClient from "../api/apiClient";
 import toast from "react-hot-toast";
 import { format } from "date-fns";
+import { XCircle, Calendar, MapPin, Ticket, Info, CheckCircle2, LayoutDashboard, RotateCcw, Mail } from 'lucide-react';
 
 export default function CancelledBookings() {
   const [cancelledBookings, setCancelledBookings] = useState([]);
@@ -45,13 +46,13 @@ export default function CancelledBookings() {
   const getRefundStatusColor = (status) => {
     switch (status) {
       case "processed":
-        return "bg-green-100 text-green-800 border-green-200";
+        return "bg-success/10 text-success border-success/20";
       case "failed":
-        return "bg-red-100 text-red-800 border-red-200";
+        return "bg-error/10 text-error border-error/20";
       case "pending":
-        return "bg-yellow-100 text-yellow-800 border-yellow-200";
+        return "bg-warning/10 text-warning border-warning/20";
       default:
-        return "bg-slate-100 text-slate-800 border-slate-200";
+        return "bg-bg-secondary text-text-secondary border-border";
     }
   };
 
@@ -76,16 +77,16 @@ export default function CancelledBookings() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white py-8">
+      <div className="min-h-screen bg-bg-primary py-8">
         <div className="max-w-6xl mx-auto px-6">
-          <div className="bg-white border border-slate-200 p-8">
+          <div className="bg-bg-primary border border-border rounded-lg p-8">
             <div className="flex items-center gap-4">
-              <div className="w-8 h-8 border-2 border-slate-900 border-t-transparent animate-spin"></div>
+              <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
               <div>
-                <h2 className="text-xl font-semibold text-slate-800">
+                <h2 className="text-xl font-semibold text-text-primary">
                   Loading cancelled bookings...
                 </h2>
-                <p className="text-slate-600">
+                <p className="text-text-secondary">
                   Please wait while we fetch your data
                 </p>
               </div>
@@ -97,45 +98,31 @@ export default function CancelledBookings() {
   }
 
   return (
-    <div className="min-h-screen bg-white py-8">
+    <div className="min-h-screen bg-bg-primary py-8">
       <div className="max-w-6xl mx-auto px-6">
         {/* Header Section */}
         <div className="mb-8">
-          <div className="flex items-center gap-4 mb-4">
-            <div>
-              <h1 className="text-3xl font-bold text-slate-800">
-                Cancelled Bookings
-              </h1>
-              <p className="text-slate-600">
-                View and manage your cancelled event bookings
-              </p>
-            </div>
+          <div>
+            <h1 className="text-3xl font-bold text-text-primary">Cancelled Bookings</h1>
+            <p className="mt-1 text-text-secondary">
+              View and manage your cancelled event bookings
+            </p>
           </div>
+        </div>
 
+        <div>
           {cancelledBookings.length > 0 && (
-            <div className="bg-white border border-slate-200 p-6">
+            <div className="bg-bg-primary border border-border rounded-lg p-6">
               <div className="flex items-center gap-4">
-                <div className="w-10 h-10 bg-orange-100 border border-orange-200 flex items-center justify-center">
-                  <svg
-                    className="w-5 h-5 text-orange-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
+                <div className="w-10 h-10 bg-warning/10 border border-warning/20 rounded-lg flex items-center justify-center">
+                  <Info className="w-5 h-5 text-warning" />
                 </div>
                 <div>
-                  <p className="font-semibold text-slate-800">
+                  <p className="font-semibold text-text-primary">
                     {cancelledBookings.length} cancelled booking
                     {cancelledBookings.length !== 1 ? "s" : ""} found
                   </p>
-                  <p className="text-sm text-slate-600">
+                  <p className="text-sm text-text-secondary">
                     Track refund status and view cancellation details for your
                     bookings
                   </p>
@@ -146,46 +133,22 @@ export default function CancelledBookings() {
         </div>
 
         {cancelledBookings.length === 0 ? (
-          <div className="bg-white border border-slate-200 p-12 text-center">
-            <div className="w-20 h-20 bg-slate-100 border border-slate-200 flex items-center justify-center mx-auto mb-6">
-              <svg
-                className="w-10 h-10 text-slate-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
+          <div className="bg-bg-primary border border-border rounded-lg p-12 text-center">
+            <div className="w-20 h-20 bg-bg-secondary border border-border rounded-lg flex items-center justify-center mx-auto mb-6">
+              <CheckCircle2 className="w-10 h-10 text-text-secondary" />
             </div>
-            <h2 className="text-2xl font-bold text-slate-800 mb-2">
+            <h2 className="text-2xl font-bold text-text-primary mb-2">
               No Cancelled Bookings
             </h2>
-            <p className="text-slate-600 mb-6 max-w-md mx-auto">
+            <p className="text-text-secondary mb-6 max-w-md mx-auto">
               You haven't cancelled any bookings yet. All your active bookings
               can be found in your dashboard.
             </p>
             <a
               href="/dashboard"
-              className="inline-flex items-center gap-2 bg-slate-900 text-white px-6 py-3 font-semibold hover:bg-slate-800 transition-colors"
+              className="inline-flex items-center gap-2 bg-primary text-bg-primary px-6 py-3 rounded-lg font-semibold hover:bg-primary/90 transition-colors cursor-pointer"
             >
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                />
-              </svg>
+              <LayoutDashboard className="w-4 h-4" />
               View Active Bookings
             </a>
           </div>
@@ -227,69 +190,27 @@ export default function CancelledBookings() {
               return (
                 <div
                   key={_id}
-                  className="bg-white border-2 border-slate-200 p-8 hover:border-slate-300 transition-colors"
+                  className="bg-bg-primary border-2 border-border rounded-lg p-8 hover:border-primary/30 transition-colors"
                 >
                   {/* Header */}
                   <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
                     <div className="flex-1">
                       <div className="flex items-start gap-4">
-                        <div className="w-16 h-16 bg-slate-100 border border-slate-200 flex items-center justify-center flex-shrink-0">
-                          <svg
-                            className="w-8 h-8 text-slate-600"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                            />
-                          </svg>
+                        <div className="w-16 h-16 bg-bg-secondary border border-border rounded-lg flex items-center justify-center flex-shrink-0">
+                          <Calendar className="w-8 h-8 text-text-secondary" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h2 className="text-2xl font-bold text-slate-800 mb-2">
+                          <h2 className="text-2xl font-bold text-text-primary mb-2">
                             {eventId.title}
                           </h2>
-                          <div className="flex flex-wrap items-center gap-4 text-sm text-slate-600">
+                          <div className="flex flex-wrap items-center gap-4 text-sm text-text-secondary">
                             <div className="flex items-center gap-1">
-                              <svg
-                                className="w-4 h-4"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                                />
-                              </svg>
+                              <Calendar className="w-4 h-4" />
                               {format(new Date(eventId.date), "PPP 'at' p")}
                             </div>
                             <div className="flex items-center gap-1">
-                              <svg
-                                className="w-4 h-4"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                                />
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                                />
-                              </svg>
-                              {eventId.location}
+                              <MapPin className="w-4 h-4" />
+                              {eventId.city}
                             </div>
                           </div>
                         </div>
@@ -298,10 +219,10 @@ export default function CancelledBookings() {
 
                     <div className="flex flex-col gap-2">
                       <span
-                        className={`px-4 py-2 text-sm font-semibold border ${
+                        className={`px-4 py-2 text-sm font-semibold border rounded-lg ${
                           cancelledByUser
-                            ? "bg-red-50 text-red-700 border-red-200"
-                            : "bg-orange-50 text-orange-700 border-orange-200"
+                            ? "bg-error/10 text-error border-error/20"
+                            : "bg-warning/10 text-warning border-warning/20"
                         }`}
                       >
                         {cancelledByUser
@@ -309,7 +230,7 @@ export default function CancelledBookings() {
                           : "Event Cancelled"}
                       </span>
                       <span
-                        className={`px-4 py-2 text-sm font-semibold border ${getRefundStatusColor(
+                        className={`px-4 py-2 text-sm font-semibold border rounded-lg ${getRefundStatusColor(
                           refundStatus
                         )}`}
                       >
@@ -321,32 +242,20 @@ export default function CancelledBookings() {
                   {/* Details Grid */}
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
                     {/* Booking Details */}
-                    <div className="bg-slate-50 border border-slate-200 p-6">
-                      <h3 className="font-semibold text-slate-800 mb-4 flex items-center gap-2">
-                        <svg
-                          className="w-5 h-5 text-slate-900"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"
-                          />
-                        </svg>
+                    <div className="bg-bg-secondary border border-border rounded-lg p-6">
+                      <h3 className="font-semibold text-text-primary mb-4 flex items-center gap-2">
+                        <Ticket className="w-5 h-5 text-primary" />
                         Booking Details
                       </h3>
                       <div className="space-y-3">
                         <div>
-                          <p className="text-sm text-slate-600">Ticket ID</p>
-                          <p className="font-semibold text-slate-800 font-mono">
+                          <p className="text-sm text-text-secondary">Ticket ID</p>
+                          <p className="font-semibold text-text-primary font-mono">
                             {ticketId}
                           </p>
                         </div>
                         <div>
-                          <p className="text-sm text-slate-600">
+                          <p className="text-sm text-text-secondary">
                             {hasTicketCategories
                               ? "Tickets Booked"
                               : "Number of Seats"}
@@ -356,38 +265,38 @@ export default function CancelledBookings() {
                               {ticketItems.map((item, index) => (
                                 <div
                                   key={index}
-                                  className="flex justify-between items-center bg-slate-100 px-3 py-2 border border-slate-200"
+                                  className="flex justify-between items-center bg-bg-primary px-3 py-2 border border-border rounded-lg"
                                 >
-                                  <span className="text-slate-700 font-medium">
+                                  <span className="text-text-secondary font-medium">
                                     {item.categoryName}
                                   </span>
-                                  <span className="text-slate-800 font-semibold">
+                                  <span className="text-text-primary font-semibold">
                                     {item.quantity} ticket
                                     {item.quantity !== 1 ? "s" : ""}
                                   </span>
                                 </div>
                               ))}
-                              <div className="flex justify-between items-center bg-blue-100 px-3 py-2 border border-blue-200">
-                                <span className="text-blue-700 font-semibold">
+                              <div className="flex justify-between items-center bg-primary/10 px-3 py-2 border border-primary/20 rounded-lg">
+                                <span className="text-primary font-semibold">
                                   Total
                                 </span>
-                                <span className="text-blue-800 font-bold">
+                                <span className="text-primary font-bold">
                                   {totalQuantity} ticket
                                   {totalQuantity !== 1 ? "s" : ""}
                                 </span>
                               </div>
                             </div>
                           ) : (
-                            <p className="font-semibold text-slate-800">
+                            <p className="font-semibold text-text-primary">
                               {noOfSeats}
                             </p>
                           )}
                         </div>
                         <div>
-                          <p className="text-sm text-slate-600">
+                          <p className="text-sm text-text-secondary">
                             Original Amount
                           </p>
-                          <p className="font-semibold text-slate-800">
+                          <p className="font-semibold text-text-primary">
                             {formatCurrency(totalAmount)}
                           </p>
                         </div>
@@ -395,33 +304,21 @@ export default function CancelledBookings() {
                     </div>
 
                     {/* Cancellation Details */}
-                    <div className="bg-slate-50 border border-slate-200 p-6">
-                      <h3 className="font-semibold text-slate-800 mb-4 flex items-center gap-2">
-                        <svg
-                          className="w-5 h-5 text-red-600"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M6 18L18 6M6 6l12 12"
-                          />
-                        </svg>
+                    <div className="bg-bg-secondary border border-border rounded-lg p-6">
+                      <h3 className="font-semibold text-text-primary mb-4 flex items-center gap-2">
+                        <XCircle className="w-5 h-5 text-error" />
                         Cancellation Info
                       </h3>
                       <div className="space-y-3">
                         <div>
-                          <p className="text-sm text-slate-600">Cancelled On</p>
-                          <p className="font-semibold text-slate-800">
+                          <p className="text-sm text-text-secondary">Cancelled On</p>
+                          <p className="font-semibold text-text-primary">
                             {format(new Date(cancellationDate), "PPP 'at' p")}
                           </p>
                         </div>
                         <div>
-                          <p className="text-sm text-slate-600">Cancelled By</p>
-                          <p className="font-semibold text-slate-800">
+                          <p className="text-sm text-text-secondary">Cancelled By</p>
+                          <p className="font-semibold text-text-primary">
                             {cancelledByUser ? "You" : "Event Organizer"}
                           </p>
                         </div>
@@ -429,25 +326,25 @@ export default function CancelledBookings() {
                     </div>
 
                     {/* Refund Details */}
-                    <div className="bg-slate-50 border border-slate-200 p-6">
-                      <h3 className="font-semibold text-slate-800 mb-4 flex items-center gap-2">
-                        <span className="w-5 h-5 text-green-600 font-bold text-lg flex items-center justify-center">
+                    <div className="bg-bg-secondary border border-border rounded-lg p-6">
+                      <h3 className="font-semibold text-text-primary mb-4 flex items-center gap-2">
+                        <span className="w-5 h-5 text-success font-bold text-lg flex items-center justify-center">
                           ₹
                         </span>
                         Refund Information
                       </h3>
                       <div className="space-y-3">
                         <div>
-                          <p className="text-sm text-slate-600">Status</p>
+                          <p className="text-sm text-text-secondary">Status</p>
                           <p
                             className={`font-semibold ${
                               refundStatus === "processed"
-                                ? "text-green-600"
+                                ? "text-success"
                                 : refundStatus === "failed"
-                                ? "text-red-600"
+                                ? "text-error"
                                 : refundStatus === "pending"
-                                ? "text-yellow-600"
-                                : "text-slate-600"
+                                ? "text-warning"
+                                : "text-text-secondary"
                             }`}
                           >
                             {getRefundStatusText(refundStatus)}
@@ -455,13 +352,13 @@ export default function CancelledBookings() {
                         </div>
                         {refundAmount !== undefined && (
                           <div>
-                            <p className="text-sm text-slate-600">
+                            <p className="text-sm text-text-secondary">
                               Refund Amount
                             </p>
-                            <p className="font-semibold text-slate-800">
+                            <p className="font-semibold text-text-primary">
                               {formatCurrency(refundAmount)}
                               {refundPercentage > 0 && (
-                                <span className="text-sm text-slate-600 ml-1">
+                                <span className="text-sm text-text-secondary ml-1">
                                   ({refundPercentage}%)
                                 </span>
                               )}
@@ -470,8 +367,8 @@ export default function CancelledBookings() {
                         )}
                         {refundId && (
                           <div>
-                            <p className="text-sm text-slate-600">Refund ID</p>
-                            <p className="font-mono text-sm text-slate-800">
+                            <p className="text-sm text-text-secondary">Refund ID</p>
+                            <p className="font-mono text-sm text-text-primary">
                               ...{refundId.slice(-8)}
                             </p>
                           </div>
@@ -482,24 +379,12 @@ export default function CancelledBookings() {
 
                   {/* Cancellation Reason */}
                   {cancellationReason && (
-                    <div className="bg-blue-50 border border-blue-200 p-4 mb-6">
-                      <h4 className="font-semibold text-blue-800 mb-2 flex items-center gap-2">
-                        <svg
-                          className="w-4 h-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                          />
-                        </svg>
+                    <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 mb-6">
+                      <h4 className="font-semibold text-primary mb-2 flex items-center gap-2">
+                        <Info className="w-4 h-4" />
                         Cancellation Reason
                       </h4>
-                      <p className="text-blue-700">{cancellationReason}</p>
+                      <p className="text-primary/80">{cancellationReason}</p>
                     </div>
                   )}
 
@@ -508,21 +393,9 @@ export default function CancelledBookings() {
                     {refundId && (
                       <button
                         onClick={() => checkRefundStatus(_id)}
-                        className="flex items-center gap-2 bg-slate-900 text-white px-6 py-3 font-semibold hover:bg-slate-800 transition-colors"
+                        className="flex items-center gap-2 bg-primary text-bg-primary px-6 py-3 rounded-lg font-semibold hover:bg-primary/90 transition-colors cursor-pointer"
                       >
-                        <svg
-                          className="w-4 h-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                          />
-                        </svg>
+                        <RotateCcw className="w-4 h-4" />
                         Check Refund Status
                       </button>
                     )}
@@ -530,21 +403,9 @@ export default function CancelledBookings() {
                     {refundStatus === "failed" && (
                       <a
                         href="mailto:support@eventtickets.com?subject=Refund Issue"
-                        className="flex items-center gap-2 bg-red-600 text-white px-6 py-3 font-semibold hover:bg-red-700 transition-colors"
+                        className="flex items-center gap-2 bg-error text-bg-primary px-6 py-3 rounded-lg font-semibold hover:bg-error/90 transition-colors cursor-pointer"
                       >
-                        <svg
-                          className="w-4 h-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                          />
-                        </svg>
+                        <Mail className="w-4 h-4" />
                         Contact Support
                       </a>
                     )}

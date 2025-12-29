@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import Webcam from "react-webcam";
+import { Camera, X, AlertCircle, Scan, Check, Info, RotateCcw } from 'lucide-react';
 
 const QRScanner = ({ onScan, onError, isScanning, onClose }) => {
   const webcamRef = useRef(null);
@@ -177,23 +178,11 @@ const QRScanner = ({ onScan, onError, isScanning, onClose }) => {
   if (hasPermission === false) {
     return (
       <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-        <div className="bg-white border-2 border-slate-200 max-w-md w-full overflow-hidden">
+        <div className="bg-bg-primary rounded-lg border border-border max-w-md w-full overflow-hidden">
           {/* Header */}
-          <div className="bg-red-600 text-white p-6 text-center">
-            <div className="w-16 h-16 bg-white/20 border border-slate-200 mx-auto mb-4 flex items-center justify-center">
-              <svg
-                className="w-8 h-8"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.664-.833-2.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"
-                />
-              </svg>
+          <div className="bg-error text-bg-primary p-6 text-center rounded-t-lg">
+            <div className="w-16 h-16 bg-bg-primary/20 rounded-lg mx-auto mb-4 flex items-center justify-center">
+              <AlertCircle className="w-8 h-8" />
             </div>
             <h3 className="text-2xl font-bold mb-2">Camera Access Required</h3>
             <p className="text-red-100">
@@ -204,57 +193,21 @@ const QRScanner = ({ onScan, onError, isScanning, onClose }) => {
           {/* Content */}
           <div className="p-6 text-center">
             <div className="space-y-4 mb-6">
-              <div className="flex items-center gap-3 text-slate-600">
-                <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <svg
-                    className="w-4 h-4 text-slate-900"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
+              <div className="flex items-center gap-3 text-text-secondary">
+                <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Check className="w-4 h-4 text-primary" />
                 </div>
                 <span className="text-sm">Secure and private scanning</span>
               </div>
-              <div className="flex items-center gap-3 text-slate-600">
-                <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <svg
-                    className="w-4 h-4 text-slate-900"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
+              <div className="flex items-center gap-3 text-text-secondary">
+                <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Check className="w-4 h-4 text-primary" />
                 </div>
                 <span className="text-sm">No data stored or transmitted</span>
               </div>
-              <div className="flex items-center gap-3 text-slate-600">
-                <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <svg
-                    className="w-4 h-4 text-slate-900"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
+              <div className="flex items-center gap-3 text-text-secondary">
+                <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Check className="w-4 h-4 text-primary" />
                 </div>
                 <span className="text-sm">Local processing only</span>
               </div>
@@ -262,7 +215,7 @@ const QRScanner = ({ onScan, onError, isScanning, onClose }) => {
 
             <button
               onClick={onClose}
-              className="w-full bg-slate-900 hover:bg-slate-800 text-white px-6 py-3 font-semibold transition-colors"
+              className="w-full bg-primary hover:bg-primary/90 text-bg-primary rounded-lg px-6 py-3 font-semibold transition-colors cursor-pointer"
             >
               Close Scanner
             </button>
@@ -274,50 +227,26 @@ const QRScanner = ({ onScan, onError, isScanning, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white border-2 border-slate-200 max-w-lg w-full overflow-hidden">
+      <div className="bg-bg-primary rounded-lg border border-border max-w-lg w-full overflow-hidden">
         {/* Header */}
-        <div className="bg-slate-900 text-white p-6">
+        <div className="bg-primary text-bg-primary p-6 rounded-t-lg">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-white/20 border border-slate-200 flex items-center justify-center">
-                <svg
-                  className="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"
-                  />
-                </svg>
+              <div className="w-12 h-12 bg-bg-primary/20 rounded-lg flex items-center justify-center">
+                <Scan className="w-6 h-6" />
               </div>
               <div>
                 <h3 className="text-xl font-bold">QR Code Scanner</h3>
-                <p className="text-blue-100 text-sm">
+                <p className="text-bg-primary/80 text-sm">
                   Position QR code in the frame
                 </p>
               </div>
             </div>
             <button
               onClick={onClose}
-              className="w-10 h-10 bg-white/20 hover:bg-white/30 border border-slate-200 flex items-center justify-center transition-all duration-200"
+              className="w-10 h-10 bg-bg-primary/20 hover:bg-bg-primary/30 rounded-lg flex items-center justify-center transition-all duration-200 cursor-pointer"
             >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
+              <X className="w-5 h-5" />
             </button>
           </div>
         </div>
@@ -325,7 +254,7 @@ const QRScanner = ({ onScan, onError, isScanning, onClose }) => {
         {/* Scanner Content */}
         <div className="p-6">
           {/* Camera View */}
-          <div className="relative bg-slate-900 border border-slate-300 overflow-hidden mb-6">
+          <div className="relative bg-black border border-border rounded-lg overflow-hidden mb-6">
             <Webcam
               ref={webcamRef}
               audio={false}
@@ -340,12 +269,12 @@ const QRScanner = ({ onScan, onError, isScanning, onClose }) => {
 
             {/* Scanning Animation Overlay */}
             {scanning && (
-              <div className="absolute inset-0 bg-blue-500/10 animate-pulse">
-                <div className="absolute inset-4 border-2 border-slate-900">
-                  <div className="absolute -top-1 -left-1 w-6 h-6 border-t-4 border-l-4 border-blue-400 rounded-tl-lg"></div>
-                  <div className="absolute -top-1 -right-1 w-6 h-6 border-t-4 border-r-4 border-blue-400 rounded-tr-lg"></div>
-                  <div className="absolute -bottom-1 -left-1 w-6 h-6 border-b-4 border-l-4 border-blue-400 rounded-bl-lg"></div>
-                  <div className="absolute -bottom-1 -right-1 w-6 h-6 border-b-4 border-r-4 border-blue-400 rounded-br-lg"></div>
+              <div className="absolute inset-0 bg-primary/10 animate-pulse">
+                <div className="absolute inset-4 border-2 border-primary rounded-lg">
+                  <div className="absolute -top-1 -left-1 w-6 h-6 border-t-4 border-l-4 border-primary rounded-tl-lg"></div>
+                  <div className="absolute -top-1 -right-1 w-6 h-6 border-t-4 border-r-4 border-primary rounded-tr-lg"></div>
+                  <div className="absolute -bottom-1 -left-1 w-6 h-6 border-b-4 border-l-4 border-primary rounded-bl-lg"></div>
+                  <div className="absolute -bottom-1 -right-1 w-6 h-6 border-b-4 border-r-4 border-primary rounded-br-lg"></div>
                 </div>
               </div>
             )}
@@ -354,21 +283,21 @@ const QRScanner = ({ onScan, onError, isScanning, onClose }) => {
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
               <div className="relative w-48 h-48">
                 {/* Corner markers */}
-                <div className="absolute -top-2 -left-2 w-8 h-8 border-t-4 border-l-4 border-white"></div>
-                <div className="absolute -top-2 -right-2 w-8 h-8 border-t-4 border-r-4 border-white"></div>
-                <div className="absolute -bottom-2 -left-2 w-8 h-8 border-b-4 border-l-4 border-white"></div>
-                <div className="absolute -bottom-2 -right-2 w-8 h-8 border-b-4 border-r-4 border-white"></div>
+                <div className="absolute -top-2 -left-2 w-8 h-8 border-t-4 border-l-4 border-bg-primary rounded-lg"></div>
+                <div className="absolute -top-2 -right-2 w-8 h-8 border-t-4 border-r-4 border-bg-primary rounded-lg"></div>
+                <div className="absolute -bottom-2 -left-2 w-8 h-8 border-b-4 border-l-4 border-bg-primary rounded-lg"></div>
+                <div className="absolute -bottom-2 -right-2 w-8 h-8 border-b-4 border-r-4 border-bg-primary rounded-lg"></div>
 
                 {/* Center guidance */}
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-2 h-2 bg-white rounded-full opacity-50"></div>
+                  <div className="w-2 h-2 bg-bg-primary rounded-full opacity-50"></div>
                 </div>
               </div>
             </div>
 
             {/* Instructions overlay */}
             <div className="absolute bottom-4 left-4 right-4">
-              <div className="bg-black/60 text-white px-4 py-2 border border-slate-200 text-center">
+              <div className="bg-black/60 text-bg-primary px-4 py-2 rounded-lg text-center">
                 <p className="text-sm font-medium">
                   {scanning
                     ? "Scanning QR code..."
@@ -382,57 +311,27 @@ const QRScanner = ({ onScan, onError, isScanning, onClose }) => {
           <div className="flex gap-3 mb-6">
             <button
               onClick={() => setCaptureMode("manual")}
-              className={`flex-1 py-3 px-4 font-semibold transition-colors border-2 ${
+              className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-colors cursor-pointer ${
                 captureMode === "manual"
-                  ? "bg-slate-900 text-white border-transparent"
-                  : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 hover:border-slate-300"
+                  ? "bg-primary text-bg-primary"
+                  : "bg-bg-secondary text-text-primary border border-border hover:bg-bg-secondary/80"
               }`}
             >
               <div className="flex items-center justify-center gap-2">
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
-                  />
-                </svg>
+                <Camera className="w-5 h-5" />
                 Manual
               </div>
             </button>
             <button
               onClick={() => setCaptureMode("auto")}
-              className={`flex-1 py-3 px-4 font-semibold transition-colors border-2 ${
+              className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-colors cursor-pointer ${
                 captureMode === "auto"
-                  ? "bg-slate-900 text-white border-transparent"
-                  : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 hover:border-slate-300"
+                  ? "bg-primary text-bg-primary"
+                  : "bg-bg-secondary text-text-primary border border-border hover:bg-bg-secondary/80"
               }`}
             >
               <div className="flex items-center justify-center gap-2">
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                  />
-                </svg>
+                <RotateCcw className="w-5 h-5" />
                 Auto Scan
               </div>
             </button>
@@ -444,41 +343,23 @@ const QRScanner = ({ onScan, onError, isScanning, onClose }) => {
               <button
                 onClick={handleManualCapture}
                 disabled={scanning || !hasPermission}
-                className="w-20 h-20 bg-slate-900 hover:bg-slate-800 disabled:bg-slate-400 text-white rounded-full flex items-center justify-center transition-colors"
+                className="w-20 h-20 bg-primary hover:bg-primary/90 disabled:bg-primary/40 text-bg-primary rounded-full flex items-center justify-center transition-colors cursor-pointer"
               >
                 {scanning ? (
-                  <div className="w-8 h-8 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <div className="w-8 h-8 border-3 border-bg-primary border-t-transparent rounded-full animate-spin"></div>
                 ) : (
-                  <svg
-                    className="w-8 h-8"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
-                    />
-                  </svg>
+                  <Camera className="w-8 h-8" />
                 )}
               </button>
-              <p className="text-slate-600 text-sm mt-3">Tap to capture</p>
+              <p className="text-text-secondary text-sm mt-3">Tap to capture</p>
             </div>
           )}
 
           {/* Auto Scanning Indicator */}
           {captureMode === "auto" && (
             <div className="text-center">
-              <div className="inline-flex items-center gap-3 bg-slate-100 text-slate-900 px-6 py-3 border border-slate-200">
-                <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+              <div className="inline-flex items-center gap-3 bg-primary/10 text-primary px-6 py-3 rounded-lg border border-primary/20">
+                <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
                 <span className="font-semibold">
                   {scanning ? "Auto scanning active..." : "Auto scan ready"}
                 </span>
@@ -487,7 +368,7 @@ const QRScanner = ({ onScan, onError, isScanning, onClose }) => {
           )}
 
           {/* Status Information */}
-          <div className="mt-6 bg-slate-50 border border-slate-200 p-4">
+          <div className="mt-6 bg-bg-secondary border border-border rounded-lg p-4">
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div className="flex items-center gap-2">
                 <div
@@ -495,36 +376,24 @@ const QRScanner = ({ onScan, onError, isScanning, onClose }) => {
                     hasPermission ? "bg-emerald-500" : "bg-red-500"
                   }`}
                 ></div>
-                <span className="text-slate-600">
+                <span className="text-text-secondary">
                   Camera: {hasPermission ? "Ready" : "Unavailable"}
                 </span>
               </div>
               <div className="flex items-center gap-2">
                 <div
                   className={`w-3 h-3 rounded-full ${
-                    scanning ? "bg-blue-500 animate-pulse" : "bg-slate-300"
+                    scanning ? "bg-primary animate-pulse" : "bg-text-secondary/30"
                   }`}
                 ></div>
-                <span className="text-slate-600">
+                <span className="text-text-secondary">
                   Status: {scanning ? "Scanning" : "Standby"}
                 </span>
               </div>
             </div>
-            <div className="mt-3 pt-3 border-t border-slate-200">
-              <div className="flex items-center gap-2 text-slate-600">
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
+            <div className="mt-3 pt-3 border-t border-border">
+              <div className="flex items-center gap-2 text-text-secondary">
+                <Info className="w-4 h-4" />
                 <span className="text-sm">
                   Mode:{" "}
                   {captureMode === "auto"

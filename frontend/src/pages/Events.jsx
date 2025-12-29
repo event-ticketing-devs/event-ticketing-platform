@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import apiClient from "../api/apiClient";
 import { format } from "date-fns";
+import { Search, X, RotateCcw, ArrowUpDown, Calendar as CalendarIcon, MapPin } from "lucide-react";
 
 const EventListPage = () => {
   const [events, setEvents] = useState([]);
@@ -152,195 +153,164 @@ const EventListPage = () => {
   }, [filters, sorting]);
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Hero Section */}
-      <div className="bg-slate-900 text-white border-b border-slate-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="flex flex-col lg:flex-row items-start justify-between gap-6">
-            <div className="flex-1">
-              <h1 className="text-3xl sm:text-4xl font-bold mb-2">
-                All Events
-              </h1>
-              <p className="text-slate-400">
+    <div className="min-h-screen bg-bg-primary py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h1 className="text-3xl font-bold text-text-primary">All Events</h1>
+              <p className="mt-1 text-text-secondary">
                 Find and book tickets for concerts, festivals, conferences, and more
               </p>
             </div>
-            <div className="flex-shrink-0">
-              <Link
-                to="/events/create"
-                className="inline-flex items-center gap-2 bg-white text-slate-900 px-5 py-2.5 font-semibold hover:bg-slate-100 transition-colors"
-              >
-                Create Event
-              </Link>
-            </div>
+            <Link
+              to="/events/create"
+              className="inline-flex items-center gap-2 bg-primary text-bg-primary px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors cursor-pointer font-medium"
+            >
+              Create Event
+            </Link>
           </div>
         </div>
-      </div>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Search and Filters Section */}
-        <div className="bg-white border border-slate-200 p-6 mb-8">
-          <div className="flex flex-col lg:flex-row gap-4">
-            {/* Search Bar */}
-            <div className="flex-1">
-              <label className="block text-sm font-medium text-slate-900 mb-2">
-                Search Events
-              </label>
+        {/* Filters - Compact Design */}
+        <div className="bg-bg-primary border border-border rounded-lg mb-8">
+          {/* Search Bar */}
+          <div className="p-4 border-b border-border">
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Search className="h-5 w-5 text-text-secondary" />
+              </div>
               <input
                 type="text"
                 placeholder="Search by event name or description..."
-                className="w-full px-4 py-2.5 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition-colors"
+                className="w-full pl-10 pr-4 py-3 text-sm border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary bg-bg-primary"
                 value={filters.search}
                 onChange={(e) => handleFilterChange('search', e.target.value)}
               />
-            </div>
-
-            {/* Category Filter */}
-            <div className="lg:w-48">
-              <label className="block text-sm font-medium text-slate-900 mb-2">
-                Category
-              </label>
-              <select
-                className="w-full px-4 py-2.5 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900"
-                value={filters.category}
-                onChange={(e) => handleFilterChange('category', e.target.value)}
-              >
-                <option value="">All Categories</option>
-                {categories.map((category) => (
-                  <option key={category._id} value={category.name}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
+              {filters.search && (
+                <button
+                  type="button"
+                  onClick={() => handleFilterChange('search', '')}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-text-secondary hover:text-text-primary"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              )}
             </div>
           </div>
 
-          {/* Advanced Filters Row */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
-            {/* Date From */}
-            <div>
-              <label className="block text-sm font-medium text-slate-900 mb-2">
-                From Date
-              </label>
-              <input
-                type="date"
-                className="w-full px-4 py-2.5 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900"
-                value={filters.dateFrom}
-                onChange={(e) => handleFilterChange('dateFrom', e.target.value)}
-                min={new Date().toISOString().split('T')[0]}
-              />
+          {/* Main Filters Bar */}
+          <div className="p-4 bg-bg-secondary">
+            <div className="flex flex-col lg:flex-row gap-3">
+              {/* Quick Filters */}
+              <div className="flex-1 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-text-secondary mb-1">Category</label>
+                  <select
+                    className="w-full px-3 py-2 text-sm border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary bg-bg-primary cursor-pointer"
+                    value={filters.category}
+                    onChange={(e) => handleFilterChange('category', e.target.value)}
+                  >
+                    <option value="">All Categories</option>
+                    {categories.map((category) => (
+                      <option key={category._id} value={category.name}>
+                        {category.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-text-secondary mb-1">City</label>
+                  <input
+                    type="text"
+                    placeholder="Enter city"
+                    className="w-full px-3 py-2 text-sm border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary bg-bg-primary"
+                    value={filters.city}
+                    onChange={(e) => handleFilterChange('city', e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-text-secondary mb-1">Min Price</label>
+                  <input
+                    type="number"
+                    placeholder="Min"
+                    className="w-full px-3 py-2 text-sm border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary bg-bg-primary"
+                    value={filters.minPrice}
+                    onChange={(e) => handleFilterChange('minPrice', e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-text-secondary mb-1">Max Price</label>
+                  <input
+                    type="number"
+                    placeholder="Max"
+                    className="w-full px-3 py-2 text-sm border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary bg-bg-primary"
+                    value={filters.maxPrice}
+                    onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-text-secondary mb-1">Sort By</label>
+                  <select
+                    className="w-full px-3 py-2 text-sm border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary bg-bg-primary cursor-pointer"
+                    value={sorting.sortBy}
+                    onChange={(e) => handleSortChange(e.target.value, sorting.sortOrder)}
+                  >
+                    <option value="date">Date</option>
+                    <option value="title">Title</option>
+                    <option value="city">City</option>
+                    <option value="price">Price</option>
+                    <option value="createdAt">Created</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-2 items-end">
+                <button
+                  type="button"
+                  onClick={resetFilters}
+                  className="flex-1 lg:flex-none px-3 py-1.5 rounded-lg border border-border hover:bg-bg-secondary text-text-primary transition-colors cursor-pointer font-medium text-sm flex items-center justify-center gap-1.5"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  Reset
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleSortChange(sorting.sortBy, sorting.sortOrder === 'asc' ? 'desc' : 'asc')}
+                  className="flex-1 lg:flex-none px-3 py-1.5 rounded-lg border border-border hover:bg-bg-secondary text-text-primary transition-colors cursor-pointer font-medium text-sm flex items-center justify-center gap-1.5"
+                >
+                  <ArrowUpDown className="w-3.5 h-3.5" />
+                  {sorting.sortOrder === 'asc' ? 'Asc' : 'Desc'}
+                </button>
+              </div>
             </div>
 
-            {/* Date To */}
-            <div>
-              <label className="block text-sm font-medium text-slate-900 mb-2">
-                To Date
-              </label>
-              <input
-                type="date"
-                className="w-full px-4 py-2.5 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900"
-                value={filters.dateTo}
-                onChange={(e) => handleFilterChange('dateTo', e.target.value)}
-                min={filters.dateFrom || new Date().toISOString().split('T')[0]}
-              />
-            </div>
-
-            {/* City Filter */}
-            <div>
-              <label className="block text-sm font-medium text-slate-900 mb-2">
-                City
-              </label>
-              <input
-                type="text"
-                placeholder="Enter city..."
-                className="w-full px-4 py-2.5 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900"
-                value={filters.city}
-                onChange={(e) => handleFilterChange('city', e.target.value)}
-              />
-            </div>
-
-            {/* Price Range */}
-            <div>
-              <label className="block text-sm font-medium text-slate-900 mb-2">
-                Price Range
-              </label>
-              <div className="flex gap-2">
+            {/* Date Range - Compact Row */}
+            <div className="grid grid-cols-2 gap-3 mt-3">
+              <div>
+                <label className="block text-xs font-medium text-text-secondary mb-1">From Date</label>
                 <input
-                  type="number"
-                  placeholder="Min"
-                  className="w-full px-3 py-2.5 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900"
-                  value={filters.minPrice}
-                  onChange={(e) => handleFilterChange('minPrice', e.target.value)}
+                  type="date"
+                  className="w-full px-3 py-2 text-sm border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary bg-bg-primary cursor-pointer"
+                  value={filters.dateFrom}
+                  onChange={(e) => handleFilterChange('dateFrom', e.target.value)}
+                  min={new Date().toISOString().split('T')[0]}
                 />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-text-secondary mb-1">To Date</label>
                 <input
-                  type="number"
-                  placeholder="Max"
-                  className="w-full px-3 py-2.5 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900"
-                  value={filters.maxPrice}
-                  onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
+                  type="date"
+                  className="w-full px-3 py-2 text-sm border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary bg-bg-primary cursor-pointer"
+                  value={filters.dateTo}
+                  onChange={(e) => handleFilterChange('dateTo', e.target.value)}
+                  min={filters.dateFrom || new Date().toISOString().split('T')[0]}
                 />
               </div>
             </div>
           </div>
-
-          {/* Sorting and Actions */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6 pt-6 border-t border-slate-200">
-            <div className="flex items-center gap-3">
-              <label className="text-sm font-medium text-slate-900">Sort by:</label>
-              <select
-                className="px-3 py-2 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900"
-                value={sorting.sortBy}
-                onChange={(e) => handleSortChange(e.target.value, sorting.sortOrder)}
-              >
-                <option value="date">Date</option>
-                <option value="title">Title</option>
-                <option value="city">City</option>
-                <option value="price">Price</option>
-                <option value="createdAt">Created Date</option>
-              </select>
-              <select
-                className="px-3 py-2 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900"
-                value={sorting.sortOrder}
-                onChange={(e) => handleSortChange(sorting.sortBy, e.target.value)}
-              >
-                <option value="asc">Ascending</option>
-                <option value="desc">Descending</option>
-              </select>
-            </div>
-
-            <div className="flex gap-3">
-              <button
-                onClick={resetFilters}
-                className="px-4 py-2 text-slate-900 border border-slate-300 hover:bg-slate-50 transition-colors text-sm font-medium"
-              >
-                Reset Filters
-              </button>
-              <button
-                onClick={applyFiltersAndSort}
-                className="px-6 py-2 bg-slate-900 text-white hover:bg-slate-800 transition-colors text-sm font-medium"
-              >
-                Apply Filters
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Results Summary */}
-        <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
-          <h2 className="text-xl font-semibold text-slate-900 mb-4 sm:mb-0">
-            {loading 
-              ? "Loading events..." 
-              : visibleEvents.length === 0 
-                ? "No events found" 
-                : `${visibleEvents.length} Event${visibleEvents.length !== 1 ? 's' : ''}`}
-          </h2>
-          
-          {!loading && visibleEvents.length > 0 && (
-            <div className="text-sm text-slate-600">
-              Showing {visibleEvents.length} upcoming event{visibleEvents.length !== 1 ? 's' : ''}
-            </div>
-          )}
         </div>
 
         {/* Events Grid */}
@@ -351,13 +321,13 @@ const EventListPage = () => {
               {[...Array(8)].map((_, index) => (
                 <div
                   key={index}
-                  className="bg-white border border-slate-200 overflow-hidden animate-pulse"
+                  className="bg-bg-secondary border border-border rounded-lg overflow-hidden animate-pulse"
                 >
-                  <div className="h-48 bg-slate-200"></div>
+                  <div className="h-48 bg-border"></div>
                   <div className="p-5 space-y-3">
-                    <div className="h-4 bg-slate-200 w-3/4"></div>
-                    <div className="h-3 bg-slate-200 w-1/2"></div>
-                    <div className="h-10 bg-slate-200"></div>
+                    <div className="h-4 bg-border rounded w-3/4"></div>
+                    <div className="h-3 bg-border rounded w-1/2"></div>
+                    <div className="h-10 bg-border rounded"></div>
                   </div>
                 </div>
               ))}
@@ -365,29 +335,17 @@ const EventListPage = () => {
           ) : visibleEvents.length === 0 ? (
             // No Events State
             <div className="text-center py-16">
-              <div className="mx-auto w-16 h-16 mb-6 bg-slate-100 flex items-center justify-center">
-                <svg
-                  className="w-8 h-8 text-slate-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                  />
-                </svg>
+              <div className="mx-auto w-16 h-16 mb-6 bg-bg-secondary rounded-lg flex items-center justify-center">
+                <CalendarIcon className="w-8 h-8 text-text-secondary" />
               </div>
-              <h3 className="text-xl font-semibold text-slate-900 mb-2">
+              <h3 className="text-xl font-semibold text-text-primary mb-2">
                 No events found
               </h3>
-              <p className="text-slate-600 mb-6">
+              <p className="text-text-secondary mb-6">
                 Try adjusting your filters or{" "}
                 <button 
                   onClick={resetFilters}
-                  className="text-slate-900 hover:text-slate-700 font-medium"
+                  className="text-primary hover:text-primary/80 font-medium cursor-pointer"
                 >
                   reset them
                 </button>{" "}
@@ -395,7 +353,7 @@ const EventListPage = () => {
               </p>
               <Link
                 to="/events/create"
-                className="inline-flex items-center gap-2 bg-slate-900 text-white px-5 py-2.5 font-semibold hover:bg-slate-800 transition-colors"
+                className="inline-flex items-center gap-2 bg-primary text-bg-primary px-5 py-2.5 font-semibold hover:bg-primary/90 transition-colors rounded-lg cursor-pointer"
               >
                 Create New Event
               </Link>
@@ -406,38 +364,26 @@ const EventListPage = () => {
               {visibleEvents.map((event) => (
                 <div
                   key={event._id}
-                  className="group bg-white border border-slate-200 hover:border-slate-300 overflow-hidden transition-colors flex flex-col"
+                  className="group bg-bg-primary border border-border hover:border-primary/30 rounded-lg overflow-hidden transition-all flex flex-col hover:shadow-md"
                 >
                   {/* Event Image */}
-                  <div className="relative h-48 bg-slate-100 overflow-hidden">
+                  <div className="relative h-48 bg-bg-secondary overflow-hidden">
                     {event.photo ? (
                       <img
                         src={event.photo}
                         alt={event.title}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
-                        <svg
-                          className="w-12 h-12 text-slate-300"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                          />
-                        </svg>
+                        <CalendarIcon className="w-12 h-12 text-text-secondary/30" />
                       </div>
                     )}
                     
                     {/* Category Badge */}
                     {event.categoryId && (
                       <div className="absolute top-3 left-3">
-                        <span className="inline-block bg-white text-slate-900 px-2.5 py-1 text-xs font-medium">
+                        <span className="inline-block bg-bg-primary text-text-primary px-2.5 py-1 text-xs font-medium rounded-md shadow-md">
                           {event.categoryId.name || event.categoryId}
                         </span>
                       </div>
@@ -445,7 +391,7 @@ const EventListPage = () => {
 
                     {/* Price Badge */}
                     <div className="absolute top-3 right-3">
-                      <span className="inline-block bg-slate-900 text-white px-2.5 py-1 text-xs font-semibold">
+                      <span className="inline-block bg-primary text-bg-primary px-2.5 py-1 text-xs font-semibold rounded-md shadow-md">
                         {formatEventPrice(event)}
                       </span>
                     </div>
@@ -453,26 +399,21 @@ const EventListPage = () => {
 
                   {/* Event Details - flex-1 to grow and push button down */}
                   <div className="p-5 flex flex-col flex-1">
-                    <h3 className="text-lg font-semibold text-slate-900 mb-2 line-clamp-2">
+                    <h3 className="text-lg font-semibold text-text-primary mb-2 line-clamp-2">
                       {event.title}
                     </h3>
                     
                     {/* Date and Time */}
-                    <div className="flex items-center gap-2 text-slate-600 mb-2">
-                      <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
+                    <div className="flex items-center gap-2 text-text-secondary mb-2">
+                      <CalendarIcon className="w-4 h-4 text-text-secondary/60" />
                       <span className="text-sm">
                         {format(new Date(event.date), "MMM dd, yyyy 'at' h:mm a")}
                       </span>
                     </div>
 
                     {/* Location */}
-                    <div className="flex items-center gap-2 text-slate-600 mb-4">
-                      <svg className="w-4 h-4 text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                      </svg>
+                    <div className="flex items-center gap-2 text-text-secondary mb-4">
+                      <MapPin className="w-4 h-4 text-text-secondary/60 flex-shrink-0" />
                       <span className="text-sm truncate">
                         {event.venue?.name || event.venue}, {event.city}
                       </span>
@@ -484,7 +425,7 @@ const EventListPage = () => {
                     {/* View Details Button */}
                     <Link
                       to={`/events/${event._id}`}
-                      className="block w-full bg-slate-900 text-white text-center py-2.5 font-semibold hover:bg-slate-800 transition-colors"
+                      className="block w-full bg-primary text-bg-primary text-center py-2.5 font-semibold hover:bg-primary/90 transition-colors rounded-lg cursor-pointer"
                     >
                       View Details
                     </Link>
@@ -498,7 +439,7 @@ const EventListPage = () => {
         {/* Pagination */}
         {!loading && pagination.totalPages > 1 && (
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="text-sm text-slate-600">
+            <div className="text-sm text-text-secondary">
               Page {pagination.currentPage} of {pagination.totalPages}
             </div>
             
@@ -507,7 +448,7 @@ const EventListPage = () => {
               <button
                 onClick={() => handlePageChange(1)}
                 disabled={pagination.currentPage === 1}
-                className="px-3 py-2 text-sm border border-slate-300 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="px-3 py-2 text-sm border border-border rounded-lg hover:bg-bg-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
               >
                 First
               </button>
@@ -516,7 +457,7 @@ const EventListPage = () => {
               <button
                 onClick={() => handlePageChange(pagination.currentPage - 1)}
                 disabled={!pagination.hasPrevPage}
-                className="px-3 py-2 text-sm border border-slate-300 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="px-3 py-2 text-sm border border-border rounded-lg hover:bg-bg-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
               >
                 Previous
               </button>
@@ -529,10 +470,10 @@ const EventListPage = () => {
                     <button
                       key={pageNum}
                       onClick={() => handlePageChange(pageNum)}
-                      className={`px-3 py-2 text-sm border transition-colors ${
+                      className={`px-3 py-2 text-sm border rounded-lg transition-colors cursor-pointer ${
                         pageNum === pagination.currentPage
-                          ? "bg-slate-900 text-white border-slate-900"
-                          : "border-slate-300 hover:bg-slate-50"
+                          ? "bg-primary text-bg-primary border-primary"
+                          : "border-border hover:bg-bg-secondary"
                       }`}
                     >
                       {pageNum}
@@ -546,7 +487,7 @@ const EventListPage = () => {
               <button
                 onClick={() => handlePageChange(pagination.currentPage + 1)}
                 disabled={!pagination.hasNextPage}
-                className="px-3 py-2 text-sm border border-slate-300 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="px-3 py-2 text-sm border border-border rounded-lg hover:bg-bg-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
               >
                 Next
               </button>
@@ -555,7 +496,7 @@ const EventListPage = () => {
               <button
                 onClick={() => handlePageChange(pagination.totalPages)}
                 disabled={pagination.currentPage === pagination.totalPages}
-                className="px-3 py-2 text-sm border border-slate-300 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="px-3 py-2 text-sm border border-border rounded-lg hover:bg-bg-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
               >
                 Last
               </button>

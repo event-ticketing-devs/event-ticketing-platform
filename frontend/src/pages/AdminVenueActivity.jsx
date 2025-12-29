@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import apiClient from "../api/apiClient";
 import toast from "react-hot-toast";
+import { format } from "date-fns";
+import { Building2, Calendar, CheckCircle2, XCircle, Clock, ChevronLeft, FileText, Users } from "lucide-react";
 
 export default function AdminVenueActivity() {
   const { id } = useParams();
@@ -26,26 +28,16 @@ export default function AdminVenueActivity() {
     }
   };
 
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
-
   const getStatusBadge = (status) => {
     const config = {
-      open: { bg: "bg-blue-100", text: "text-blue-800", label: "Open" },
-      quoted: { bg: "bg-purple-100", text: "text-purple-800", label: "Quoted" },
-      declined: { bg: "bg-red-100", text: "text-red-800", label: "Declined" },
-      externally_booked: { bg: "bg-green-100", text: "text-green-800", label: "Booked" },
+      open: { bg: "bg-secondary/10", text: "text-secondary", label: "Open" },
+      quoted: { bg: "bg-primary/10", text: "text-primary", label: "Quoted" },
+      declined: { bg: "bg-error/10", text: "text-error", label: "Declined" },
+      externally_booked: { bg: "bg-success/10", text: "text-success", label: "Booked" },
     };
     const { bg, text, label } = config[status] || config.open;
     return (
-      <span className={`px-2 py-1 rounded-full text-xs font-medium ${bg} ${text}`}>
+      <span className={`px-3 py-1 rounded-md text-xs font-medium ${bg} ${text}`}>
         {label}
       </span>
     );
@@ -53,137 +45,172 @@ export default function AdminVenueActivity() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="min-h-screen bg-bg-secondary flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
       </div>
     );
   }
 
   if (!data) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-lg text-red-600">Activity data not found</div>
+      <div className="min-h-screen bg-bg-secondary flex items-center justify-center">
+        <div className="text-lg text-error">Activity data not found</div>
       </div>
     );
   }
 
-  const { venue, spaces, requests, quotes, totalRevenue } = data;
+  const { venue, spaces, requests, quotes } = data;
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-bg-secondary py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-6">
           <button
             onClick={() => navigate("/admin/venues")}
-            className="text-blue-600 hover:text-blue-700 mb-4 flex items-center gap-2"
+            className="text-primary hover:text-primary/80 mb-4 flex items-center gap-2 cursor-pointer transition-colors"
           >
-            ← Back to Venues
+            <ChevronLeft className="w-5 h-5" />
+            Back to Venues
           </button>
-          <h1 className="text-3xl font-bold text-gray-900">{venue.name}</h1>
-          <p className="text-gray-600 mt-2">{venue.city} | {venue.fullAddress}</p>
-        </div>
-
-        {/* Venue Info Card */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">Venue Information</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <h3 className="text-sm font-medium text-gray-700 mb-2">Owner Details</h3>
-              <p className="text-sm text-gray-600">
-                <span className="font-medium">Name:</span> {venue.owner?.name || "N/A"}
-              </p>
-              <p className="text-sm text-gray-600">
-                <span className="font-medium">Email:</span> {venue.owner?.email || "N/A"}
-              </p>
-              <p className="text-sm text-gray-600">
-                <span className="font-medium">Status:</span>{" "}
-                {venue.owner?.isBanned ? (
-                  <span className="text-red-600 font-semibold">Banned</span>
+          
+          <div className="bg-bg-primary border border-border rounded-lg p-6">
+            <div className="flex items-start justify-between mb-4">
+              <div>
+                <h1 className="text-2xl font-bold text-text-primary">{venue.name}</h1>
+                <p className="text-text-secondary mt-1">{venue.city} • {venue.fullAddress}</p>
+              </div>
+              <span className={`px-4 py-2 rounded-md text-sm font-medium ${
+                venue.verificationStatus === 'verified' ? 'bg-success/10 text-success' :
+                venue.verificationStatus === 'suspended' ? 'bg-error/10 text-error' :
+                'bg-warning/10 text-warning'
+              } inline-flex items-center gap-1`}>
+                {venue.verificationStatus === 'verified' ? (
+                  <><CheckCircle2 className="w-3 h-3" /><span>Verified</span></>
+                ) : venue.verificationStatus === 'suspended' ? (
+                  <><XCircle className="w-3 h-3" /><span>Suspended</span></>
                 ) : (
-                  <span className="text-green-600 font-semibold">Active</span>
+                  <><Clock className="w-3 h-3" /><span>Pending</span></>
                 )}
-              </p>
+              </span>
             </div>
 
-            <div>
-              <h3 className="text-sm font-medium text-gray-700 mb-2">Primary Contact</h3>
-              <p className="text-sm text-gray-600">
-                <span className="font-medium">Name:</span> {venue.primaryContact?.name || "N/A"}
-              </p>
-              <p className="text-sm text-gray-600">
-                <span className="font-medium">Phone:</span> {venue.primaryContact?.phone || "N/A"}
-              </p>
-              <p className="text-sm text-gray-600">
-                <span className="font-medium">Email:</span> {venue.primaryContact?.email || "N/A"}
-              </p>
-            </div>
-
-            <div>
-              <h3 className="text-sm font-medium text-gray-700 mb-2">Verification</h3>
-              <p className="text-sm text-gray-600">
-                <span className="font-medium">Status:</span>{" "}
-                <span className="capitalize">{venue.verificationStatus}</span>
-              </p>
-              <p className="text-sm text-gray-600">
-                <span className="font-medium">Registered:</span> {formatDate(venue.createdAt)}
-              </p>
-            </div>
-
-            <div>
-              <h3 className="text-sm font-medium text-gray-700 mb-2">Team Members</h3>
-              <p className="text-sm text-gray-600">
-                {venue.teamMembers && venue.teamMembers.length > 0
-                  ? `${venue.teamMembers.length} member(s)`
-                  : "No team members"}
-              </p>
+            {/* Compact Info Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4 border-t border-border">
+              <div>
+                <p className="text-xs text-text-secondary mb-1">Owner</p>
+                <p className="text-sm font-medium text-text-primary">{venue.owner?.name || "N/A"}</p>
+                {venue.owner?.isBanned && (
+                  <span className="inline-block mt-1 px-2 py-0.5 rounded-md text-xs font-medium bg-error/10 text-error">
+                    Banned
+                  </span>
+                )}
+              </div>
+              <div>
+                <p className="text-xs text-text-secondary mb-1">Primary Contact</p>
+                <p className="text-sm font-medium text-text-primary">{venue.primaryContact?.name || "N/A"}</p>
+                <p className="text-xs text-text-secondary">{venue.primaryContact?.phone || "—"}</p>
+                <p className="text-xs text-text-secondary">{venue.primaryContact?.email || "—"}</p>
+              </div>
+              <div>
+                <p className="text-xs text-text-secondary mb-1">Registered</p>
+                <p className="text-sm font-medium text-text-primary">
+                  {format(new Date(venue.createdAt), "MMM d, yyyy")}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs text-text-secondary mb-1">Team Members</p>
+                <p className="text-sm font-medium text-text-primary">
+                  {venue.teamMembers?.length || 0}
+                </p>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Statistics */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <p className="text-sm text-gray-600 mb-1">Total Spaces</p>
-            <p className="text-3xl font-bold text-blue-600">{spaces.length}</p>
+        {/* Statistics Cards */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          <div className="bg-bg-primary border border-border rounded-lg p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-primary/10 rounded-lg">
+                <Building2 className="w-5 h-5 text-primary" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-text-primary">{spaces.length}</p>
+                <p className="text-xs text-text-secondary">Spaces</p>
+              </div>
+            </div>
           </div>
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <p className="text-sm text-gray-600 mb-1">Total Requests</p>
-            <p className="text-3xl font-bold text-purple-600">{requests.length}</p>
+
+          <div className="bg-bg-primary border border-border rounded-lg p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-secondary/10 rounded-lg">
+                <FileText className="w-5 h-5 text-secondary" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-text-primary">{requests.length}</p>
+                <p className="text-xs text-text-secondary">Requests</p>
+              </div>
+            </div>
           </div>
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <p className="text-sm text-gray-600 mb-1">Quotes Sent</p>
-            <p className="text-3xl font-bold text-yellow-600">{quotes.length}</p>
+
+          <div className="bg-bg-primary border border-border rounded-lg p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-warning/10 rounded-lg flex items-center justify-center">
+                <span className="w-5 h-5 flex items-center justify-center text-xl text-warning">₹</span>
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-text-primary">{quotes.length}</p>
+                <p className="text-xs text-text-secondary">Quotes</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-bg-primary border border-border rounded-lg p-4">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-success/10 rounded-lg">
+                <CheckCircle2 className="w-5 h-5 text-success" />
+              </div>
+              <div>
+                <p className="text-2xl font-bold text-text-primary">
+                  {requests.filter(r => r.status === 'externally_booked').length}
+                </p>
+                <p className="text-xs text-text-secondary">Booked</p>
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Spaces */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">Spaces ({spaces.length})</h2>
+        <div className="bg-bg-primary border border-border rounded-lg p-6 mb-6">
+          <h2 className="text-lg font-semibold text-text-primary mb-4">
+            Spaces ({spaces.length})
+          </h2>
+          
           {spaces.length === 0 ? (
-            <p className="text-gray-500 text-center py-6">No spaces added yet</p>
+            <div className="text-center py-8">
+              <Building2 className="mx-auto h-12 w-12 text-text-secondary mb-3" />
+              <p className="text-sm text-text-secondary">No spaces added</p>
+            </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {spaces.map((space) => (
-                <div key={space._id} className="border border-gray-200 rounded-lg p-4">
-                  <h3 className="font-semibold text-gray-900 mb-2">{space.name}</h3>
-                  <p className="text-sm text-gray-600">
-                    <span className="font-medium">Type:</span>{" "}
-                    <span className="capitalize">{space.type}</span>
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    <span className="font-medium">Capacity:</span> {space.maxPax} guests
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    <span className="font-medium">Booking:</span>{" "}
-                    <span className="capitalize">{space.bookingUnit}</span>
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    <span className="font-medium">Status:</span>{" "}
-                    <span className={space.isActive ? "text-green-600" : "text-red-600"}>
+                <div key={space._id} className="p-4 border border-border rounded-lg hover:border-primary/30 transition-colors">
+                  <div className="flex items-start justify-between mb-3">
+                    <div>
+                      <h3 className="font-semibold text-text-primary">{space.name}</h3>
+                      <p className="text-xs text-text-secondary capitalize">{space.type} • {space.indoorOutdoor}</p>
+                    </div>
+                    <span className={`px-2 py-1 rounded-md text-xs font-medium ${
+                      space.isActive ? "bg-success/10 text-success" : "bg-error/10 text-error"
+                    }`}>
                       {space.isActive ? "Active" : "Inactive"}
                     </span>
-                  </p>
+                  </div>
+                  <div className="flex items-center gap-4 text-sm text-text-secondary">
+                    <span>{space.maxPax} guests</span>
+                    {space.areaSqFt && <span>{space.areaSqFt} sq ft</span>}
+                  </div>
                 </div>
               ))}
             </div>
@@ -191,85 +218,95 @@ export default function AdminVenueActivity() {
         </div>
 
         {/* Recent Requests */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">
-            Recent Requests ({requests.length})
-          </h2>
+        <div className="bg-bg-primary border border-border rounded-lg p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-lg font-semibold text-text-primary">
+              Recent Requests ({requests.length})
+            </h2>
+            
+            {/* Status Filter Pills */}
+            <div className="flex gap-2">
+              <span className="px-3 py-1 bg-secondary/10 text-secondary rounded-md text-xs font-medium">
+                {requests.filter(r => r.status === 'open').length} Open
+              </span>
+              <span className="px-3 py-1 bg-primary/10 text-primary rounded-md text-xs font-medium">
+                {requests.filter(r => r.status === 'quoted').length} Quoted
+              </span>
+              <span className="px-3 py-1 bg-success/10 text-success rounded-md text-xs font-medium">
+                {requests.filter(r => r.status === 'externally_booked').length} Booked
+              </span>
+              <span className="px-3 py-1 bg-error/10 text-error rounded-md text-xs font-medium">
+                {requests.filter(r => r.status === 'declined').length} Declined
+              </span>
+            </div>
+          </div>
+          
           {requests.length === 0 ? (
-            <p className="text-gray-500 text-center py-6">No requests yet</p>
+            <div className="text-center py-12">
+              <FileText className="mx-auto h-12 w-12 text-text-secondary mb-3" />
+              <p className="text-sm text-text-secondary">No requests yet</p>
+            </div>
           ) : (
             <div className="space-y-3">
-              {requests.slice(0, 10).map((request) => (
+              {requests.slice(0, 15).map((request) => (
                 <div
                   key={request._id}
-                  className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+                  className="p-4 border border-border rounded-lg hover:border-primary/30 hover:shadow-sm transition-all"
                 >
-                  <div className="flex items-start justify-between mb-2">
-                    <div>
-                      <h3 className="font-semibold text-gray-900">{request.eventName}</h3>
-                      <p className="text-sm text-gray-600">
-                        {request.organizer?.name} ({request.organizer?.email})
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-text-primary mb-1">{request.eventName}</h3>
+                      <p className="text-sm text-text-secondary">
+                        {request.organizer?.name} • {request.organizer?.email}
                       </p>
                     </div>
                     {getStatusBadge(request.status)}
                   </div>
 
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm text-gray-600">
-                    <div>
-                      <span className="font-medium">Space:</span> {request.space?.name || "N/A"}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <div className="flex items-center gap-2 text-sm text-text-secondary">
+                      <Building2 className="w-4 h-4 flex-shrink-0" />
+                      <span className="truncate">{request.space?.name || "N/A"}</span>
                     </div>
-                    <div>
-                      <span className="font-medium">Date:</span>{" "}
-                      {new Date(request.eventDateStart).toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                        year: "numeric",
-                      })}
+                    <div className="flex items-center gap-2 text-sm text-text-secondary">
+                      <Calendar className="w-4 h-4 flex-shrink-0" />
+                      <span>{format(new Date(request.eventDateStart), "MMM d, yyyy")}</span>
                     </div>
-                    <div>
-                      <span className="font-medium">Guests:</span> {request.expectedPax}
+                    <div className="flex items-center gap-2 text-sm text-text-secondary">
+                      <Users className="w-4 h-4 flex-shrink-0" />
+                      <span>{request.expectedPax} guests</span>
                     </div>
-                    <div>
-                      <span className="font-medium">Created:</span>{" "}
-                      {new Date(request.createdAt).toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                      })}
+                    <div className="flex items-center gap-2 text-sm text-text-secondary">
+                      <Clock className="w-4 h-4 flex-shrink-0" />
+                      <span>{format(new Date(request.createdAt), "MMM d")}</span>
                     </div>
                   </div>
 
                   {request.status === "externally_booked" && request.bookedAt && (
-                    <p className="text-sm text-green-600 mt-2">
-                      <span className="font-medium">Booked on:</span>{" "}
-                      {new Date(request.bookedAt).toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                        year: "numeric",
-                      })}
-                    </p>
+                    <div className="mt-3 pt-3 border-t border-border">
+                      <p className="text-sm text-success flex items-center gap-2">
+                        <CheckCircle2 className="w-4 h-4" />
+                        Booked on {format(new Date(request.bookedAt), "MMM d, yyyy")}
+                      </p>
+                    </div>
                   )}
 
-                  {request.status === "declined" && request.declinedAt && (
-                    <p className="text-sm text-red-600 mt-2">
-                      <span className="font-medium">Declined on:</span>{" "}
-                      {new Date(request.declinedAt).toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                        year: "numeric",
-                      })}
-                      {request.declineReason && (
-                        <span className="ml-2">- {request.declineReason}</span>
-                      )}
-                    </p>
+                  {request.status === "declined" && request.declineReason && (
+                    <div className="mt-3 pt-3 border-t border-border">
+                      <p className="text-sm text-error flex items-start gap-2">
+                        <XCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                        <span>{request.declineReason}</span>
+                      </p>
+                    </div>
                   )}
                 </div>
               ))}
             </div>
           )}
 
-          {requests.length > 10 && (
-            <p className="text-sm text-gray-500 text-center mt-4">
-              Showing 10 of {requests.length} requests
+          {requests.length > 15 && (
+            <p className="text-sm text-text-secondary text-center mt-6 pt-6 border-t border-border">
+              Showing 15 of {requests.length} requests
             </p>
           )}
         </div>

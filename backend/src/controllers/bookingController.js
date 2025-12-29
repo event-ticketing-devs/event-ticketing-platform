@@ -320,14 +320,14 @@ export const createBooking = async (req, res) => {
                 ? `
             <!-- Venue Map Section -->
             <div style="margin: 20px 0; padding: 16px; background: #f8f9fa; border-radius: 8px; text-align: center;">
-              <h3 style="color: #333; margin: 0 0 12px 0;">📍 Venue Location</h3>
+              <h3 style="color: #333; margin: 0 0 12px 0;">Venue Location</h3>
               <img src="https://maps.googleapis.com/maps/api/staticmap?center=${event.venue.coordinates.lat},${event.venue.coordinates.lng}&zoom=15&size=400x200&markers=color:red%7C${event.venue.coordinates.lat},${event.venue.coordinates.lng}&key=${process.env.GOOGLE_MAPS_API_KEY}" 
                    alt="Venue Map" 
                    style="max-width: 100%; border-radius: 6px; border: 1px solid #ddd;" />
               <div style="margin-top: 10px;">
                 <a href="https://www.google.com/maps/search/?api=1&query=${event.venue.coordinates.lat},${event.venue.coordinates.lng}" 
                    style="background: #4285f4; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-size: 14px;">
-                  🗺️ Open in Google Maps
+                  Open in Google Maps
                 </a>
               </div>
             </div>
@@ -486,7 +486,7 @@ export const cancelBooking = async (req, res) => {
         html: `
           <div style="font-family: Arial, sans-serif; background: #f9f9f9; padding: 24px;">
             <div style="max-width: 500px; margin: auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); padding: 24px;">
-              <h1 style="color: #e74c3c; text-align: center;">🚫 Booking Cancelled</h1>
+              <h1 style="color: #e74c3c; text-align: center;">Booking Cancelled</h1>
               <hr style="margin: 16px 0;">
               <p style="font-size: 1.1em;">Your booking for <strong>${
                 event.title
@@ -523,7 +523,7 @@ export const cancelBooking = async (req, res) => {
                   refundResult?.success
                     ? `
                   <div style="background: #d4edda; border: 1px solid #c3e6cb; color: #155724; padding: 12px; border-radius: 4px; margin-top: 12px;">
-                    <strong>✅ Refund Processed:</strong> ₹${refundResult.amount}<br>
+                    <strong>Refund Processed:</strong> ₹${refundResult.amount}<br>
                     <strong>Refund ID:</strong> ${refundResult.refundId}<br>
                     <small>The refund will appear in your account within 5-10 business days.</small>
                   </div>
@@ -531,14 +531,14 @@ export const cancelBooking = async (req, res) => {
                     : booking.refundAmount === 0
                     ? `
                   <div style="background: #fff3cd; border: 1px solid #ffeaa7; color: #856404; padding: 12px; border-radius: 4px; margin-top: 12px;">
-                    <strong>⚠️ No Refund:</strong> Cancelled within 24 hours of event<br>
+                    <strong>No Refund:</strong> Cancelled within 24 hours of event<br>
                     <small>As per our cancellation policy, no refund is applicable.</small>
                   </div>
                 `
                     : booking.refundStatus === "failed"
                     ? `
                   <div style="background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 12px; border-radius: 4px; margin-top: 12px;">
-                    <strong>❌ Refund Failed:</strong> Please contact support<br>
+                    <strong>Refund Failed:</strong> Please contact support<br>
                     <small>We'll help you process your refund manually.</small>
                   </div>
                 `
@@ -997,7 +997,7 @@ export const verifyBookingCode = async (req, res) => {
 
     // Check if booking belongs to the selected event
     if (eventId && booking.eventId.toString() !== eventId) {
-      console.log("❌ Event ID mismatch - booking vs frontend");
+      console.log("Event ID mismatch - booking vs frontend");
       return res
         .status(400)
         .json({ message: "Ticket does not belong to this event" });
@@ -1005,7 +1005,7 @@ export const verifyBookingCode = async (req, res) => {
 
     // Also check if QR data event matches the booking event
     if (booking.eventId.toString() !== ticketInfo.eventId) {
-      console.log("❌ Event ID mismatch - booking vs QR code");
+      console.log("Event ID mismatch - booking vs QR code");
       return res.status(400).json({ message: "Ticket event mismatch" });
     }
 
