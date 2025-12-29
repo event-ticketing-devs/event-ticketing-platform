@@ -10,7 +10,12 @@ const VenuesPage = () => {
   const [loading, setLoading] = useState(true);
   const [expandedAmenities, setExpandedAmenities] = useState({});
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [sortOrder, setSortOrder] = useState('asc'); // For sorting by name
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const itemsPerPage = 12;
   const [filters, setFilters] = useState({
+    search: "",
     city: "",
     eventType: "",
     minPax: "",
@@ -40,8 +45,17 @@ const VenuesPage = () => {
         }
       });
 
+      // Add sorting parameters
+      params.append('sortBy', 'venue');
+      params.append('sortOrder', sortOrder);
+      
+      // Add pagination parameters
+      params.append('page', currentPage);
+      params.append('limit', itemsPerPage);
+
       const res = await apiClient.get(`/spaces/search?${params.toString()}`);
-      setSpaces(res.data);
+      setSpaces(res.data.spaces || res.data);
+      setTotalCount(res.data.total || res.data.length);
     } catch (err) {
       console.error("Error fetching spaces:", err);
       setSpaces([]);
@@ -51,7 +65,12 @@ const VenuesPage = () => {
 
   useEffect(() => {
     fetchSpaces();
-  }, []);
+  }, [filters, sortOrder, currentPage]); // Auto-apply filters when they change
+
+  useEffect(() => {
+    // Reset to page 1 when filters change
+    setCurrentPage(1);
+  }, [filters, sortOrder]);
 
   const handleFilterChange = (e) => {
     setFilters({
@@ -60,13 +79,13 @@ const VenuesPage = () => {
     });
   };
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    fetchSpaces();
+  const toggleSortOrder = () => {
+    setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
   };
 
   const clearFilters = () => {
     setFilters({
+      search: "",
       city: "",
       eventType: "",
       minPax: "",
@@ -78,8 +97,9 @@ const VenuesPage = () => {
       amenities: [],
       allowedItems: [],
       bannedItems: [],
-    });ShowAdvancedFilters(false);
-    setTimeout(() => fetchSpaces(), 0);
+    });
+    setSortOrder('asc');
+    setShowAdvancedFilters(false);
   };
 
   const hasActiveFilters = () => {
@@ -132,32 +152,61 @@ const VenuesPage = () => {
 
         {/* Filters - Compact Design */}
         <div className="bg-bg-primary border border-border rounded-lg mb-8">
-          <form onSubmit={handleSearch}>
-            {/* Main Filters Bar */}
-            <div className="p-4 bg-bg-secondary">
-              <div className="flex flex-col lg:flex-row gap-3">
-                {/* Quick Filters */}
-                <div className="flex-1 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-                  <div>
-                    <label className="block text-xs font-medium text-text-secondary mb-1">City</label>
-                    <input
-                      type="text"
-                      name="city"
-                      value={filters.city}
-                      onChange={handleFilterChange}
-                      placeholder="Enter city"
-                      className="w-full px-3 py-2 text-sm border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary bg-bg-primary"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-text-secondary mb-1">Event Type</label>
-                    <select
-                      name="eventType"
-                      value={filters.eventType}
-                      onChange={handleFilterChange}
-                      className="w-full px-3 py-2 text-sm border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary bg-bg-primary cursor-pointer"
-                    >
-                      <option value="">Select type</option>
+          {/* Search Bar */}
+          <div className="p-4 border-b border-border">
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg className="h-5 w-5 text-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+              <input
+                type="text"
+                name="search"
+                value={filters.search}
+                onChange={handleFilterChange}
+                placeholder="Search by venue name or space name..."
+                className="w-full pl-10 pr-4 py-3 text-sm border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary bg-bg-primary"
+              />
+              {filters.search && (
+                <button
+                  type="button"
+                  onClick={() => setFilters({ ...filters, search: "" })}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-text-secondary hover:text-text-primary"
+                >
+                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Main Filters Bar */}
+          <div className="p-4 bg-bg-secondary">
+            <div className="flex flex-col lg:flex-row gap-3">
+              {/* Quick Filters */}
+              <div className="flex-1 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-text-secondary mb-1">City</label>
+                  <input
+                    type="text"
+                    name="city"
+                    value={filters.city}
+                    onChange={handleFilterChange}
+                    placeholder="Enter city"
+                    className="w-full px-3 py-2 text-sm border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary bg-bg-primary"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-text-secondary mb-1">Event Type</label>
+                  <select
+                    name="eventType"
+                    value={filters.eventType}
+                    onChange={handleFilterChange}
+                    className="w-full px-3 py-2 text-sm border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary bg-bg-primary cursor-pointer"
+                  >
+                    <option value="">Select type</option>
                     <option value="wedding">Wedding</option>
                     <option value="conference">Conference</option>
                     <option value="concert">Concert</option>
@@ -213,30 +262,48 @@ const VenuesPage = () => {
                 {/* Action Buttons */}
                 <div className="flex gap-2 items-end">
                   <button
-                    type="submit"
-                    className="flex-1 lg:flex-none bg-primary text-bg-primary px-4 py-1.5 rounded-lg hover:bg-primary/90 transition-colors cursor-pointer font-medium text-sm"
-                  >
-                    Search
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-                    className={`flex-1 lg:flex-none px-3 py-1.5 rounded-lg border transition-colors cursor-pointer font-medium text-sm flex items-center justify-center gap-1.5 ${
-                      hasActiveFilters() 
-                        ? 'border-primary bg-primary/10 text-primary' 
-                        : 'border-border hover:bg-bg-secondary text-text-primary'
-                    }`}
-                  >
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-                    </svg>
-                    {showAdvancedFilters ? 'Less' : 'More'}
-                    {hasActiveFilters() && !showAdvancedFilters && (
-                      <span className="bg-primary text-bg-primary text-xs font-bold px-1.5 rounded-full">
-                        {filters.amenities.length + filters.allowedItems.length + filters.bannedItems.length + (filters.parking ? 1 : 0)}
-                      </span>
+                  type="button"
+                  onClick={clearFilters}
+                  className="flex-1 lg:flex-none px-3 py-1.5 rounded-lg border border-border hover:bg-bg-secondary text-text-primary transition-colors cursor-pointer font-medium text-sm flex items-center justify-center gap-1.5"
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                  Reset
+                </button>
+                <button
+                  type="button"
+                  onClick={toggleSortOrder}
+                  className="flex-1 lg:flex-none px-3 py-1.5 rounded-lg border border-border hover:bg-bg-secondary text-text-primary transition-colors cursor-pointer font-medium text-sm flex items-center justify-center gap-1.5"
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    {sortOrder === 'asc' ? (
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
+                    ) : (
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h9m5-4v12m0 0l-4-4m4 4l4-4" />
                     )}
-                  </button>
+                  </svg>
+                  {sortOrder === 'asc' ? 'Asc' : 'Desc'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+                  className={`flex-1 lg:flex-none px-3 py-1.5 rounded-lg border transition-colors cursor-pointer font-medium text-sm flex items-center justify-center gap-1.5 ${
+                    hasActiveFilters() 
+                      ? 'border-primary bg-primary/10 text-primary' 
+                      : 'border-border hover:bg-bg-secondary text-text-primary'
+                  }`}
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                  </svg>
+                  {showAdvancedFilters ? 'Less' : 'More'}
+                  {hasActiveFilters() && !showAdvancedFilters && (
+                    <span className="bg-primary text-bg-primary text-xs font-bold px-1.5 rounded-full">
+                      {filters.amenities.length + filters.allowedItems.length + filters.bannedItems.length + (filters.parking ? 1 : 0)}
+                    </span>
+                  )}
+                </button>
                 </div>
               </div>
 
@@ -302,7 +369,6 @@ const VenuesPage = () => {
                 </div>
               )}
             </div>
-          </form>
         </div>
 
         {/* Advanced Filters - Side Panel */}
@@ -310,7 +376,7 @@ const VenuesPage = () => {
           <>
             {/* Backdrop */}
             <div 
-              className="fixed inset-0 bg-text-primary/50 z-40 transition-opacity duration-300"
+              className="fixed inset-0 bg-text-primary/50 z-40"
               onClick={() => setShowAdvancedFilters(false)}
             />
             
@@ -402,20 +468,16 @@ const VenuesPage = () => {
               {/* Sticky Footer */}
               <div className="sticky bottom-0 bg-bg-secondary border-t border-border px-6 py-4 flex gap-3">
                 <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleSearch(e);
-                    setShowAdvancedFilters(false);
-                  }}
+                  onClick={() => setShowAdvancedFilters(false)}
                   className="flex-1 bg-primary text-bg-primary px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors cursor-pointer font-semibold"
                 >
-                  Apply Filters
+                  Done
                 </button>
                 <button
                   onClick={clearFilters}
                   className="px-6 py-3 border border-border rounded-lg hover:bg-bg-primary transition-colors cursor-pointer font-medium"
                 >
-                  Clear
+                  Clear All
                 </button>
               </div>
             </div>
@@ -625,6 +687,56 @@ const VenuesPage = () => {
               </div>
             );
             })}
+          </div>
+        )}
+
+        {/* Pagination */}
+        {!loading && spaces.length > 0 && totalCount > itemsPerPage && (
+          <div className="mt-8 flex items-center justify-center gap-2">
+            <button
+              onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+              disabled={currentPage === 1}
+              className="px-4 py-2 border border-border rounded-lg hover:bg-bg-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              Previous
+            </button>
+            
+            <div className="flex gap-1">
+              {Array.from({ length: Math.ceil(totalCount / itemsPerPage) }, (_, i) => i + 1)
+                .filter(page => {
+                  const totalPages = Math.ceil(totalCount / itemsPerPage);
+                  return (
+                    page === 1 ||
+                    page === totalPages ||
+                    (page >= currentPage - 1 && page <= currentPage + 1)
+                  );
+                })
+                .map((page, idx, arr) => (
+                  <div key={page} className="flex items-center">
+                    {idx > 0 && arr[idx - 1] !== page - 1 && (
+                      <span className="px-2 text-text-secondary">...</span>
+                    )}
+                    <button
+                      onClick={() => setCurrentPage(page)}
+                      className={`px-4 py-2 rounded-lg transition-colors ${
+                        currentPage === page
+                          ? 'bg-primary text-bg-primary font-medium'
+                          : 'border border-border hover:bg-bg-secondary'
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  </div>
+                ))}
+            </div>
+            
+            <button
+              onClick={() => setCurrentPage(prev => Math.min(Math.ceil(totalCount / itemsPerPage), prev + 1))}
+              disabled={currentPage === Math.ceil(totalCount / itemsPerPage)}
+              className="px-4 py-2 border border-border rounded-lg hover:bg-bg-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              Next
+            </button>
           </div>
         )}
       </div>

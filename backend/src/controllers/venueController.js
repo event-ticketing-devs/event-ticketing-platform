@@ -728,7 +728,7 @@ export const getMySpaces = async (req, res) => {
 // @access  Public
 export const getPublicSpaces = async (req, res) => {
   try {
-    const { city, eventType, minPax, maxPax, spaceType, indoorOutdoor, startDate, endDate, parking, amenities, allowedItems, bannedItems, venueId } = req.query;
+    const { search, city, eventType, minPax, maxPax, spaceType, indoorOutdoor, startDate, endDate, parking, amenities, allowedItems, bannedItems, venueId, sortBy, sortOrder, page, limit } = req.query;
 
     // Build space filter
     const spaceFilter = { isActive: true };
@@ -794,9 +794,13 @@ export const getPublicSpaces = async (req, res) => {
     // Skip venue verification checks if fetching by specific venueId (for admin use)
     const venueFilter = venueId ? {} : { 
       verificationStatus: "verified",
-      isListed: true,
-      ...(city ? { city: new RegExp(city, "i") } : {})
+      isListed: true
     };
+
+    // Add city filter if provided
+    if (city) {
+      venueFilter.city = new RegExp(city, "i");
+    }
 
     // Filter by parking
     if (parking === 'true') {
@@ -815,6 +819,14 @@ export const getPublicSpaces = async (req, res) => {
     // Filter out spaces where venue didn't match (only if venue filter was applied)
     if (Object.keys(venueFilter).length > 0) {
       spaces = spaces.filter(space => space.venue);
+    }
+
+    // Apply text search filter for space name or venue name (after population)
+    if (search && search.trim()) {
+      const searchRegex = new RegExp(search.trim(), 'i');
+      spaces = spaces.filter(space => 
+        searchRegex.test(space.name) || (space.venue && searchRegex.test(space.venue.name))
+      );
     }
 
     // Check availability for requested dates if provided
@@ -840,6 +852,35 @@ export const getPublicSpaces = async (req, res) => {
           ...space,
           isAvailableForDates: !hasOverlap
         };
+      });
+    }
+
+    // Apply sorting
+    if (sortBy === 'venue') {
+      const order = sortOrder === 'desc' ? -1 : 1;
+      spaces.sort((a, b) => {
+        const nameA = (a.venue?.name || '').toLowerCase();
+        const nameB = (b.venue?.name || '').toLowerCase();
+        if (nameA < nameB) return -1 * order;
+        if (nameA > nameB) return 1 * order;
+        return 0;
+      });
+    }
+
+    // Apply pagination
+    const totalCount = spaces.length;
+    if (page && limit) {
+      const pageNum = parseInt(page);
+      const limitNum = parseInt(limit);
+      const startIndex = (pageNum - 1) * limitNum;
+      const endIndex = startIndex + limitNum;
+      spaces = spaces.slice(startIndex, endIndex);
+      
+      return res.json({
+        spaces,
+        total: totalCount,
+        page: pageNum,
+        totalPages: Math.ceil(totalCount / limitNum)
       });
     }
 

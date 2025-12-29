@@ -172,151 +172,163 @@ const EventListPage = () => {
           </div>
         </div>
 
-        {/* Search and Filters Section */}
-        <div className="bg-bg-secondary border border-border rounded-lg p-6 mb-8">
-          <div className="flex flex-col lg:flex-row gap-4">
-            {/* Search Bar */}
-            <div className="flex-1">
-              <label className="block text-sm font-medium text-text-primary mb-2">
-                Search Events
-              </label>
+        {/* Filters - Compact Design */}
+        <div className="bg-bg-primary border border-border rounded-lg mb-8">
+          {/* Search Bar */}
+          <div className="p-4 border-b border-border">
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg className="h-5 w-5 text-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
               <input
                 type="text"
                 placeholder="Search by event name or description..."
-                className="w-full px-4 py-2.5 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                className="w-full pl-10 pr-4 py-3 text-sm border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary bg-bg-primary"
                 value={filters.search}
                 onChange={(e) => handleFilterChange('search', e.target.value)}
               />
-            </div>
-
-            {/* Category Filter */}
-            <div className="lg:w-48">
-              <label className="block text-sm font-medium text-text-primary mb-2">
-                Category
-              </label>
-              <select
-                className="w-full px-4 py-2.5 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary cursor-pointer"
-                value={filters.category}
-                onChange={(e) => handleFilterChange('category', e.target.value)}
-              >
-                <option value="">All Categories</option>
-                {categories.map((category) => (
-                  <option key={category._id} value={category.name}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
+              {filters.search && (
+                <button
+                  type="button"
+                  onClick={() => handleFilterChange('search', '')}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-text-secondary hover:text-text-primary"
+                >
+                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              )}
             </div>
           </div>
 
-          {/* Advanced Filters Row */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
-            {/* Date From */}
-            <div>
-              <label className="block text-sm font-medium text-text-primary mb-2">
-                From Date
-              </label>
-              <input
-                type="date"
-                className="w-full px-4 py-2.5 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary cursor-pointer"
-                value={filters.dateFrom}
-                onChange={(e) => handleFilterChange('dateFrom', e.target.value)}
-                min={new Date().toISOString().split('T')[0]}
-              />
+          {/* Main Filters Bar */}
+          <div className="p-4 bg-bg-secondary">
+            <div className="flex flex-col lg:flex-row gap-3">
+              {/* Quick Filters */}
+              <div className="flex-1 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-text-secondary mb-1">Category</label>
+                  <select
+                    className="w-full px-3 py-2 text-sm border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary bg-bg-primary cursor-pointer"
+                    value={filters.category}
+                    onChange={(e) => handleFilterChange('category', e.target.value)}
+                  >
+                    <option value="">All Categories</option>
+                    {categories.map((category) => (
+                      <option key={category._id} value={category.name}>
+                        {category.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-text-secondary mb-1">City</label>
+                  <input
+                    type="text"
+                    placeholder="Enter city"
+                    className="w-full px-3 py-2 text-sm border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary bg-bg-primary"
+                    value={filters.city}
+                    onChange={(e) => handleFilterChange('city', e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-text-secondary mb-1">Min Price</label>
+                  <input
+                    type="number"
+                    placeholder="Min"
+                    className="w-full px-3 py-2 text-sm border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary bg-bg-primary"
+                    value={filters.minPrice}
+                    onChange={(e) => handleFilterChange('minPrice', e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-text-secondary mb-1">Max Price</label>
+                  <input
+                    type="number"
+                    placeholder="Max"
+                    className="w-full px-3 py-2 text-sm border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary bg-bg-primary"
+                    value={filters.maxPrice}
+                    onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-text-secondary mb-1">Sort By</label>
+                  <select
+                    className="w-full px-3 py-2 text-sm border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary bg-bg-primary cursor-pointer"
+                    value={sorting.sortBy}
+                    onChange={(e) => handleSortChange(e.target.value, sorting.sortOrder)}
+                  >
+                    <option value="date">Date</option>
+                    <option value="title">Title</option>
+                    <option value="city">City</option>
+                    <option value="price">Price</option>
+                    <option value="createdAt">Created</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-2 items-end">
+                <button
+                  type="button"
+                  onClick={resetFilters}
+                  className="flex-1 lg:flex-none px-3 py-1.5 rounded-lg border border-border hover:bg-bg-secondary text-text-primary transition-colors cursor-pointer font-medium text-sm flex items-center justify-center gap-1.5"
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                  Reset
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleSortChange(sorting.sortBy, sorting.sortOrder === 'asc' ? 'desc' : 'asc')}
+                  className="flex-1 lg:flex-none px-3 py-1.5 rounded-lg border border-border hover:bg-bg-secondary text-text-primary transition-colors cursor-pointer font-medium text-sm flex items-center justify-center gap-1.5"
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    {sorting.sortOrder === 'asc' ? (
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
+                    ) : (
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h9m5-4v12m0 0l-4-4m4 4l4-4" />
+                    )}
+                  </svg>
+                  {sorting.sortOrder === 'asc' ? 'Asc' : 'Desc'}
+                </button>
+              </div>
             </div>
 
-            {/* Date To */}
-            <div>
-              <label className="block text-sm font-medium text-text-primary mb-2">
-                To Date
-              </label>
-              <input
-                type="date"
-                className="w-full px-4 py-2.5 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary cursor-pointer"
-                value={filters.dateTo}
-                onChange={(e) => handleFilterChange('dateTo', e.target.value)}
-                min={filters.dateFrom || new Date().toISOString().split('T')[0]}
-              />
-            </div>
-
-            {/* City Filter */}
-            <div>
-              <label className="block text-sm font-medium text-text-primary mb-2">
-                City
-              </label>
-              <input
-                type="text"
-                placeholder="Enter city..."
-                className="w-full px-4 py-2.5 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                value={filters.city}
-                onChange={(e) => handleFilterChange('city', e.target.value)}
-              />
-            </div>
-
-            {/* Price Range */}
-            <div>
-              <label className="block text-sm font-medium text-text-primary mb-2">
-                Price Range
-              </label>
-              <div className="flex gap-2">
+            {/* Date Range - Compact Row */}
+            <div className="grid grid-cols-2 gap-3 mt-3">
+              <div>
+                <label className="block text-xs font-medium text-text-secondary mb-1">From Date</label>
                 <input
-                  type="number"
-                  placeholder="Min"
-                  className="w-full px-3 py-2.5 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                  value={filters.minPrice}
-                  onChange={(e) => handleFilterChange('minPrice', e.target.value)}
+                  type="date"
+                  className="w-full px-3 py-2 text-sm border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary bg-bg-primary cursor-pointer"
+                  value={filters.dateFrom}
+                  onChange={(e) => handleFilterChange('dateFrom', e.target.value)}
+                  min={new Date().toISOString().split('T')[0]}
                 />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-text-secondary mb-1">To Date</label>
                 <input
-                  type="number"
-                  placeholder="Max"
-                  className="w-full px-3 py-2.5 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                  value={filters.maxPrice}
-                  onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
+                  type="date"
+                  className="w-full px-3 py-2 text-sm border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary bg-bg-primary cursor-pointer"
+                  value={filters.dateTo}
+                  onChange={(e) => handleFilterChange('dateTo', e.target.value)}
+                  min={filters.dateFrom || new Date().toISOString().split('T')[0]}
                 />
               </div>
             </div>
           </div>
+        </div>
 
-          {/* Sorting and Actions */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6 pt-6 border-t border-border">
-            <div className="flex items-center gap-3">
-              <label className="text-sm font-medium text-text-primary">Sort by:</label>
-              <select
-                className="px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary cursor-pointer"
-                value={sorting.sortBy}
-                onChange={(e) => handleSortChange(e.target.value, sorting.sortOrder)}
-              >
-                <option value="date">Date</option>
-                <option value="title">Title</option>
-                <option value="city">City</option>
-                <option value="price">Price</option>
-                <option value="createdAt">Created Date</option>
-              </select>
-              <select
-                className="px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary cursor-pointer"
-                value={sorting.sortOrder}
-                onChange={(e) => handleSortChange(sorting.sortBy, e.target.value)}
-              >
-                <option value="asc">Ascending</option>
-                <option value="desc">Descending</option>
-              </select>
-            </div>
-
-            <div className="flex gap-3">
-              <button
-                onClick={resetFilters}
-                className="px-4 py-2 text-text-primary border border-border rounded-lg hover:bg-bg-secondary transition-colors text-sm font-medium cursor-pointer"
-              >
-                Reset Filters
-              </button>
-              <button
-                onClick={applyFiltersAndSort}
-                className="px-6 py-2 bg-primary text-bg-primary hover:bg-primary/90 transition-colors text-sm font-medium rounded-lg cursor-pointer"
-              >
-                Apply Filters
-              </button>
-            </div>
-          </div>
+        {/* Results Count */}
+        <div className="mb-4">
+          <p className="text-sm text-text-secondary">
+            Showing {visibleEvents.length} upcoming event{visibleEvents.length !== 1 ? 's' : ''}
+          </p>
         </div>
 
         {/* Results Summary */}
