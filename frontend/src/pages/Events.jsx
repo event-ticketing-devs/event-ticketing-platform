@@ -324,30 +324,6 @@ const EventListPage = () => {
           </div>
         </div>
 
-        {/* Results Count */}
-        <div className="mb-4">
-          <p className="text-sm text-text-secondary">
-            Showing {visibleEvents.length} upcoming event{visibleEvents.length !== 1 ? 's' : ''}
-          </p>
-        </div>
-
-        {/* Results Summary */}
-        <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
-          <h2 className="text-xl font-semibold text-text-primary mb-4 sm:mb-0">
-            {loading 
-              ? "Loading events..." 
-              : visibleEvents.length === 0 
-                ? "No events found" 
-                : `${visibleEvents.length} Event${visibleEvents.length !== 1 ? 's' : ''}`}
-          </h2>
-          
-          {!loading && visibleEvents.length > 0 && (
-            <div className="text-sm text-text-secondary">
-              Showing {visibleEvents.length} upcoming event{visibleEvents.length !== 1 ? 's' : ''}
-            </div>
-          )}
-        </div>
-
         {/* Events Grid */}
         <div className="mb-8">
           {loading ? (

@@ -486,9 +486,23 @@ const VenuesPage = () => {
 
         {/* Results */}
         {loading ? (
-          <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-            <p className="mt-4 text-text-secondary">Loading spaces...</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-24">
+            {[...Array(12)].map((_, index) => (
+              <div
+                key={index}
+                className="bg-bg-primary border border-border rounded-lg overflow-hidden animate-pulse"
+              >
+                <div className="h-48 bg-border"></div>
+                <div className="p-6 space-y-4">
+                  <div className="h-5 bg-border rounded w-3/4"></div>
+                  <div className="h-4 bg-border rounded w-1/2"></div>
+                  <div className="h-4 bg-border rounded w-2/3"></div>
+                  <div className="h-12 bg-border rounded"></div>
+                  <div className="h-4 bg-border rounded w-full"></div>
+                  <div className="h-4 bg-border rounded w-5/6"></div>
+                </div>
+              </div>
+            ))}
           </div>
         ) : spaces.length === 0 ? (
           <div className="text-center py-12 bg-bg-secondary border border-border rounded-lg">
