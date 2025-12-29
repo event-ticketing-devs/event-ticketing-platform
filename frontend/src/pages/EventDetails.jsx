@@ -34,30 +34,30 @@ const calculateRefundPolicy = (eventDate, customRefundPolicy = null) => {
     if (daysUntilEvent >= 7 - epsilon) {
       refundPercentage = customRefundPolicy.sevenDaysOrMore;
       refundPolicy = customRefundPolicy.description || `${refundPercentage}% refund (7+ days before event)`;
-      refundColor = refundPercentage >= 80 ? "text-green-600" : refundPercentage >= 50 ? "text-yellow-600" : "text-red-600";
+      refundColor = refundPercentage >= 80 ? "text-success" : refundPercentage >= 50 ? "text-warning" : "text-error";
     } else if (daysUntilEvent >= 1 - epsilon) {
       refundPercentage = customRefundPolicy.oneToDays;
       refundPolicy = customRefundPolicy.description || `${refundPercentage}% refund (1-7 days before event)`;
-      refundColor = refundPercentage >= 80 ? "text-green-600" : refundPercentage >= 50 ? "text-yellow-600" : "text-red-600";
+      refundColor = refundPercentage >= 80 ? "text-success" : refundPercentage >= 50 ? "text-warning" : "text-error";
     } else {
       refundPercentage = customRefundPolicy.lessThanDay;
       refundPolicy = customRefundPolicy.description || `${refundPercentage}% refund (less than 24 hours before event)`;
-      refundColor = refundPercentage >= 80 ? "text-green-600" : refundPercentage >= 50 ? "text-yellow-600" : "text-red-600";
+      refundColor = refundPercentage >= 80 ? "text-success" : refundPercentage >= 50 ? "text-warning" : "text-error";
     }
   } else {
     // Use default refund policy
     if (daysUntilEvent >= 7 - epsilon) {
       refundPercentage = 100;
       refundPolicy = "Full refund (7+ days before event)";
-      refundColor = "text-green-600";
+      refundColor = "text-success";
     } else if (daysUntilEvent >= 1 - epsilon) {
       refundPercentage = 50;
       refundPolicy = "50% refund (1-7 days before event)";
-      refundColor = "text-yellow-600";
+      refundColor = "text-warning";
     } else {
       refundPercentage = 0;
       refundPolicy = "No refund (less than 24 hours before event)";
-      refundColor = "text-red-600";
+      refundColor = "text-error";
     }
   }
 
@@ -265,9 +265,9 @@ export default function EventDetailsPage() {
 
   if (loading)
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="flex items-center gap-3 text-slate-900">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-900"></div>
+      <div className="min-h-screen bg-bg-primary flex items-center justify-center">
+        <div className="flex items-center gap-3 text-text-primary">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
           <span className="text-xl font-medium">Loading event details...</span>
         </div>
       </div>
@@ -275,11 +275,11 @@ export default function EventDetailsPage() {
 
   if (error)
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="bg-white border border-slate-200 p-8 max-w-md text-center">
-          <div className="w-16 h-16 bg-red-50 border border-red-200 flex items-center justify-center mx-auto mb-4">
+      <div className="min-h-screen bg-bg-primary flex items-center justify-center">
+        <div className="bg-bg-primary border border-border p-8 max-w-md text-center rounded-lg">
+          <div className="w-16 h-16 bg-error/10 border border-error/20 flex items-center justify-center mx-auto mb-4 rounded-lg">
             <svg
-              className="w-8 h-8 text-red-600"
+              className="w-8 h-8 text-error"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -292,13 +292,13 @@ export default function EventDetailsPage() {
               />
             </svg>
           </div>
-          <h3 className="text-xl font-bold text-slate-900 mb-2">
+          <h3 className="text-xl font-bold text-text-primary mb-2">
             Event Not Found
           </h3>
-          <p className="text-red-600 mb-4">{error}</p>
+          <p className="text-error mb-4">{error}</p>
           <button
             onClick={() => navigate("/events")}
-            className="bg-slate-900 text-white px-6 py-2.5 font-semibold hover:bg-slate-800 transition-colors"
+            className="bg-primary text-bg-primary px-6 py-2.5 font-semibold hover:bg-primary/90 transition-colors rounded-lg cursor-pointer"
           >
             Browse Other Events
           </button>
@@ -309,12 +309,12 @@ export default function EventDetailsPage() {
   const isPastEvent = event && new Date(event.date) < new Date();
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-bg-primary">
       <div className="max-w-6xl mx-auto px-6 py-12">
         {/* Hero Image Section */}
         <div className="relative mb-8">
           {event.photo ? (
-            <div className="relative h-96 overflow-hidden border border-slate-200">
+            <div className="relative h-96 overflow-hidden border border-border rounded-lg">
               <img
                 src={event.photo}
                 alt={event.title}
@@ -325,19 +325,19 @@ export default function EventDetailsPage() {
               {/* Floating Status Badges */}
               <div className="absolute top-6 left-6 flex gap-3">
                 {event.categoryId && (
-                  <span className="inline-flex items-center px-4 py-2 text-sm font-semibold bg-white/90 backdrop-blur-sm text-slate-900 border border-white/20">
+                  <span className="inline-flex items-center px-4 py-2 text-sm font-semibold bg-bg-primary/90 backdrop-blur-sm text-text-primary border border-border/20 rounded-lg">
                     {typeof event.categoryId === "object"
                       ? event.categoryId.name
                       : event.categoryId}
                   </span>
                 )}
                 {event.cancelled && (
-                  <span className="inline-flex items-center px-4 py-2 text-sm font-semibold bg-red-500/90 backdrop-blur-sm text-white border border-red-400/20">
+                  <span className="inline-flex items-center px-4 py-2 text-sm font-semibold bg-error/90 backdrop-blur-sm text-bg-primary border border-error/20 rounded-lg">
                     Cancelled
                   </span>
                 )}
                 {isPastEvent && !event.cancelled && (
-                  <span className="inline-flex items-center px-4 py-2 text-sm font-semibold bg-gray-500/90 backdrop-blur-sm text-white border border-gray-400/20">
+                  <span className="inline-flex items-center px-4 py-2 text-sm font-semibold bg-secondary/90 backdrop-blur-sm text-bg-primary border border-secondary/20 rounded-lg">
                     Past Event
                   </span>
                 )}
@@ -345,7 +345,7 @@ export default function EventDetailsPage() {
 
               {/* Price Badge */}
               <div className="absolute top-6 right-6">
-                <span className="inline-flex items-center px-4 py-2 text-lg font-bold bg-slate-900 text-white">
+                <span className="inline-flex items-center px-4 py-2 text-lg font-bold bg-primary text-bg-primary rounded-lg">
                   {event.hasTicketCategories && event.ticketCategories
                     ? `₹${Math.min(
                         ...event.ticketCategories.map((c) => c.price)
@@ -383,10 +383,10 @@ export default function EventDetailsPage() {
               </div>
             </div>
           ) : (
-            <div className="relative h-96 overflow-hidden border border-slate-200 bg-slate-50 flex items-center justify-center">
+            <div className="relative h-96 overflow-hidden border border-border bg-bg-secondary flex items-center justify-center rounded-lg">
               <div className="text-center">
                 <svg
-                  className="w-24 h-24 text-slate-300 mx-auto mb-4"
+                  className="w-24 h-24 text-text-secondary mx-auto mb-4"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -398,10 +398,10 @@ export default function EventDetailsPage() {
                     d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
                   />
                 </svg>
-                <h1 className="text-4xl sm:text-5xl font-bold text-slate-900 mb-2">
+                <h1 className="text-4xl sm:text-5xl font-bold text-text-primary mb-2">
                   {event.title}
                 </h1>
-                <div className="flex items-center justify-center gap-2 text-slate-600">
+                <div className="flex items-center justify-center gap-2 text-text-secondary">
                   <svg
                     className="w-5 h-5"
                     fill="none"
@@ -425,7 +425,7 @@ export default function EventDetailsPage() {
               {/* Floating badges for no-image version */}
               <div className="absolute top-6 left-6 flex gap-3">
                 {event.categoryId && (
-                  <span className="inline-flex items-center px-4 py-2 text-sm font-semibold bg-white border border-slate-200 text-slate-900">
+                  <span className="inline-flex items-center px-4 py-2 text-sm font-semibold bg-bg-primary border border-border text-text-primary rounded-lg">
                     {typeof event.categoryId === "object"
                       ? event.categoryId.name
                       : event.categoryId}
@@ -433,7 +433,7 @@ export default function EventDetailsPage() {
                 )}
               </div>
               <div className="absolute top-6 right-6">
-                <span className="inline-flex items-center px-4 py-2 text-lg font-bold bg-slate-900 text-white">
+                <span className="inline-flex items-center px-4 py-2 text-lg font-bold bg-primary text-bg-primary rounded-lg">
                   {event.hasTicketCategories && event.ticketCategories
                     ? `₹${Math.min(
                         ...event.ticketCategories.map((c) => c.price)
@@ -450,11 +450,11 @@ export default function EventDetailsPage() {
           {/* Left Column - Event Information */}
           <div className="lg:col-span-2 space-y-8">
             {/* Event Description Card */}
-            <div className="bg-white border border-slate-200 p-6">
-              <h2 className="text-xl font-bold text-slate-900 mb-4 flex items-center gap-3">
-                <div className="p-2 bg-slate-100 border border-slate-200">
+            <div className="bg-bg-primary border border-border p-6 rounded-lg">
+              <h2 className="text-xl font-bold text-text-primary mb-4 flex items-center gap-3">
+                <div className="p-2 bg-bg-secondary border border-border rounded-lg">
                   <svg
-                    className="w-5 h-5 text-slate-900"
+                    className="w-5 h-5 text-primary"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -470,7 +470,7 @@ export default function EventDetailsPage() {
                 About This Event
               </h2>
               <div className="prose prose-slate max-w-none">
-                <p className="text-slate-600 leading-relaxed whitespace-pre-wrap">
+                <p className="text-text-secondary leading-relaxed whitespace-pre-wrap">
                   {event.description}
                 </p>
               </div>
@@ -479,11 +479,11 @@ export default function EventDetailsPage() {
             {/* Event Details Grid */}
             <div className="grid sm:grid-cols-2 gap-6">
               {/* Date & Time Card */}
-              <div className="bg-white border border-slate-200 p-5">
+              <div className="bg-bg-primary border border-border p-5 rounded-lg">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="p-2 bg-slate-100 border border-slate-200">
+                  <div className="p-2 bg-bg-secondary border border-border rounded-lg">
                     <svg
-                      className="w-5 h-5 text-slate-900"
+                      className="w-5 h-5 text-primary"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -496,32 +496,32 @@ export default function EventDetailsPage() {
                       />
                     </svg>
                   </div>
-                  <h3 className="text-lg font-bold text-slate-900">
+                  <h3 className="text-lg font-bold text-text-primary">
                     Date & Time
                   </h3>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-slate-600 text-sm font-medium">
+                  <p className="text-text-secondary text-sm font-medium">
                     Event Date
                   </p>
-                  <p className="text-slate-900 font-semibold text-lg">
+                  <p className="text-text-primary font-semibold text-lg">
                     {format(new Date(event.date), "EEEE, MMMM do, yyyy")}
                   </p>
-                  <p className="text-slate-600 text-sm font-medium mt-3">
+                  <p className="text-text-secondary text-sm font-medium mt-3">
                     Event Time
                   </p>
-                  <p className="text-slate-900 font-semibold text-lg">
+                  <p className="text-text-primary font-semibold text-lg">
                     {format(new Date(event.date), "h:mm a")}
                   </p>
                 </div>
               </div>
 
               {/* Location Card */}
-              <div className="bg-white border border-slate-200 p-5">
+              <div className="bg-bg-primary border border-border p-5 rounded-lg">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="p-2 bg-slate-100 border border-slate-200">
+                  <div className="p-2 bg-bg-secondary border border-border rounded-lg">
                     <svg
-                      className="w-5 h-5 text-slate-900"
+                      className="w-5 h-5 text-primary"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -540,27 +540,27 @@ export default function EventDetailsPage() {
                       />
                     </svg>
                   </div>
-                  <h3 className="text-lg font-bold text-slate-900">Location</h3>
+                  <h3 className="text-lg font-bold text-text-primary">Location</h3>
                 </div>
                 <div className="space-y-2">
-                  <p className="text-slate-600 text-sm font-medium">Venue</p>
-                  <p className="text-slate-900 font-semibold text-lg">
+                  <p className="text-text-secondary text-sm font-medium">Venue</p>
+                  <p className="text-text-primary font-semibold text-lg">
                     {event.venue?.name || event.venue}
                   </p>
-                  <p className="text-slate-600 text-sm font-medium mt-3">
+                  <p className="text-text-secondary text-sm font-medium mt-3">
                     City
                   </p>
-                  <p className="text-slate-900 font-semibold">{event.city}</p>
+                  <p className="text-text-primary font-semibold">{event.city}</p>
                 </div>
               </div>
             </div>
 
             {/* Event Specs Grid */}
-            <div className="bg-white border border-slate-200 p-6">
-              <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-3">
-                <div className="p-2 bg-slate-100 border border-slate-200">
+            <div className="bg-bg-primary border border-border p-6 rounded-lg">
+              <h2 className="text-xl font-bold text-text-primary mb-6 flex items-center gap-3">
+                <div className="p-2 bg-bg-secondary border border-border rounded-lg">
                   <svg
-                    className="w-5 h-5 text-slate-900"
+                    className="w-5 h-5 text-primary"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -576,8 +576,8 @@ export default function EventDetailsPage() {
                 Event Details
               </h2>
               <div className="grid sm:grid-cols-3 gap-6">
-                <div className="text-center p-4 bg-slate-50 border border-slate-200">
-                  <div className="text-2xl font-bold text-slate-900 mb-1">
+                <div className="text-center p-4 bg-bg-secondary border border-border rounded-lg">
+                  <div className="text-2xl font-bold text-text-primary mb-1">
                     {event.hasTicketCategories && event.ticketCategories
                       ? event.ticketCategories.reduce(
                           (sum, cat) => sum + (cat.totalSeats || 0),
@@ -585,12 +585,12 @@ export default function EventDetailsPage() {
                         )
                       : event.totalSeats || 0}
                   </div>
-                  <div className="text-slate-600 text-sm font-medium">
+                  <div className="text-text-secondary text-sm font-medium">
                     Total Seats
                   </div>
                 </div>
-                <div className="text-center p-4 bg-slate-50 border border-slate-200">
-                  <div className="text-2xl font-bold text-green-600 mb-1">
+                <div className="text-center p-4 bg-bg-secondary border border-border rounded-lg">
+                  <div className="text-2xl font-bold text-success mb-1">
                     {event.hasTicketCategories && event.ticketCategories
                       ? event.ticketCategories.reduce(
                           (sum, cat) =>
@@ -599,19 +599,19 @@ export default function EventDetailsPage() {
                         )
                       : availableSeats}
                   </div>
-                  <div className="text-slate-600 text-sm font-medium">
+                  <div className="text-text-secondary text-sm font-medium">
                     Available
                   </div>
                 </div>
-                <div className="text-center p-4 bg-slate-50 border border-slate-200">
-                  <div className="text-2xl font-bold text-slate-900 mb-1">
+                <div className="text-center p-4 bg-bg-secondary border border-border rounded-lg">
+                  <div className="text-2xl font-bold text-text-primary mb-1">
                     {event.hasTicketCategories && event.ticketCategories
                       ? `₹${Math.min(
                           ...event.ticketCategories.map((c) => c.price)
                         ).toLocaleString()}`
                       : `₹${event.price || 0}`}
                   </div>
-                  <div className="text-slate-600 text-sm font-medium">
+                  <div className="text-text-secondary text-sm font-medium">
                     {event.hasTicketCategories ? "Onwards" : "Per Ticket"}
                   </div>
                 </div>
@@ -622,11 +622,11 @@ export default function EventDetailsPage() {
             {event.venue &&
               typeof event.venue === "object" &&
               event.venue.coordinates && (
-                <div className="bg-white border border-slate-200 p-6">
-                  <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-3">
-                    <div className="p-2 bg-slate-100 border border-slate-200">
+                <div className="bg-bg-primary border border-border p-6 rounded-lg">
+                  <h2 className="text-xl font-bold text-text-primary mb-6 flex items-center gap-3">
+                    <div className="p-2 bg-bg-secondary border border-border rounded-lg">
                       <svg
-                        className="w-5 h-5 text-slate-900"
+                        className="w-5 h-5 text-primary"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -641,7 +641,7 @@ export default function EventDetailsPage() {
                     </div>
                     Venue Location
                   </h2>
-                  <div className="overflow-hidden border border-slate-200">
+                  <div className="overflow-hidden border border-border rounded-lg">
                     <VenueMap venue={event.venue} height="250px" />
                   </div>
                 </div>
@@ -649,11 +649,11 @@ export default function EventDetailsPage() {
 
             {/* Refund Policy Section */}
             {!isPastEvent && !event.cancelled && (
-              <div className="bg-white border border-slate-200 p-6">
-                <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-3">
-                  <div className="p-2 bg-slate-100 border border-slate-200">
+              <div className="bg-bg-primary border border-border p-6 rounded-lg">
+                <h2 className="text-xl font-bold text-text-primary mb-6 flex items-center gap-3">
+                  <div className="p-2 bg-bg-secondary border border-border rounded-lg">
                     <svg
-                      className="w-5 h-5 text-slate-900"
+                      className="w-5 h-5 text-primary"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -668,37 +668,37 @@ export default function EventDetailsPage() {
                   </div>
                   Cancellation & Refund Policy
                 </h2>
-                <div className="bg-slate-50 border border-slate-200 p-6">
+                <div className="bg-bg-secondary border border-border p-6 rounded-lg">
                   {event.useDefaultRefundPolicy ? (
                     /* Default Policy Display */
                     <>
                       <div className="grid md:grid-cols-3 gap-4 mb-4">
-                        <div className="bg-green-50 border border-green-200 p-4 text-center">
-                          <div className="font-bold text-green-700 text-lg mb-1">
+                        <div className="bg-success/10 border border-success/20 p-4 text-center rounded-lg">
+                          <div className="font-bold text-success text-lg mb-1">
                             7+ Days Before
                           </div>
-                          <div className="text-green-600 font-semibold">
+                          <div className="text-success font-semibold">
                             100% Refund
                           </div>
                         </div>
-                        <div className="bg-yellow-50 border border-yellow-200 p-4 text-center">
-                          <div className="font-bold text-yellow-700 text-lg mb-1">
+                        <div className="bg-warning/10 border border-warning/20 p-4 text-center rounded-lg">
+                          <div className="font-bold text-warning text-lg mb-1">
                             1-7 Days Before
                           </div>
-                          <div className="text-yellow-600 font-semibold">
+                          <div className="text-warning font-semibold">
                             50% Refund
                           </div>
                         </div>
-                        <div className="bg-red-50 border border-red-200 p-4 text-center">
-                          <div className="font-bold text-red-700 text-lg mb-1">
+                        <div className="bg-error/10 border border-error/20 p-4 text-center rounded-lg">
+                          <div className="font-bold text-error text-lg mb-1">
                             &lt;24 Hours
                           </div>
-                          <div className="text-red-600 font-semibold">
+                          <div className="text-error font-semibold">
                             No Refund
                           </div>
                         </div>
                       </div>
-                      <p className="text-sm text-slate-600 text-center bg-white border border-slate-200 p-3">
+                      <p className="text-sm text-text-secondary text-center bg-bg-primary border border-border p-3 rounded-lg">
                         Refunds are processed automatically and will appear in your
                         account within 5-10 business days.
                       </p>
@@ -707,69 +707,69 @@ export default function EventDetailsPage() {
                     /* Custom Policy Display */
                     <>
                       <div className="grid md:grid-cols-3 gap-4 mb-4">
-                        <div className={`p-4 text-center border ${
-                          event.customRefundPolicy?.sevenDaysOrMore >= 80 ? 'bg-green-50 border-green-200' :
-                          event.customRefundPolicy?.sevenDaysOrMore >= 50 ? 'bg-yellow-50 border-yellow-200' : 'bg-red-50 border-red-200'
+                        <div className={`p-4 text-center border rounded-lg ${
+                          event.customRefundPolicy?.sevenDaysOrMore >= 80 ? 'bg-success/10 border-success/20' :
+                          event.customRefundPolicy?.sevenDaysOrMore >= 50 ? 'bg-warning/10 border-warning/20' : 'bg-error/10 border-error/20'
                         }`}>
                           <div className={`font-bold text-lg mb-1 ${
-                            event.customRefundPolicy?.sevenDaysOrMore >= 80 ? 'text-green-700' :
-                            event.customRefundPolicy?.sevenDaysOrMore >= 50 ? 'text-yellow-700' : 'text-red-700'
+                            event.customRefundPolicy?.sevenDaysOrMore >= 80 ? 'text-success' :
+                            event.customRefundPolicy?.sevenDaysOrMore >= 50 ? 'text-warning' : 'text-error'
                           }`}>
                             7+ Days Before
                           </div>
                           <div className={`font-semibold ${
-                            event.customRefundPolicy?.sevenDaysOrMore >= 80 ? 'text-green-600' :
-                            event.customRefundPolicy?.sevenDaysOrMore >= 50 ? 'text-yellow-600' : 'text-red-600'
+                            event.customRefundPolicy?.sevenDaysOrMore >= 80 ? 'text-success' :
+                            event.customRefundPolicy?.sevenDaysOrMore >= 50 ? 'text-warning' : 'text-error'
                           }`}>
                             {event.customRefundPolicy?.sevenDaysOrMore || 0}% Refund
                           </div>
                         </div>
-                        <div className={`p-4 text-center border ${
-                          event.customRefundPolicy?.oneToDays >= 80 ? 'bg-green-50 border-green-200' :
-                          event.customRefundPolicy?.oneToDays >= 50 ? 'bg-yellow-50 border-yellow-200' : 'bg-red-50 border-red-200'
+                        <div className={`p-4 text-center border rounded-lg ${
+                          event.customRefundPolicy?.oneToDays >= 80 ? 'bg-success/10 border-success/20' :
+                          event.customRefundPolicy?.oneToDays >= 50 ? 'bg-warning/10 border-warning/20' : 'bg-error/10 border-error/20'
                         }`}>
                           <div className={`font-bold text-lg mb-1 ${
-                            event.customRefundPolicy?.oneToDays >= 80 ? 'text-green-700' :
-                            event.customRefundPolicy?.oneToDays >= 50 ? 'text-yellow-700' : 'text-red-700'
+                            event.customRefundPolicy?.oneToDays >= 80 ? 'text-success' :
+                            event.customRefundPolicy?.oneToDays >= 50 ? 'text-warning' : 'text-error'
                           }`}>
                             1-7 Days Before
                           </div>
                           <div className={`font-semibold ${
-                            event.customRefundPolicy?.oneToDays >= 80 ? 'text-green-600' :
-                            event.customRefundPolicy?.oneToDays >= 50 ? 'text-yellow-600' : 'text-red-600'
+                            event.customRefundPolicy?.oneToDays >= 80 ? 'text-success' :
+                            event.customRefundPolicy?.oneToDays >= 50 ? 'text-warning' : 'text-error'
                           }`}>
                             {event.customRefundPolicy?.oneToDays || 0}% Refund
                           </div>
                         </div>
-                        <div className={`p-4 text-center border ${
-                          event.customRefundPolicy?.lessThanDay >= 80 ? 'bg-green-50 border-green-200' :
-                          event.customRefundPolicy?.lessThanDay >= 50 ? 'bg-yellow-50 border-yellow-200' : 'bg-red-50 border-red-200'
+                        <div className={`p-4 text-center border rounded-lg ${
+                          event.customRefundPolicy?.lessThanDay >= 80 ? 'bg-success/10 border-success/20' :
+                          event.customRefundPolicy?.lessThanDay >= 50 ? 'bg-warning/10 border-warning/20' : 'bg-error/10 border-error/20'
                         }`}>
                           <div className={`font-bold text-lg mb-1 ${
-                            event.customRefundPolicy?.lessThanDay >= 80 ? 'text-green-700' :
-                            event.customRefundPolicy?.lessThanDay >= 50 ? 'text-yellow-700' : 'text-red-700'
+                            event.customRefundPolicy?.lessThanDay >= 80 ? 'text-success' :
+                            event.customRefundPolicy?.lessThanDay >= 50 ? 'text-warning' : 'text-error'
                           }`}>
                             &lt;24 Hours
                           </div>
                           <div className={`font-semibold ${
-                            event.customRefundPolicy?.lessThanDay >= 80 ? 'text-green-600' :
-                            event.customRefundPolicy?.lessThanDay >= 50 ? 'text-yellow-600' : 'text-red-600'
+                            event.customRefundPolicy?.lessThanDay >= 80 ? 'text-success' :
+                            event.customRefundPolicy?.lessThanDay >= 50 ? 'text-warning' : 'text-error'
                           }`}>
                             {event.customRefundPolicy?.lessThanDay || 0}% Refund
                           </div>
                         </div>
                       </div>
                       {event.customRefundPolicy?.description && (
-                        <div className="bg-white border border-slate-200 p-4 mb-4">
-                          <h4 className="text-sm font-semibold text-slate-700 mb-2">
+                        <div className="bg-bg-primary border border-border p-4 mb-4 rounded-lg">
+                          <h4 className="text-sm font-semibold text-text-primary mb-2">
                             Policy Details:
                           </h4>
-                          <p className="text-sm text-slate-600">
+                          <p className="text-sm text-text-secondary">
                             {event.customRefundPolicy.description}
                           </p>
                         </div>
                       )}
-                      <p className="text-sm text-slate-600 text-center bg-white border border-slate-200 p-3">
+                      <p className="text-sm text-text-secondary text-center bg-bg-primary border border-border p-3 rounded-lg">
                         Refunds are processed automatically and will appear in your
                         account within 5-10 business days.
                       </p>
@@ -781,11 +781,11 @@ export default function EventDetailsPage() {
 
             {/* Cancellation Reason for Cancelled Events */}
             {event.cancelled && event.cancelledReason && (
-              <div className="bg-white border border-red-200 p-6">
-                <h2 className="text-xl font-bold text-slate-900 mb-4 flex items-center gap-3">
-                  <div className="p-2 bg-red-50 border border-red-200">
+              <div className="bg-bg-primary border border-error/20 p-6 rounded-lg">
+                <h2 className="text-xl font-bold text-text-primary mb-4 flex items-center gap-3">
+                  <div className="p-2 bg-error/10 border border-error/20 rounded-lg">
                     <svg
-                      className="w-5 h-5 text-red-600"
+                      className="w-5 h-5 text-error"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -800,8 +800,8 @@ export default function EventDetailsPage() {
                   </div>
                   Cancellation Notice
                 </h2>
-                <div className="bg-red-50 border border-red-200 p-6">
-                  <p className="text-red-800 font-medium">
+                <div className="bg-error/10 border border-error/20 p-6 rounded-lg">
+                  <p className="text-error font-medium">
                     <strong>Reason:</strong> {event.cancelledReason}
                   </p>
                 </div>
@@ -813,10 +813,10 @@ export default function EventDetailsPage() {
           <div className="lg:col-span-1">
             <div className="sticky top-24">
               {isPastEvent ? (
-                <div className="bg-white border border-slate-200 p-6 text-center">
-                  <div className="w-16 h-16 bg-slate-100 border border-slate-200 flex items-center justify-center mx-auto mb-4">
+                <div className="bg-bg-primary border border-border p-6 text-center rounded-lg">
+                  <div className="w-16 h-16 bg-bg-secondary border border-border flex items-center justify-center mx-auto mb-4 rounded-lg">
                     <svg
-                      className="w-8 h-8 text-slate-600"
+                      className="w-8 h-8 text-text-secondary"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -829,25 +829,25 @@ export default function EventDetailsPage() {
                       />
                     </svg>
                   </div>
-                  <h3 className="text-xl font-bold text-slate-900 mb-2">
+                  <h3 className="text-xl font-bold text-text-primary mb-2">
                     Event Ended
                   </h3>
-                  <p className="text-slate-600 mb-4">
+                  <p className="text-text-secondary mb-4">
                     This event took place on{" "}
                     {format(new Date(event.date), "PPP")}
                   </p>
                   <button
                     onClick={() => navigate("/events")}
-                    className="w-full bg-slate-900 text-white py-3 px-6 font-semibold hover:bg-slate-800 transition-colors"
+                    className="w-full bg-primary text-bg-primary py-3 px-6 font-semibold hover:bg-primary/90 transition-colors rounded-lg cursor-pointer"
                   >
                     Browse Upcoming Events
                   </button>
                 </div>
               ) : event.cancelled ? (
-                <div className="bg-white border border-red-200 p-6 text-center">
-                  <div className="w-16 h-16 bg-red-50 border border-red-200 flex items-center justify-center mx-auto mb-4">
+                <div className="bg-bg-primary border border-error/20 p-6 text-center rounded-lg">
+                  <div className="w-16 h-16 bg-error/10 border border-error/20 flex items-center justify-center mx-auto mb-4 rounded-lg">
                     <svg
-                      className="w-8 h-8 text-red-600"
+                      className="w-8 h-8 text-error"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -860,25 +860,25 @@ export default function EventDetailsPage() {
                       />
                     </svg>
                   </div>
-                  <h3 className="text-xl font-bold text-slate-900 mb-2">
+                  <h3 className="text-xl font-bold text-text-primary mb-2">
                     Event Cancelled
                   </h3>
-                  <p className="text-slate-600 mb-4">
+                  <p className="text-text-secondary mb-4">
                     This event has been cancelled by the organizer
                   </p>
                   <button
                     onClick={() => navigate("/events")}
-                    className="w-full bg-slate-900 text-white py-3 px-6 font-semibold hover:bg-slate-800 transition-colors"
+                    className="w-full bg-primary text-bg-primary py-3 px-6 font-semibold hover:bg-primary/90 transition-colors rounded-lg cursor-pointer"
                   >
                     Find Other Events
                   </button>
                 </div>
               ) : alreadyBooked ? (
-                <div className="bg-white border border-slate-200 p-6">
+                <div className="bg-bg-primary border border-border p-6 rounded-lg">
                   <div className="text-center mb-6">
-                    <div className="w-16 h-16 bg-green-50 border border-green-200 flex items-center justify-center mx-auto mb-4">
+                    <div className="w-16 h-16 bg-success/10 border border-success/20 flex items-center justify-center mx-auto mb-4 rounded-lg">
                       <svg
-                        className="w-8 h-8 text-green-600"
+                        className="w-8 h-8 text-success"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -891,21 +891,21 @@ export default function EventDetailsPage() {
                         />
                       </svg>
                     </div>
-                    <h3 className="text-xl font-bold text-slate-900 mb-2">
+                    <h3 className="text-xl font-bold text-text-primary mb-2">
                       You're Registered!
                     </h3>
-                    <p className="text-slate-600 mb-4">
+                    <p className="text-text-secondary mb-4">
                       You have successfully booked this event
                     </p>
                   </div>
 
                   <div className="space-y-4 mb-6">
-                    <div className="bg-slate-50 border border-slate-200 p-4">
+                    <div className="bg-bg-secondary border border-border p-4 rounded-lg">
                       <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm font-medium text-slate-600">
+                        <span className="text-sm font-medium text-text-secondary">
                           Booking Status
                         </span>
-                        <span className="inline-flex items-center px-2 py-1 text-xs font-semibold bg-green-100 text-green-800 border border-green-200">
+                        <span className="inline-flex items-center px-2 py-1 text-xs font-semibold bg-success/10 text-success border border-success/20 rounded-md">
                           Confirmed
                         </span>
                       </div>
@@ -921,10 +921,10 @@ export default function EventDetailsPage() {
                                 key={index}
                                 className="flex justify-between items-center text-sm"
                               >
-                                <span className="text-slate-600">
+                                <span className="text-text-secondary">
                                   {item.categoryName} × {item.quantity}
                                 </span>
-                                <span className="font-medium text-slate-800">
+                                <span className="font-medium text-text-primary">
                                   ₹
                                   {(
                                     item.pricePerTicket * item.quantity
@@ -933,11 +933,11 @@ export default function EventDetailsPage() {
                               </div>
                             ))}
                           </div>
-                          <div className="flex justify-between items-center pt-2 border-t border-slate-200">
-                            <span className="text-sm font-medium text-slate-600">
+                          <div className="flex justify-between items-center pt-2 border-t border-border">
+                            <span className="text-sm font-medium text-text-secondary">
                               Total Tickets
                             </span>
-                            <span className="text-sm font-bold text-slate-800">
+                            <span className="text-sm font-bold text-text-primary">
                               {userBooking.ticketItems.reduce(
                                 (sum, item) => sum + item.quantity,
                                 0
@@ -948,20 +948,20 @@ export default function EventDetailsPage() {
                       ) : (
                         // Legacy booking display
                         <div className="flex justify-between items-center mb-2">
-                          <span className="text-sm font-medium text-slate-600">
+                          <span className="text-sm font-medium text-text-secondary">
                             Seats Booked
                           </span>
-                          <span className="text-sm font-bold text-slate-800">
+                          <span className="text-sm font-bold text-text-primary">
                             {userBooking?.noOfSeats || seatCount}
                           </span>
                         </div>
                       )}
 
                       <div className="flex justify-between items-center">
-                        <span className="text-sm font-medium text-slate-600">
+                        <span className="text-sm font-medium text-text-secondary">
                           Total Paid
                         </span>
-                        <span className="text-lg font-bold text-slate-800">
+                        <span className="text-lg font-bold text-text-primary">
                           ₹
                           {userBooking
                             ? userBooking.totalAmount 
@@ -976,8 +976,7 @@ export default function EventDetailsPage() {
                   <div className="space-y-3">
                     <button
                       onClick={() => navigate(`/ticket/${userBookingId}`)}
-                      className="w-full bg-slate-900 text-white py-3 px-6 font-semibold hover:bg-slate-800 transition-colors flex items-center justify-center gap-2"
-                    >
+                      className="w-full bg-primary text-bg-primary py-3 px-6 font-semibold hover:bg-primary/90 transition-colors flex items-center justify-center gap-2 rounded-lg cursor-pointer">
                       <svg
                         className="w-5 h-5"
                         fill="none"
@@ -996,8 +995,7 @@ export default function EventDetailsPage() {
 
                     <button
                       onClick={handleUnregister}
-                      className="w-full bg-white border-2 border-red-200 text-red-600 py-3 px-6 font-semibold hover:bg-red-50 hover:border-red-300 transition-colors flex items-center justify-center gap-2"
-                    >
+                      className="w-full bg-bg-primary border-2 border-error/20 text-error py-3 px-6 font-semibold hover:bg-error/10 hover:border-error/30 transition-colors flex items-center justify-center gap-2 rounded-lg cursor-pointer">
                       <svg
                         className="w-5 h-5"
                         fill="none"
@@ -1016,16 +1014,16 @@ export default function EventDetailsPage() {
                   </div>
                 </div>
               ) : (
-                <div className="bg-white border border-slate-200 p-6">
+                <div className="bg-bg-primary border border-border p-6 rounded-lg">
                   <div className="text-center mb-6">
-                    <div className="text-3xl font-bold text-slate-900 mb-1">
+                    <div className="text-3xl font-bold text-text-primary mb-1">
                       {event.hasTicketCategories && event.ticketCategories
                         ? `₹${Math.min(
                             ...event.ticketCategories.map((c) => c.price)
                           ).toLocaleString()}`
                         : `₹${event.price || 0}`}
                     </div>
-                    <p className="text-slate-600">
+                    <p className="text-text-secondary">
                       {event.hasTicketCategories ? "Onwards" : "Per Ticket"}
                     </p>
                   </div>
@@ -1037,27 +1035,27 @@ export default function EventDetailsPage() {
                   !showPayment ? (
                     <div className="mb-6 space-y-4">
                       <div className="flex items-center justify-between">
-                        <h3 className="text-lg font-semibold text-slate-900">
+                        <h3 className="text-lg font-semibold text-text-primary">
                           Select Ticket Categories
                         </h3>
                         <div
                           className={`text-sm ${
                             totalTickets >= 8
-                              ? "text-amber-600 font-medium"
-                              : "text-slate-600"
+                              ? "text-warning font-medium"
+                              : "text-text-secondary"
                           }`}
                         >
                           {totalTickets}/10 tickets selected
                           {totalTickets < 10 && totalTickets >= 7 && (
-                            <span className="ml-1 text-amber-600">
+                            <span className="ml-1 text-warning">
                               ({10 - totalTickets} remaining)
                             </span>
                           )}
                         </div>
                       </div>
                       {totalTickets >= 10 && (
-                        <div className="bg-amber-50 border border-amber-200 p-3">
-                          <p className="text-amber-800 text-sm font-medium">
+                        <div className="bg-warning/10 border border-warning/20 p-3 rounded-lg">
+                          <p className="text-warning text-sm font-medium">
                             Maximum of 10 tickets per booking reached. Remove
                             some tickets to select different categories.
                           </p>
@@ -1076,24 +1074,24 @@ export default function EventDetailsPage() {
                         return (
                           <div
                             key={category._id || index}
-                            className="border border-slate-200 p-4"
+                            className="border border-border p-4 rounded-lg"
                           >
                             <div className="flex justify-between items-start mb-3">
                               <div>
-                                <h4 className="font-semibold text-slate-900">
+                                <h4 className="font-semibold text-text-primary">
                                   {category.name}
                                 </h4>
                                 {category.description && (
-                                  <p className="text-sm text-slate-600 mt-1">
+                                  <p className="text-sm text-text-secondary mt-1">
                                     {category.description}
                                   </p>
                                 )}
                               </div>
                               <div className="text-right">
-                                <div className="text-lg font-bold text-slate-900">
+                                <div className="text-lg font-bold text-text-primary">
                                   ₹{category.price.toLocaleString()}
                                 </div>
-                                <div className="text-xs text-slate-500">
+                                <div className="text-xs text-text-secondary">
                                   {categoryAvailableSeats} available
                                 </div>
                               </div>
@@ -1101,7 +1099,7 @@ export default function EventDetailsPage() {
 
                             {categoryAvailableSeats > 0 ? (
                               <div className="flex items-center gap-3">
-                                <label className="text-sm font-medium text-slate-700">
+                                <label className="text-sm font-medium text-text-primary">
                                   Quantity:
                                 </label>
                                 <select
@@ -1112,7 +1110,7 @@ export default function EventDetailsPage() {
                                       parseInt(e.target.value)
                                     )
                                   }
-                                  className="border border-slate-300 px-3 py-2 text-sm focus:ring-1 focus:ring-slate-900 focus:border-slate-900"
+                                  className="border border-border px-3 py-2 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary bg-bg-primary text-text-primary rounded-lg cursor-pointer"
                                 >
                                   {Array.from(
                                     {
@@ -1137,7 +1135,7 @@ export default function EventDetailsPage() {
                                   )}
                                 </select>
                                 {categorySelection.quantity > 0 && (
-                                  <span className="text-sm font-medium text-slate-600">
+                                  <span className="text-sm font-medium text-text-secondary">
                                     = ₹
                                     {(
                                       category.price *
@@ -1147,7 +1145,7 @@ export default function EventDetailsPage() {
                                 )}
                               </div>
                             ) : (
-                              <div className="text-sm text-red-600 font-medium">
+                              <div className="text-sm text-error font-medium">
                                 Sold Out
                               </div>
                             )}
@@ -1157,15 +1155,15 @@ export default function EventDetailsPage() {
 
                       {/* Total Summary */}
                       {totalTickets > 0 && (
-                        <div className="mt-4 p-4 bg-slate-50 border border-slate-200">
-                          <div className="flex justify-between items-center text-lg font-bold text-slate-900">
+                        <div className="mt-4 p-4 bg-bg-secondary border border-border rounded-lg">
+                          <div className="flex justify-between items-center text-lg font-bold text-text-primary">
                             <span>
                               Total ({totalTickets}{" "}
                               {totalTickets === 1 ? "ticket" : "tickets"})
                             </span>
                             <span>₹{totalPrice.toLocaleString()}</span>
                           </div>
-                          <div className="mt-2 text-xs text-slate-500">
+                          <div className="mt-2 text-xs text-text-secondary">
                             Maximum 10 tickets per booking
                           </div>
                         </div>
@@ -1178,7 +1176,7 @@ export default function EventDetailsPage() {
                     <div className="mb-6">
                       <label
                         htmlFor="seatCount"
-                        className="block text-sm font-medium text-slate-700 mb-2"
+                        className="block text-sm font-medium text-text-primary mb-2"
                       >
                         Number of Seats
                       </label>
@@ -1187,7 +1185,7 @@ export default function EventDetailsPage() {
                           id="seatCount"
                           value={seatCount}
                           onChange={(e) => setSeatCount(Number(e.target.value))}
-                          className="flex-1 border border-slate-300 px-4 py-3 focus:ring-1 focus:ring-slate-900 focus:border-slate-900"
+                          className="flex-1 border border-border px-4 py-3 focus:ring-2 focus:ring-primary/20 focus:border-primary bg-bg-primary text-text-primary rounded-lg cursor-pointer"
                           disabled={availableSeats === 0}
                         >
                           {Array.from(
@@ -1199,16 +1197,16 @@ export default function EventDetailsPage() {
                             )
                           )}
                         </select>
-                        <span className="text-sm text-slate-500">
+                        <span className="text-sm text-text-secondary">
                           of {availableSeats} available
                         </span>
                       </div>
-                      <div className="mt-3 p-3 bg-slate-50 border border-slate-200">
+                      <div className="mt-3 p-3 bg-bg-secondary border border-border rounded-lg">
                         <div className="flex justify-between items-center">
-                          <span className="text-sm text-slate-600">
+                          <span className="text-sm text-text-secondary">
                             Total Price:
                           </span>
-                          <span className="text-xl font-bold text-slate-900">
+                          <span className="text-xl font-bold text-text-primary">
                             ₹{((event.price || 0) * seatCount).toLocaleString()}
                           </span>
                         </div>
@@ -1217,10 +1215,10 @@ export default function EventDetailsPage() {
                   ) : null}
 
                   <div className="space-y-4 mb-6">
-                    <div className="bg-slate-50 border border-slate-200 p-4 space-y-3">
+                    <div className="bg-bg-secondary border border-border p-4 space-y-3 rounded-lg">
                       <div className="flex items-center gap-3">
                         <svg
-                          className="w-5 h-5 text-green-600"
+                          className="w-5 h-5 text-success"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -1232,13 +1230,13 @@ export default function EventDetailsPage() {
                             d="M5 13l4 4L19 7"
                           />
                         </svg>
-                        <span className="text-sm text-slate-700">
+                        <span className="text-sm text-text-primary">
                           Instant confirmation
                         </span>
                       </div>
                       <div className="flex items-center gap-3">
                         <svg
-                          className="w-5 h-5 text-green-600"
+                          className="w-5 h-5 text-success"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -1250,17 +1248,17 @@ export default function EventDetailsPage() {
                             d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
                           />
                         </svg>
-                        <span className="text-sm text-slate-700">
+                        <span className="text-sm text-text-primary">
                           Secure payment
                         </span>
                       </div>
                       <div className="flex items-center gap-3">
                         <div className="w-5 h-5 flex items-center justify-center">
-                          <span className="text-xs font-bold text-green-600">
+                          <span className="text-xs font-bold text-success">
                             ₹
                           </span>
                         </div>
-                        <span className="text-sm text-slate-700">
+                        <span className="text-sm text-text-primary">
                           Flexible refund policy
                         </span>
                       </div>
@@ -1275,15 +1273,15 @@ export default function EventDetailsPage() {
                             state: { from: location.pathname },
                           })
                         }
-                        className="w-full bg-slate-900 text-white py-4 px-6 font-bold text-lg hover:bg-slate-800 transition-colors"
+                        className="w-full bg-primary text-bg-primary py-4 px-6 font-bold text-lg hover:bg-primary/90 transition-colors rounded-lg cursor-pointer"
                       >
                         Login to Book
                       </button>
-                      <p className="text-center text-sm text-slate-500">
+                      <p className="text-center text-sm text-text-secondary">
                         New here?{" "}
                         <button
                           onClick={() => navigate("/register")}
-                          className="text-slate-900 font-semibold hover:text-slate-700"
+                          className="text-primary font-semibold hover:text-primary/80 cursor-pointer"
                         >
                           Create an account
                         </button>
@@ -1335,10 +1333,10 @@ export default function EventDetailsPage() {
                           }
                           handleBookingSuccess();
                         }}
-                        buttonClassName="w-full bg-green-600 text-white py-4 px-6 font-bold text-lg hover:bg-green-700 transition-colors"
+                        buttonClassName="w-full bg-success text-bg-primary py-4 px-6 font-bold text-lg hover:bg-success/90 transition-colors rounded-lg cursor-pointer"
                       />
                       <button
-                        className="w-full text-slate-600 py-2 text-sm hover:text-slate-800 transition-colors"
+                        className="w-full text-text-secondary py-2 text-sm hover:text-text-primary transition-colors cursor-pointer"
                         onClick={() => setShowPayment(false)}
                       >
                         ← Back to booking details
@@ -1347,7 +1345,7 @@ export default function EventDetailsPage() {
                   ) : (
                     <button
                       onClick={() => setShowPayment(true)}
-                      className="w-full bg-slate-900 text-white py-4 px-6 font-bold text-lg hover:bg-slate-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full bg-primary text-bg-primary py-4 px-6 font-bold text-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed rounded-lg cursor-pointer"
                       disabled={
                         event.hasTicketCategories
                           ? totalTickets === 0
@@ -1373,7 +1371,7 @@ export default function EventDetailsPage() {
                 <div className="mt-6">
                   <button
                     onClick={() => setShowContactOrganizer(true)}
-                    className="w-full flex items-center justify-center gap-2 text-slate-900 hover:text-slate-700 py-3 px-4 border border-slate-300 hover:border-slate-400 hover:bg-slate-50 transition-colors text-sm font-medium"
+                    className="w-full flex items-center justify-center gap-2 text-text-primary hover:text-primary py-3 px-4 border border-border hover:border-primary hover:bg-bg-secondary transition-colors text-sm font-medium rounded-lg cursor-pointer"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -1385,10 +1383,10 @@ export default function EventDetailsPage() {
 
               {/* Report Event Button */}
               {currentUser && !isPastEvent && (
-                <div className="mt-6 pt-6 border-t border-slate-200">
+                <div className="mt-6 pt-6 border-t border-border">
                   <button
                     onClick={() => setShowReportModal(true)}
-                    className="w-full flex items-center justify-center gap-2 text-red-600 hover:text-red-700 py-3 px-4 border border-red-200 hover:border-red-300 hover:bg-red-50 transition-colors text-sm font-medium"
+                    className="w-full flex items-center justify-center gap-2 text-error hover:text-error/80 py-3 px-4 border border-error/20 hover:border-error/30 hover:bg-error/10 transition-colors text-sm font-medium rounded-lg cursor-pointer"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.268 16.5c-.77.833.192 2.5 1.732 2.5z" />
@@ -1430,8 +1428,8 @@ export default function EventDetailsPage() {
               </p>
 
               {refundPolicy && (
-                <div className="bg-blue-50 border border-blue-200 p-4">
-                  <h4 className="font-semibold text-blue-800 mb-2">
+                <div className="bg-primary/10 border border-primary/20 p-4 rounded-lg">
+                  <h4 className="font-semibold text-primary mb-2">
                     Refund Policy
                   </h4>
                   <div className="text-sm space-y-1">
@@ -1443,7 +1441,7 @@ export default function EventDetailsPage() {
                       {refundPolicy.refundPolicy}
                     </p>
                     {refundPolicy.refundPercentage > 0 && (
-                      <p className="text-green-700">
+                      <p className="text-success">
                         You will receive {refundPolicy.refundPercentage}% refund
                         (₹
                         {(
@@ -1456,12 +1454,12 @@ export default function EventDetailsPage() {
                       </p>
                     )}
                     {refundPolicy.refundPercentage === 0 && (
-                      <p className="text-red-600 font-medium">
+                      <p className="text-error font-medium">
                         No refund will be processed due to cancellation timing.
                       </p>
                     )}
                   </div>
-                  <div className="mt-2 text-xs text-gray-600 border-t border-blue-200 pt-2">
+                  <div className="mt-2 text-xs text-text-secondary border-t border-primary/20 pt-2">
                     <p>
                       Policy: 7+ days = 100% | 1-7 days = 50% | &lt;24 hours =
                       0%

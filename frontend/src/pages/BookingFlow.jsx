@@ -419,8 +419,8 @@ export default function BookingFlow({ event, onBookingSuccess }) {
                     </div>
 
                     {category.remainingSeats === 0 && (
-                      <div className="bg-red-50 border border-red-200 p-2 text-center">
-                        <span className="text-red-600 text-sm font-medium">
+                      <div className="bg-error/10 border border-error/20 p-2 text-center rounded-lg">
+                        <span className="text-error text-sm font-medium">
                           Sold Out
                         </span>
                       </div>
@@ -431,14 +431,14 @@ export default function BookingFlow({ event, onBookingSuccess }) {
             </div>
           ) : (
             <div className="space-y-3">
-              <label className="block text-sm font-medium text-slate-700">
+              <label className="block text-sm font-medium text-text-primary">
                 Number of Seats
               </label>
               <div className="relative">
                 <select
                   value={selectedSeats}
                   onChange={(e) => setSelectedSeats(Number(e.target.value))}
-                  className="w-full border border-slate-300 px-4 py-3 focus:ring-1 focus:ring-slate-900 focus:border-slate-900 bg-white text-slate-900 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full border border-border rounded-lg px-4 py-3 focus:ring-2 focus:ring-primary/20 focus:border-primary bg-bg-primary text-text-primary font-medium disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                   disabled={loading}
                 >
                   {Array.from(
@@ -466,7 +466,7 @@ export default function BookingFlow({ event, onBookingSuccess }) {
                   </svg>
                 </div>
               </div>
-              <p className="text-sm text-slate-500">
+              <p className="text-sm text-text-secondary">
                 {seatInfo?.remainingSeats} seats available
               </p>
             </div>
@@ -474,14 +474,14 @@ export default function BookingFlow({ event, onBookingSuccess }) {
 
           {/* Total Calculation */}
           {getTotalQuantity() > 0 && (
-            <div className="bg-slate-50 p-4 border border-slate-200">
+            <div className="bg-bg-secondary p-4 border border-border rounded-lg">
               <div className="flex justify-between items-center">
                 <div>
-                  <span className="text-slate-900 font-medium">
+                  <span className="text-text-primary font-medium">
                     Total Amount
                   </span>
                   {seatInfo?.hasTicketCategories ? (
-                    <div className="text-slate-600 text-sm space-y-1">
+                    <div className="text-text-secondary text-sm space-y-1">
                       {getSelectedItems().map((item, index) => (
                         <div key={index}>
                           {item.quantity}x {item.categoryName} × ₹
@@ -490,13 +490,13 @@ export default function BookingFlow({ event, onBookingSuccess }) {
                       ))}
                     </div>
                   ) : (
-                    <p className="text-slate-600 text-sm">
+                    <p className="text-text-secondary text-sm">
                       {selectedSeats} × ₹{event.price?.toLocaleString()}
                     </p>
                   )}
                 </div>
                 <div className="text-right">
-                  <div className="text-2xl font-bold text-slate-900">
+                  <div className="text-2xl font-bold text-text-primary">
                     ₹{getTotalAmount().toLocaleString()}
                   </div>
                 </div>
@@ -508,10 +508,10 @@ export default function BookingFlow({ event, onBookingSuccess }) {
           {getTotalQuantity() > 0 && (
             <div className="space-y-4">
               <div className="flex items-center space-x-2">
-                <div className="w-6 h-6 bg-slate-100 border border-slate-200 flex items-center justify-center">
-                  <span className="text-xs font-bold text-slate-900">2</span>
+                <div className="w-6 h-6 bg-bg-secondary border border-border rounded-lg flex items-center justify-center">
+                  <span className="text-xs font-bold text-text-primary">2</span>
                 </div>
-                <h3 className="text-lg font-bold text-slate-900">
+                <h3 className="text-lg font-bold text-text-primary">
                   Payment Details
                 </h3>
               </div>
@@ -525,10 +525,10 @@ export default function BookingFlow({ event, onBookingSuccess }) {
 
           {/* No Selection Message */}
           {getTotalQuantity() === 0 && (
-            <div className="bg-slate-50 p-6 text-center border border-slate-200">
-              <div className="w-12 h-12 bg-slate-100 border border-slate-200 flex items-center justify-center mx-auto mb-3">
+            <div className="bg-bg-secondary p-6 text-center border border-border rounded-lg">
+              <div className="w-12 h-12 bg-bg-primary border border-border rounded-lg flex items-center justify-center mx-auto mb-3">
                 <svg
-                  className="w-6 h-6 text-slate-500"
+                  className="w-6 h-6 text-text-secondary"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -541,10 +541,10 @@ export default function BookingFlow({ event, onBookingSuccess }) {
                   />
                 </svg>
               </div>
-              <h3 className="text-lg font-medium text-slate-900 mb-2">
+              <h3 className="text-lg font-medium text-text-primary mb-2">
                 Select Your Tickets
               </h3>
-              <p className="text-slate-600 text-sm">
+              <p className="text-text-secondary text-sm">
                 {seatInfo?.hasTicketCategories
                   ? "Choose the number of tickets for each category you'd like to book."
                   : "Select the number of seats you'd like to book."}
@@ -553,11 +553,11 @@ export default function BookingFlow({ event, onBookingSuccess }) {
           )}
 
           {/* Security Note */}
-          <div className="bg-slate-50 p-4 border border-slate-200">
+          <div className="bg-bg-secondary p-4 border border-border rounded-lg">
             <div className="flex items-start space-x-3">
-              <div className="w-5 h-5 bg-slate-100 border border-slate-200 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <div className="w-5 h-5 bg-bg-primary border border-border rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
                 <svg
-                  className="w-3 h-3 text-slate-600"
+                  className="w-3 h-3 text-text-secondary"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -571,10 +571,10 @@ export default function BookingFlow({ event, onBookingSuccess }) {
                 </svg>
               </div>
               <div>
-                <p className="text-slate-900 text-sm font-medium">
+                <p className="text-text-primary text-sm font-medium">
                   Secure Transaction
                 </p>
-                <p className="text-slate-600 text-xs mt-1">
+                <p className="text-text-secondary text-xs mt-1">
                   Your payment information is encrypted and secure. You'll
                   receive a confirmation email once your booking is complete.
                 </p>

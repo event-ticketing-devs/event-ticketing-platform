@@ -56,8 +56,8 @@ const GoogleLoginButton = () => {
       {/* Loading State */}
       {loading && (
         <div className="flex items-center justify-center gap-2 py-2">
-          <div className="w-4 h-4 border-2 border-slate-300 border-t-slate-900 rounded-full animate-spin"></div>
-          <span className="text-slate-900 text-sm font-medium">
+          <div className="w-4 h-4 border-2 border-border border-t-primary rounded-full animate-spin"></div>
+          <span className="text-text-primary text-sm font-medium">
             Signing in...
           </span>
         </div>
@@ -65,11 +65,11 @@ const GoogleLoginButton = () => {
 
       {/* Error Message */}
       {error && (
-        <div className="bg-red-50 border border-red-200 p-4">
+        <div className="bg-error/10 border border-error rounded-lg p-4">
           <div className="flex items-center space-x-3">
-            <div className="w-5 h-5 bg-red-100 border border-red-200 flex items-center justify-center flex-shrink-0">
+            <div className="w-5 h-5 bg-error/20 border border-error rounded-md flex items-center justify-center flex-shrink-0">
               <svg
-                className="w-3 h-3 text-red-600"
+                className="w-3 h-3 text-error"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -82,7 +82,7 @@ const GoogleLoginButton = () => {
                 />
               </svg>
             </div>
-            <p className="text-red-700 text-sm font-medium">{error}</p>
+            <p className="text-error text-sm font-medium">{error}</p>
           </div>
         </div>
       )}
@@ -91,8 +91,8 @@ const GoogleLoginButton = () => {
         .google-login-container :global(div[role="button"]) {
           width: 100% !important;
           height: 48px !important;
-          border: 1px solid rgb(203 213 225) !important;
-          border-radius: 0 !important;
+          border: 1px solid #E8E4DF !important;
+          border-radius: 8px !important;
           font-family: "Inter", "system-ui", sans-serif !important;
           font-weight: 600 !important;
           font-size: 16px !important;
@@ -101,21 +101,22 @@ const GoogleLoginButton = () => {
         }
 
         .google-login-container :global(div[role="button"]:hover) {
-          border-color: rgb(15 23 42) !important;
-          background-color: rgb(248 250 252) !important;
+          border-color: #C75B39 !important;
+          background-color: #F5F3F0 !important;
           box-shadow: none !important;
           transform: none !important;
+          cursor: pointer !important;
         }
 
         .google-login-container :global(div[role="button"]:focus) {
           outline: none !important;
-          border: 1px solid rgb(15 23 42) !important;
+          border: 1px solid #C75B39 !important;
         }
 
         .google-login-container :global(.ns01__text) {
           font-size: 16px !important;
           font-weight: 600 !important;
-          color: rgb(51 65 85) !important;
+          color: #2B2826 !important;
         }
 
         .google-login-container :global(.ns01__text)::after {

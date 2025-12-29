@@ -41,13 +41,13 @@ const ProfileUpdate = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white py-8">
+    <div className="min-h-screen bg-bg-primary py-8">
       <div className="max-w-2xl mx-auto px-6">
         {/* Header */}
         <div className="mb-8">
           <button
             onClick={() => navigate("/profile")}
-            className="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors mb-6"
+            className="inline-flex items-center gap-2 text-text-secondary hover:text-text-primary transition-colors cursor-pointer mb-6"
           >
             <svg
               className="w-4 h-4"
@@ -65,32 +65,32 @@ const ProfileUpdate = () => {
             Back to Profile
           </button>
           <div>
-            <h1 className="text-3xl font-bold text-slate-900 mb-2">
+            <h1 className="text-3xl font-bold text-text-primary mb-2">
               Update Profile
             </h1>
-            <p className="text-slate-600">
+            <p className="text-text-secondary">
               Update your personal information and preferences
             </p>
           </div>
         </div>
 
         {/* Form Card */}
-        <div className="bg-white border border-slate-200 overflow-hidden">
+        <div className="bg-bg-primary border border-border rounded-lg overflow-hidden">
           {/* Current User Info */}
-          <div className="bg-slate-50 p-6 border-b border-slate-200">
+          <div className="bg-bg-secondary p-6 border-b border-border">
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 bg-slate-100 border border-slate-200 flex items-center justify-center">
-                <span className="text-2xl font-bold text-slate-900">
+              <div className="w-16 h-16 bg-bg-secondary border border-border rounded-lg flex items-center justify-center">
+                <span className="text-2xl font-bold text-text-primary">
                   {currentUser.name?.charAt(0).toUpperCase() || "U"}
                 </span>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-slate-900">
+                <h3 className="text-lg font-semibold text-text-primary">
                   {currentUser.name || "User"}
                 </h3>
-                <p className="text-slate-600">{currentUser.email}</p>
+                <p className="text-text-secondary">{currentUser.email}</p>
                 {currentUser.googleId && (
-                  <span className="inline-flex items-center gap-1 mt-1 px-2 py-1 bg-blue-50 border border-blue-200 text-blue-800 text-xs">
+                  <span className="inline-flex items-center gap-1 mt-1 px-2 py-1 bg-success/10 border border-success rounded-md text-success text-xs">
                     <svg className="w-3 h-3" viewBox="0 0 24 24">
                       <path
                         fill="currentColor"
@@ -121,13 +121,13 @@ const ProfileUpdate = () => {
             <div className="space-y-6">
               {/* Name Field */}
               <div>
-                <label className="block text-sm font-semibold text-slate-800 mb-2">
+                <label className="block text-sm font-semibold text-text-primary mb-2">
                   Full Name
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <svg
-                      className="w-5 h-5 text-slate-400"
+                      className="w-5 h-5 text-text-secondary"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -144,7 +144,7 @@ const ProfileUpdate = () => {
                     type="text"
                     name="name"
                     placeholder="Enter your full name"
-                    className="block w-full pl-10 pr-4 py-3 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900 bg-slate-50 transition-colors"
+                    className="block w-full pl-10 pr-4 py-3 border border-border rounded-lg focus:ring-1 focus:ring-primary focus:border-primary bg-bg-secondary transition-colors"
                     value={formData.name}
                     onChange={handleChange}
                     required
@@ -154,13 +154,13 @@ const ProfileUpdate = () => {
 
               {/* Email Field */}
               <div>
-                <label className="block text-sm font-semibold text-slate-800 mb-2">
+                <label className="block text-sm font-semibold text-text-primary mb-2">
                   Email Address
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <svg
-                      className="w-5 h-5 text-slate-400"
+                      className="w-5 h-5 text-text-secondary"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -177,7 +177,7 @@ const ProfileUpdate = () => {
                     type="email"
                     name="email"
                     placeholder="Enter your email address"
-                    className="block w-full pl-10 pr-4 py-3 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900 bg-slate-50 transition-colors"
+                    className="block w-full pl-10 pr-4 py-3 border border-border rounded-lg focus:ring-1 focus:ring-primary focus:border-primary bg-bg-secondary transition-colors"
                     value={formData.email}
                     onChange={handleChange}
                     required
@@ -187,13 +187,13 @@ const ProfileUpdate = () => {
 
               {/* Phone Field */}
               <div>
-                <label className="block text-sm font-semibold text-slate-800 mb-2">
+                <label className="block text-sm font-semibold text-text-primary mb-2">
                   Phone Number
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <svg
-                      className="w-5 h-5 text-slate-400"
+                      className="w-5 h-5 text-text-secondary"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -210,7 +210,7 @@ const ProfileUpdate = () => {
                     type="tel"
                     name="phone"
                     placeholder="Enter your phone number"
-                    className="block w-full pl-10 pr-4 py-3 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900 bg-slate-50 transition-colors"
+                    className="block w-full pl-10 pr-4 py-3 border border-border rounded-lg focus:ring-1 focus:ring-primary focus:border-primary bg-bg-secondary transition-colors"
                     value={formData.phone}
                     onChange={handleChange}
                     required
@@ -221,13 +221,13 @@ const ProfileUpdate = () => {
               {/* Password Field - Only for non-OAuth users */}
               {!currentUser.googleId && (
                 <div>
-                  <label className="block text-sm font-semibold text-slate-800 mb-2">
+                  <label className="block text-sm font-semibold text-text-primary mb-2">
                     New Password
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                       <svg
-                        className="w-5 h-5 text-slate-400"
+                        className="w-5 h-5 text-text-secondary"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -244,12 +244,12 @@ const ProfileUpdate = () => {
                       type="password"
                       name="password"
                       placeholder="Leave blank to keep current password"
-                      className="block w-full pl-10 pr-4 py-3 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900 bg-slate-50 transition-colors"
+                      className="block w-full pl-10 pr-4 py-3 border border-border rounded-lg focus:ring-1 focus:ring-primary focus:border-primary bg-bg-secondary transition-colors"
                       value={formData.password}
                       onChange={handleChange}
                     />
                   </div>
-                  <p className="text-sm text-slate-500 mt-1">
+                  <p className="text-sm text-text-secondary mt-1">
                     Leave this field empty if you don't want to change your
                     password
                   </p>
@@ -258,18 +258,18 @@ const ProfileUpdate = () => {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-3 mt-8 pt-6 border-t border-slate-200">
+            <div className="flex flex-col sm:flex-row gap-3 mt-8 pt-6 border-t border-border">
               <button
                 type="button"
                 onClick={() => navigate("/profile")}
-                className="flex-1 bg-slate-100 text-slate-700 py-3 px-6 font-semibold hover:bg-slate-200 transition-colors"
+                className="flex-1 bg-bg-secondary text-text-primary py-3 px-6 rounded-lg font-semibold hover:bg-bg-secondary/80 transition-colors cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={loading}
-                className="flex-1 bg-slate-900 text-white py-3 px-6 font-semibold hover:bg-slate-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="flex-1 bg-primary text-white py-3 px-6 rounded-lg font-semibold hover:bg-primary/90 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <>
@@ -313,11 +313,11 @@ const ProfileUpdate = () => {
           {/* Information Notice */}
           {currentUser.googleId && (
             <div className="p-6 pt-0">
-              <div className="bg-blue-50 border border-blue-200 p-4">
+              <div className="bg-success/10 border border-success rounded-lg p-4">
                 <div className="flex gap-3">
-                  <div className="w-6 h-6 bg-blue-50 border border-blue-200 flex items-center justify-center flex-shrink-0">
+                  <div className="w-6 h-6 bg-success/10 border border-success rounded-md flex items-center justify-center flex-shrink-0">
                     <svg
-                      className="w-4 h-4 text-blue-600"
+                      className="w-4 h-4 text-success"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -331,10 +331,10 @@ const ProfileUpdate = () => {
                     </svg>
                   </div>
                   <div>
-                    <h4 className="font-semibold text-blue-800 mb-1">
+                    <h4 className="font-semibold text-success mb-1">
                       Google Account Notice
                     </h4>
-                    <p className="text-sm text-blue-700">
+                    <p className="text-sm text-success">
                       Since you're signed in with Google, password changes are
                       managed through your Google account settings.
                     </p>

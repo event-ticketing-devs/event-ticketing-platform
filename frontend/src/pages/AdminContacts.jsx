@@ -49,11 +49,11 @@ const AdminContacts = () => {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'pending': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'in-progress': return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'resolved': return 'bg-green-100 text-green-800 border-green-200';
-      case 'closed': return 'bg-gray-100 text-gray-800 border-gray-200';
-      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+      case 'pending': return 'bg-warning/10 text-warning border-warning/20';
+      case 'in-progress': return 'bg-primary/10 text-primary border-primary/20';
+      case 'resolved': return 'bg-success/10 text-success border-success/20';
+      case 'closed': return 'bg-bg-secondary text-text-secondary border-border';
+      default: return 'bg-bg-secondary text-text-secondary border-border';
     }
   };
 
@@ -89,27 +89,29 @@ const AdminContacts = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white py-8">
+    <div className="min-h-screen bg-bg-primary py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-900 mb-2">Contact Management</h1>
-          <p className="text-slate-600">Manage general contact inquiries and support requests</p>
+          <div>
+            <h1 className="text-3xl font-bold text-text-primary">Contact Management</h1>
+            <p className="mt-1 text-text-secondary">Manage general contact inquiries and support requests</p>
+          </div>
         </div>
 
         {/* Filters */}
-        <div className="bg-white border border-slate-200 p-6 mb-6">
+        <div className="bg-bg-primary border border-border rounded-lg p-6 mb-6">
           <div className="flex flex-wrap gap-4 items-center">
-            <label className="text-sm font-medium text-slate-700">Filter by status:</label>
+            <label className="text-sm font-medium text-text-primary">Filter by status:</label>
             <div className="flex gap-2">
               {['all', 'pending', 'in-progress', 'resolved', 'closed'].map((status) => (
                 <button
                   key={status}
                   onClick={() => setFilter(status)}
-                  className={`px-3 py-2 text-sm font-medium transition-all duration-200 cursor-pointer ${
+                  className={`px-3 py-2 text-sm font-medium transition-all duration-200 cursor-pointer rounded-lg ${
                     filter === status
-                      ? 'bg-slate-900 text-white'
-                      : 'border border-slate-300 text-slate-700 hover:bg-slate-100'
+                      ? 'bg-primary text-bg-primary'
+                      : 'border border-border text-text-primary hover:bg-bg-secondary'
                   }`}
                 >
                   {status === 'all' ? 'All' : status.charAt(0).toUpperCase() + status.slice(1).replace('-', ' ')}
@@ -120,61 +122,61 @@ const AdminContacts = () => {
         </div>
 
         {/* Contacts List */}
-        <div className="bg-white border border-slate-200">
+        <div className="bg-bg-primary border border-border rounded-lg overflow-hidden">
           {loading ? (
             <div className="flex items-center justify-center py-12">
-              <div className="animate-spin rounded-full w-12 h-12 border-slate-900 border-b-2"></div>
+              <div className="animate-spin rounded-full w-12 h-12 border-primary border-b-2"></div>
             </div>
           ) : contacts.length === 0 ? (
             <div className="text-center py-12">
-              <svg className="w-12 h-12 text-slate-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-12 h-12 text-text-secondary mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
-              <h3 className="text-lg font-medium text-slate-900 mb-2">No contacts found</h3>
+              <h3 className="text-lg font-medium text-text-primary mb-2">No contacts found</h3>
               <p className="text-slate-500">No contact inquiries match your current filter.</p>
             </div>
           ) : (
             <>
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-white border-b border-slate-200">
+                  <thead className="bg-bg-primary border-b border-border">
                     <tr>
-                      <th className="text-left py-3 px-6 text-xs font-medium text-slate-600 uppercase tracking-wider">Contact</th>
-                      <th className="text-left py-3 px-6 text-xs font-medium text-slate-600 uppercase tracking-wider">Subject</th>
-                      <th className="text-left py-3 px-6 text-xs font-medium text-slate-600 uppercase tracking-wider">Status</th>
-                      <th className="text-left py-3 px-6 text-xs font-medium text-slate-600 uppercase tracking-wider">Date</th>
-                      <th className="text-left py-3 px-6 text-xs font-medium text-slate-600 uppercase tracking-wider">Actions</th>
+                      <th className="text-left py-3 px-6 text-xs font-medium text-text-secondary uppercase tracking-wider">Contact</th>
+                      <th className="text-left py-3 px-6 text-xs font-medium text-text-secondary uppercase tracking-wider">Subject</th>
+                      <th className="text-left py-3 px-6 text-xs font-medium text-text-secondary uppercase tracking-wider">Status</th>
+                      <th className="text-left py-3 px-6 text-xs font-medium text-text-secondary uppercase tracking-wider">Date</th>
+                      <th className="text-left py-3 px-6 text-xs font-medium text-text-secondary uppercase tracking-wider">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-200">
+                  <tbody className="divide-y divide-border">
                     {contacts.map((contact) => (
-                      <tr key={contact._id} className="hover:bg-slate-50">
+                      <tr key={contact._id} className="hover:bg-bg-secondary transition-colors">
                         <td className="py-4 px-6">
                           <div>
-                            <p className="font-medium text-slate-900">{contact.name}</p>
-                            <p className="text-sm text-slate-500">{contact.email}</p>
+                            <p className="font-medium text-text-primary">{contact.name}</p>
+                            <p className="text-sm text-text-secondary">{contact.email}</p>
                             {contact.phone && (
-                              <p className="text-sm text-slate-500">{contact.phone}</p>
+                              <p className="text-sm text-text-secondary">{contact.phone}</p>
                             )}
                           </div>
                         </td>
                         <td className="py-4 px-6">
-                          <p className="text-sm font-medium text-slate-900">{contact.subject}</p>
-                          <p className="text-sm text-slate-500 truncate max-w-xs">
+                          <p className="text-sm font-medium text-text-primary">{contact.subject}</p>
+                          <p className="text-sm text-text-secondary truncate max-w-xs">
                             {contact.message}
                           </p>
                         </td>
                         <td className="py-4 px-6">
-                          <span className={`inline-flex items-center gap-1 px-2 py-1 text-xs font-medium border ${getStatusColor(contact.status)}`}>
+                          <span className={`inline-flex items-center gap-1 px-2 py-1 text-xs font-medium border rounded-md ${getStatusColor(contact.status)}`}>
                             {getStatusIcon(contact.status)}
                             {contact.status.charAt(0).toUpperCase() + contact.status.slice(1).replace('-', ' ')}
                           </span>
                         </td>
                         <td className="py-4 px-6">
-                          <p className="text-sm text-slate-900">
+                          <p className="text-sm text-text-primary">
                             {new Date(contact.createdAt).toLocaleDateString('en-IN')}
                           </p>
-                          <p className="text-xs text-slate-500">
+                          <p className="text-xs text-text-secondary">
                             {new Date(contact.createdAt).toLocaleTimeString('en-IN')}
                           </p>
                         </td>
@@ -184,7 +186,7 @@ const AdminContacts = () => {
                               setSelectedContact(contact);
                               setShowContactModal(true);
                             }}
-                            className="text-slate-900 hover:text-slate-700 font-medium text-sm cursor-pointer"
+                            className="text-primary hover:text-primary/80 font-medium text-sm cursor-pointer"
                           >
                             View Details
                           </button>
@@ -197,25 +199,25 @@ const AdminContacts = () => {
 
               {/* Pagination */}
               {pagination.pages > 1 && (
-                <div className="px-6 py-4 border-t border-slate-200 flex items-center justify-between">
-                  <p className="text-sm text-slate-700">
+                <div className="px-6 py-4 border-t border-border flex items-center justify-between">
+                  <p className="text-sm text-text-primary">
                     Showing {contacts.length} of {pagination.total} contacts
                   </p>
                   <div className="flex gap-2">
                     <button
                       onClick={() => fetchContacts(pagination.current - 1, filter === 'all' ? '' : filter)}
                       disabled={pagination.current === 1}
-                      className="px-3 py-1 border border-slate-300 text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 cursor-pointer"
+                      className="px-3 py-1 border border-border rounded-lg text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-bg-secondary cursor-pointer"
                     >
                       Previous
                     </button>
-                    <span className="px-3 py-1 bg-slate-900 text-white text-sm">
+                    <span className="px-3 py-1 bg-primary text-bg-primary text-sm rounded-lg">
                       {pagination.current}
                     </span>
                     <button
                       onClick={() => fetchContacts(pagination.current + 1, filter === 'all' ? '' : filter)}
                       disabled={pagination.current === pagination.pages}
-                      className="px-3 py-1 border border-slate-300 text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 cursor-pointer"
+                      className="px-3 py-1 border border-border rounded-lg text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-bg-secondary cursor-pointer"
                     >
                       Next
                     </button>
@@ -255,13 +257,13 @@ const ContactDetailModal = ({ contact, onClose, onUpdateStatus }) => {
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white border border-slate-200 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-bg-primary border border-border rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="bg-slate-900 px-6 py-4 flex items-center justify-between">
-          <h2 className="text-xl font-bold text-white">Contact Details</h2>
+        <div className="bg-primary px-6 py-4 flex items-center justify-between rounded-t-lg">
+          <h2 className="text-xl font-bold text-bg-primary">Contact Details</h2>
           <button
             onClick={onClose}
-            className="text-white/80 hover:text-white transition-colors p-2 cursor-pointer"
+            className="text-bg-primary/80 hover:text-bg-primary transition-colors p-2 cursor-pointer rounded-lg"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -271,13 +273,13 @@ const ContactDetailModal = ({ contact, onClose, onUpdateStatus }) => {
 
         <div className="p-6 space-y-6">
           {/* Contact Information */}
-          <div className="bg-slate-50 p-4">
+          <div className="bg-bg-secondary p-4 rounded-lg">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="font-semibold text-slate-900">Contact Information</h3>
+              <h3 className="font-semibold text-text-primary">Contact Information</h3>
               <div className="flex gap-2">
                 <button
                   onClick={() => window.open(`mailto:${contact.email}?subject=Re: ${contact.subject}&body=Hi ${contact.name},%0D%0A%0D%0AThank you for contacting us regarding "${contact.subject}".%0D%0A%0D%0A`, '_blank')}
-                  className="flex items-center gap-2 px-3 py-2 bg-slate-900 text-white hover:bg-slate-800 transition-colors text-sm cursor-pointer"
+                  className="flex items-center gap-2 px-3 py-2 bg-primary text-bg-primary hover:bg-primary/90 transition-colors text-sm cursor-pointer rounded-lg"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -287,7 +289,7 @@ const ContactDetailModal = ({ contact, onClose, onUpdateStatus }) => {
                 {contact.phone && (
                   <button
                     onClick={() => window.open(`tel:${contact.phone}`, '_self')}
-                    className="flex items-center gap-2 px-3 py-2 border border-slate-700 text-slate-900 hover:bg-slate-100 transition-colors text-sm cursor-pointer"
+                    className="flex items-center gap-2 px-3 py-2 border border-border text-text-primary hover:bg-bg-secondary transition-colors text-sm cursor-pointer rounded-lg"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21L8.27 10.98a11.042 11.042 0 006.02 6.02l1.592-1.956a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
@@ -299,22 +301,22 @@ const ContactDetailModal = ({ contact, onClose, onUpdateStatus }) => {
             </div>
             <div className="grid md:grid-cols-2 gap-4 text-sm">
               <div>
-                <p className="font-medium text-slate-700">Name</p>
-                <p className="text-slate-900">{contact.name}</p>
+                <p className="font-medium text-text-secondary">Name</p>
+                <p className="text-text-primary">{contact.name}</p>
               </div>
               <div>
-                <p className="font-medium text-slate-700">Email</p>
-                <p className="text-slate-900">{contact.email}</p>
+                <p className="font-medium text-text-secondary">Email</p>
+                <p className="text-text-primary">{contact.email}</p>
               </div>
               {contact.phone && (
                 <div>
-                  <p className="font-medium text-slate-700">Phone</p>
-                  <p className="text-slate-900">{contact.phone}</p>
+                  <p className="font-medium text-text-secondary">Phone</p>
+                  <p className="text-text-primary">{contact.phone}</p>
                 </div>
               )}
               <div>
-                <p className="font-medium text-slate-700">Date Submitted</p>
-                <p className="text-slate-900">
+                <p className="font-medium text-text-secondary">Date Submitted</p>
+                <p className="text-text-primary">
                   {new Date(contact.createdAt).toLocaleString('en-IN')}
                 </p>
               </div>
@@ -323,12 +325,12 @@ const ContactDetailModal = ({ contact, onClose, onUpdateStatus }) => {
 
           {/* Message */}
           <div>
-            <h3 className="font-semibold text-slate-900 mb-2">Subject</h3>
-            <p className="text-slate-700 mb-4">{contact.subject}</p>
+            <h3 className="font-semibold text-text-primary mb-2">Subject</h3>
+            <p className="text-text-secondary mb-4">{contact.subject}</p>
             
-            <h3 className="font-semibold text-slate-900 mb-2">Message</h3>
-            <div className="bg-slate-50 p-4">
-              <p className="text-slate-700 whitespace-pre-wrap">{contact.message}</p>
+            <h3 className="font-semibold text-text-primary mb-2">Message</h3>
+            <div className="bg-bg-secondary p-4 rounded-lg">
+              <p className="text-text-secondary whitespace-pre-wrap">{contact.message}</p>
             </div>
           </div>
 
@@ -336,13 +338,13 @@ const ContactDetailModal = ({ contact, onClose, onUpdateStatus }) => {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
+                <label className="block text-sm font-medium text-text-primary mb-2">
                   Status
                 </label>
                 <select
                   value={status}
                   onChange={(e) => setStatus(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900"
+                  className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary cursor-pointer"
                 >
                   <option value="pending">Pending</option>
                   <option value="in-progress">In Progress</option>
@@ -351,13 +353,13 @@ const ContactDetailModal = ({ contact, onClose, onUpdateStatus }) => {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">
+                <label className="block text-sm font-medium text-text-primary mb-2">
                   Contact Method
                 </label>
                 <select
                   value={contactMethod}
                   onChange={(e) => setContactMethod(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900"
+                  className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary cursor-pointer"
                 >
                   <option value="">Not specified</option>
                   <option value="email">Email</option>
@@ -368,14 +370,14 @@ const ContactDetailModal = ({ contact, onClose, onUpdateStatus }) => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
+              <label className="block text-sm font-medium text-text-primary mb-2">
                 Admin Notes
               </label>
               <textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 rows={4}
-                className="w-full px-3 py-2 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900 resize-none"
+                className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"
                 placeholder="Add internal notes about this contact..."
               />
             </div>
@@ -384,17 +386,17 @@ const ContactDetailModal = ({ contact, onClose, onUpdateStatus }) => {
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 px-6 py-3 border border-slate-700 text-slate-900 font-semibold hover:bg-slate-100 transition-all duration-200 cursor-pointer"
+                className="flex-1 px-6 py-3 border border-border text-text-primary font-semibold hover:bg-bg-secondary transition-all duration-200 cursor-pointer rounded-lg"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={loading}
-                className={`flex-1 py-3 px-6 font-semibold text-white transition-all duration-200 cursor-pointer ${
+                className={`flex-1 py-3 px-6 font-semibold text-bg-primary transition-all duration-200 cursor-pointer rounded-lg ${
                   loading
-                    ? 'bg-slate-400 cursor-not-allowed'
-                    : 'bg-slate-900 hover:bg-slate-800'
+                    ? 'bg-primary/50 cursor-not-allowed'
+                    : 'bg-primary hover:bg-primary/90'
                 }`}
               >
                 {loading ? 'Updating...' : 'Update Contact'}

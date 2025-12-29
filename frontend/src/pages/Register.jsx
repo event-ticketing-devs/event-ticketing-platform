@@ -92,36 +92,36 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center py-12 px-4">
+    <div className="min-h-screen bg-bg-primary flex items-center justify-center py-12 px-4">
       <div className="max-w-md w-full">
         {/* Header */}
         <div className="mb-8 text-center">
-          <h1 className="text-2xl font-bold text-slate-900 mb-2">Create your account</h1>
-          <p className="text-slate-600">Join us to start booking amazing events</p>
+          <h1 className="text-2xl font-bold text-text-primary mb-2">Create your account</h1>
+          <p className="text-text-secondary">Join us to start booking amazing events</p>
         </div>
 
         {/* Register Form */}
-        <div className="bg-white border border-slate-200 overflow-hidden">
+        <div className="bg-bg-primary border border-border rounded-lg overflow-hidden">
           <form onSubmit={handleSubmit} className="p-6">
             <div className="space-y-5">
               {/* Name Input */}
               <div>
-                <label className="block text-sm font-medium text-slate-900 mb-2">
+                <label className="block text-sm font-medium text-text-primary mb-2">
                   Full Name
                 </label>
                 <input
                   type="text"
                   name="name"
                   placeholder="Enter your full name"
-                  className={`block w-full px-3 py-2.5 border focus:ring-1 focus:ring-slate-900 transition-colors ${
-                    errors.name ? 'border-red-300 focus:border-red-500' : 'border-slate-300 focus:border-slate-900'
+                  className={`block w-full px-3 py-2.5 border rounded-lg focus:ring-1 bg-bg-secondary focus:ring-primary transition-colors ${
+                    errors.name ? 'border-error focus:border-error' : 'border-border focus:border-primary'
                   }`}
                   value={form.name}
                   onChange={handleChange}
                   required
                 />
                 {errors.name && (
-                  <p className="mt-1 text-sm text-red-600">
+                  <p className="mt-1 text-sm text-error">
                     {errors.name}
                   </p>
                 )}
@@ -129,22 +129,22 @@ const Register = () => {
 
               {/* Email Input */}
               <div>
-                <label className="block text-sm font-medium text-slate-900 mb-2">
+                <label className="block text-sm font-medium text-text-primary mb-2">
                   Email Address
                 </label>
                 <input
                   type="email"
                   name="email"
                   placeholder="Enter your email address"
-                  className={`block w-full px-3 py-2.5 border focus:ring-1 focus:ring-slate-900 transition-colors ${
-                    errors.email ? 'border-red-300 focus:border-red-500' : 'border-slate-300 focus:border-slate-900'
+                  className={`block w-full px-3 py-2.5 border rounded-lg focus:ring-1 bg-bg-secondary focus:ring-primary transition-colors ${
+                    errors.email ? 'border-error focus:border-error' : 'border-border focus:border-primary'
                   }`}
                   value={form.email}
                   onChange={handleChange}
                   required
                 />
                 {errors.email && (
-                  <p className="mt-1 text-sm text-red-600">
+                  <p className="mt-1 text-sm text-error">
                     {errors.email}
                   </p>
                 )}
@@ -152,22 +152,22 @@ const Register = () => {
 
               {/* Phone Input */}
               <div>
-                <label className="block text-sm font-medium text-slate-900 mb-2">
+                <label className="block text-sm font-medium text-text-primary mb-2">
                   Phone Number
                 </label>
                 <input
                   type="tel"
                   name="phone"
                   placeholder="Enter your phone number"
-                  className={`block w-full px-3 py-2.5 border focus:ring-1 focus:ring-slate-900 transition-colors ${
-                    errors.phone ? 'border-red-300 focus:border-red-500' : 'border-slate-300 focus:border-slate-900'
+                  className={`block w-full px-3 py-2.5 border rounded-lg focus:ring-1 bg-bg-secondary focus:ring-primary transition-colors ${
+                    errors.phone ? 'border-error focus:border-error' : 'border-border focus:border-primary'
                   }`}
                   value={form.phone}
                   onChange={handleChange}
                   required
                 />
                 {errors.phone && (
-                  <p className="mt-1 text-sm text-red-600">
+                  <p className="mt-1 text-sm text-error">
                     {errors.phone}
                   </p>
                 )}
@@ -175,7 +175,7 @@ const Register = () => {
 
               {/* Password Input */}
               <div>
-                <label className="block text-sm font-medium text-slate-900 mb-2">
+                <label className="block text-sm font-medium text-text-primary mb-2">
                   Password
                 </label>
                 <div className="relative">
@@ -183,8 +183,8 @@ const Register = () => {
                     type={showPassword ? "text" : "password"}
                     name="password"
                     placeholder="Create a password"
-                    className={`block w-full px-3 py-2.5 border focus:ring-1 focus:ring-slate-900 transition-colors ${
-                      errors.password ? 'border-red-300 focus:border-red-500' : 'border-slate-300 focus:border-slate-900'
+                    className={`block w-full px-3 py-2.5 border rounded-lg focus:ring-1 bg-bg-secondary focus:ring-primary transition-colors ${
+                      errors.password ? 'border-error focus:border-error' : 'border-border focus:border-primary'
                     }`}
                     value={form.password}
                     onChange={handleChange}
@@ -192,15 +192,15 @@ const Register = () => {
                   />
                   <button
                     type="button"
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
                     onClick={() => setShowPassword(!showPassword)}
                   >
                     {showPassword ? (
-                      <svg className="w-5 h-5 text-slate-400 hover:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-5 h-5 text-text-secondary hover:text-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
                       </svg>
                     ) : (
-                      <svg className="w-5 h-5 text-slate-400 hover:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-5 h-5 text-text-secondary hover:text-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                       </svg>
@@ -208,7 +208,7 @@ const Register = () => {
                   </button>
                 </div>
                 {errors.password && (
-                  <p className="mt-1 text-sm text-red-600">
+                  <p className="mt-1 text-sm text-error">
                     {errors.password}
                   </p>
                 )}
@@ -216,7 +216,7 @@ const Register = () => {
 
               {/* Confirm Password Input */}
               <div>
-                <label className="block text-sm font-medium text-slate-900 mb-2">
+                <label className="block text-sm font-medium text-text-primary mb-2">
                   Confirm Password
                 </label>
                 <div className="relative">
@@ -224,8 +224,8 @@ const Register = () => {
                     type={showConfirmPassword ? "text" : "password"}
                     name="confirmPassword"
                     placeholder="Confirm your password"
-                    className={`block w-full px-3 py-2.5 border focus:ring-1 focus:ring-slate-900 transition-colors ${
-                      errors.confirmPassword ? 'border-red-300 focus:border-red-500' : 'border-slate-300 focus:border-slate-900'
+                    className={`block w-full px-3 py-2.5 border rounded-lg focus:ring-1 bg-bg-secondary focus:ring-primary transition-colors ${
+                      errors.confirmPassword ? 'border-error focus:border-error' : 'border-border focus:border-primary'
                     }`}
                     value={form.confirmPassword}
                     onChange={handleChange}
@@ -233,15 +233,15 @@ const Register = () => {
                   />
                   <button
                     type="button"
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   >
                     {showConfirmPassword ? (
-                      <svg className="w-5 h-5 text-slate-400 hover:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-5 h-5 text-text-secondary hover:text-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
                       </svg>
                     ) : (
-                      <svg className="w-5 h-5 text-slate-400 hover:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-5 h-5 text-text-secondary hover:text-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                       </svg>
@@ -249,7 +249,7 @@ const Register = () => {
                   </button>
                 </div>
                 {errors.confirmPassword && (
-                  <p className="mt-1 text-sm text-red-600">
+                  <p className="mt-1 text-sm text-error">
                     {errors.confirmPassword}
                   </p>
                 )}
@@ -259,7 +259,7 @@ const Register = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-slate-900 text-white py-2.5 px-4 font-semibold hover:bg-slate-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-primary text-white py-2.5 px-4 rounded-lg font-semibold hover:bg-primary/90 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? "Creating Account..." : "Create Account"}
               </button>
@@ -270,10 +270,10 @@ const Register = () => {
           <div className="px-8 py-4">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-slate-200"></div>
+                <div className="w-full border-t border-border"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-4 bg-white text-slate-500 font-medium">Or continue with</span>
+                <span className="px-4 bg-bg-primary text-text-secondary font-medium">Or continue with</span>
               </div>
             </div>
           </div>
@@ -284,10 +284,10 @@ const Register = () => {
           </div>
 
           {/* Footer */}
-          <div className="px-6 py-6 bg-white border-t border-slate-200">
-            <p className="text-center text-slate-600 text-sm">
+          <div className="px-6 py-6 bg-bg-secondary border-t border-border">
+            <p className="text-center text-text-secondary text-sm">
               Already have an account?{" "}
-              <Link to="/login" className="text-slate-900 hover:text-slate-700 font-semibold transition-colors">
+              <Link to="/login" className="text-primary hover:text-primary/90 font-semibold transition-colors cursor-pointer">
                 Sign in
               </Link>
             </p>

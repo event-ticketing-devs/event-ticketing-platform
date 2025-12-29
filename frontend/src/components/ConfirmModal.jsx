@@ -20,10 +20,10 @@ export default function ConfirmModal({
     switch (variant) {
       case "danger":
         return {
-          iconBg: "bg-red-50 border border-red-200",
-          iconColor: "text-red-600",
-          confirmBg: "bg-red-600",
-          confirmHover: "hover:bg-red-700",
+          iconBg: "bg-error/10 border border-error/20",
+          iconColor: "text-error",
+          confirmBg: "bg-error",
+          confirmHover: "hover:bg-error/90",
           icon: (
             <svg
               className="w-6 h-6"
@@ -42,10 +42,10 @@ export default function ConfirmModal({
         };
       case "warning":
         return {
-          iconBg: "bg-orange-50 border border-orange-200",
-          iconColor: "text-orange-600",
-          confirmBg: "bg-orange-600",
-          confirmHover: "hover:bg-orange-700",
+          iconBg: "bg-warning/10 border border-warning/20",
+          iconColor: "text-warning",
+          confirmBg: "bg-warning",
+          confirmHover: "hover:bg-warning/90",
           icon: (
             <svg
               className="w-6 h-6"
@@ -64,10 +64,10 @@ export default function ConfirmModal({
         };
       default: // info
         return {
-          iconBg: "bg-slate-100 border border-slate-200",
-          iconColor: "text-slate-900",
-          confirmBg: "bg-slate-900",
-          confirmHover: "hover:bg-slate-800",
+          iconBg: "bg-bg-secondary border border-border",
+          iconColor: "text-text-primary",
+          confirmBg: "bg-primary",
+          confirmHover: "hover:bg-primary/90",
           icon: (
             <svg
               className="w-6 h-6"
@@ -96,12 +96,12 @@ export default function ConfirmModal({
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="bg-white border border-slate-200 max-w-md w-full overflow-hidden animate-in fade-in-0 zoom-in-95 duration-200">
+      <div className="bg-bg-primary border border-border rounded-lg max-w-md w-full overflow-hidden animate-in fade-in-0 zoom-in-95 duration-200">
         {/* Header */}
         <div className="relative p-6 pb-4">
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 w-8 h-8 bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-700 flex items-center justify-center transition-colors"
+            className="absolute top-4 right-4 w-8 h-8 bg-bg-secondary hover:bg-border text-text-secondary hover:text-text-primary rounded-lg flex items-center justify-center transition-colors cursor-pointer"
             aria-label="Close"
           >
             <svg
@@ -121,15 +121,15 @@ export default function ConfirmModal({
 
           <div className="flex items-start gap-4">
             <div
-              className={`w-12 h-12 ${variantStyles.iconBg} flex items-center justify-center flex-shrink-0`}
+              className={`w-12 h-12 ${variantStyles.iconBg} rounded-lg flex items-center justify-center flex-shrink-0`}
             >
               <div className={variantStyles.iconColor}>
                 {variantStyles.icon}
               </div>
             </div>
             <div className="flex-1 min-w-0">
-              <h2 className="text-xl font-bold text-slate-900 mb-2">{title}</h2>
-              <p className="text-slate-600 leading-relaxed whitespace-pre-line">
+              <h2 className="text-xl font-bold text-text-primary mb-2">{title}</h2>
+              <p className="text-text-secondary leading-relaxed whitespace-pre-line">
                 {description}
               </p>
             </div>
@@ -142,7 +142,7 @@ export default function ConfirmModal({
             <div className="relative">
               <div className="absolute top-3 left-3 pointer-events-none">
                 <svg
-                  className="w-5 h-5 text-slate-400"
+                  className="w-5 h-5 text-text-secondary"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -156,7 +156,7 @@ export default function ConfirmModal({
                 </svg>
               </div>
               <textarea
-                className="w-full pl-10 pr-4 py-3 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900 bg-slate-50 transition-colors resize-none"
+                className="w-full pl-10 pr-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary bg-bg-secondary transition-colors resize-none"
                 rows={3}
                 placeholder="Please provide a reason..."
                 value={inputValue}
@@ -164,7 +164,7 @@ export default function ConfirmModal({
                 autoFocus
               />
             </div>
-            <p className="text-sm text-slate-500 mt-2">
+            <p className="text-sm text-text-secondary mt-2">
               This information will be recorded and may be shared with affected
               users.
             </p>
@@ -172,11 +172,11 @@ export default function ConfirmModal({
         )}
 
         {/* Actions */}
-        <div className="px-6 py-4 bg-slate-50 border-t border-slate-200">
+        <div className="px-6 py-4 bg-bg-secondary border-t border-border">
           <div className="flex gap-3">
             <button
               onClick={onClose}
-              className="flex-1 bg-white border border-slate-300 text-slate-700 py-3 px-4 font-semibold hover:bg-slate-50 hover:border-slate-400 transition-colors"
+              className="flex-1 bg-bg-primary border border-border text-text-primary py-3 px-4 rounded-lg font-semibold hover:bg-bg-secondary hover:border-text-secondary transition-colors cursor-pointer"
               type="button"
             >
               {cancelText}
@@ -185,7 +185,7 @@ export default function ConfirmModal({
               onClick={onConfirm}
               className={`flex-1 ${variantStyles.confirmBg} ${
                 variantStyles.confirmHover
-              } text-white py-3 px-4 font-semibold transition-colors ${
+              } text-white py-3 px-4 rounded-lg font-semibold transition-colors ${
                 showInput && !inputValue.trim()
                   ? "opacity-50 cursor-not-allowed"
                   : "cursor-pointer"

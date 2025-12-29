@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 export default function NotFound() {
   return (
-    <div className="min-h-[80vh] flex flex-col items-center justify-center bg-white px-4">
+    <div className="min-h-[80vh] flex flex-col items-center justify-center bg-bg-primary px-4">
       {/* Sad/Broken Robot SVG illustration */}
       <svg
         width="120"
@@ -106,15 +106,15 @@ export default function NotFound() {
         <ellipse cx="60" cy="110" rx="28" ry="5" fill="#cbd5e1" />
       </svg>
 
-      <h1 className="text-6xl font-black text-slate-800 mb-4">404</h1>
+      <h1 className="text-6xl font-black text-text-primary mb-4">404</h1>
 
-      <p className="text-xl text-slate-600 mb-8 text-center max-w-md">
+      <p className="text-xl text-text-secondary mb-8 text-center max-w-md">
         Oops! The page you're looking for doesn't exist.
       </p>
 
       <Link
         to="/"
-        className="bg-slate-900 hover:bg-slate-800 text-white px-8 py-3 font-semibold transition-colors"
+        className="bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-lg font-semibold transition-colors cursor-pointer"
       >
         Back to Home
       </Link>

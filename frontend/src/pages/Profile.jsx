@@ -106,21 +106,21 @@ const Profile = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white py-8">
+    <div className="min-h-screen bg-bg-primary py-8">
       <div className="max-w-4xl mx-auto px-6">
         {/* Header Section */}
-        <div className="bg-white border border-slate-200 p-8 mb-8">
+        <div className="bg-bg-primary border border-border rounded-lg p-8 mb-8">
           <div className="flex flex-col md:flex-row items-center gap-6">
             {/* Avatar */}
             <div className="relative">
-              <div className="w-24 h-24 bg-slate-900 flex items-center justify-center">
-                <span className="text-white font-bold text-2xl">
+              <div className="w-24 h-24 bg-primary rounded-lg flex items-center justify-center">
+                <span className="text-bg-primary font-bold text-2xl">
                   {getInitials(currentUser?.name)}
                 </span>
               </div>
-              <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-600 border-4 border-white flex items-center justify-center">
+              <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-success border-4 border-bg-primary rounded-md flex items-center justify-center">
                 <svg
-                  className="w-4 h-4 text-white"
+                  className="w-4 h-4 text-bg-primary"
                   fill="currentColor"
                   viewBox="0 0 20 20"
                 >
@@ -136,7 +136,7 @@ const Profile = () => {
             {/* User Info */}
             <div className="flex-1 text-center md:text-left">
               <div className="flex flex-col md:flex-row md:items-center gap-3 mb-2">
-                <h1 className="text-3xl font-bold text-slate-900">
+                <h1 className="text-3xl font-bold text-text-primary">
                   {currentUser?.name}
                 </h1>
                 <span
@@ -147,7 +147,7 @@ const Profile = () => {
                   {currentUser?.role || "User"}
                 </span>
               </div>
-              <div className="space-y-2 text-slate-600">
+              <div className="space-y-2 text-text-secondary">
                 <div className="flex items-center justify-center md:justify-start gap-2">
                   <svg
                     className="w-4 h-4"
@@ -189,7 +189,7 @@ const Profile = () => {
             <div className="flex flex-col gap-3">
               <Link
                 to="/profile/update"
-                className="flex items-center gap-2 bg-slate-900 text-white px-6 py-2 font-semibold hover:bg-slate-800 transition-colors"
+                className="flex items-center gap-2 bg-primary text-white px-6 py-2 rounded-lg font-semibold hover:bg-primary/90 transition-colors cursor-pointer"
               >
                 <svg
                   className="w-4 h-4"
@@ -208,7 +208,7 @@ const Profile = () => {
               </Link>
               <Link
                 to="/dashboard"
-                className="flex items-center gap-2 bg-white text-slate-700 px-6 py-2 font-semibold border border-slate-200 hover:bg-slate-50 hover:border-slate-300 transition-colors"
+                className="flex items-center gap-2 bg-bg-primary text-text-primary px-6 py-2 rounded-lg font-semibold border border-border hover:bg-bg-secondary hover:border-border transition-colors cursor-pointer"
               >
                 <svg
                   className="w-4 h-4"
@@ -230,64 +230,54 @@ const Profile = () => {
         </div>
 
         {/* Stats Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           {[
             {
               title: "Total Bookings",
               value: loading ? "..." : userStats.totalBookings,
               icon: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2",
-              color: "bg-slate-900",
+              color: "bg-primary",
             },
             {
               title: "Upcoming Events",
               value: loading ? "..." : userStats.upcomingEvents,
               icon: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z",
-              color: "bg-slate-900",
+              color: "bg-primary",
             },
             {
               title: "Completed Events",
               value: loading ? "..." : userStats.completedEvents,
               icon: "M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z",
-              color: "bg-slate-900",
-            },
-            {
-              title: "Total Spent",
-              value: loading ? "..." : formatCurrency(userStats.totalSpent),
-              icon: "M15 8H9v8h6v-2h-2V8zm-3 6h2v2h-2v-2zm0-4h2v2h-2v-2zM7 6h10v2H7V6zm0 10h10v2H7v-2z",
-              color: "bg-slate-900",
+              color: "bg-success",
             },
           ].map((stat, index) => (
             <div
               key={index}
-              className="bg-white border border-slate-200 p-6 hover:border-slate-900 transition-colors"
+              className="bg-bg-primary border border-border rounded-lg p-6 hover:border-primary transition-colors"
             >
               <div className="flex flex-col items-center text-center space-y-4">
                 <div
-                  className={`w-12 h-12 ${stat.color} flex items-center justify-center flex-shrink-0`}
+                  className={`w-12 h-12 ${stat.color} rounded-lg flex items-center justify-center flex-shrink-0`}
                 >
-                  {stat.title === "Total Spent" ? (
-                    <span className="text-white font-bold text-xl">₹</span>
-                  ) : (
-                    <svg
-                      className="w-6 h-6 text-white"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d={stat.icon}
-                      />
-                    </svg>
-                  )}
+                  <svg
+                    className="w-6 h-6 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d={stat.icon}
+                    />
+                  </svg>
                 </div>
                 <div>
-                  <p className="text-slate-600 text-sm font-medium mb-1">
+                  <p className="text-text-secondary text-sm font-medium mb-1">
                     {stat.title}
                   </p>
-                  <p className="text-2xl font-bold text-slate-900">
+                  <p className="text-2xl font-bold text-text-primary">
                     {stat.value}
                   </p>
                 </div>
@@ -297,18 +287,18 @@ const Profile = () => {
         </div>
 
         {/* Quick Actions */}
-        <div className="bg-white border border-slate-200 p-8 mb-8">
-          <h2 className="text-xl font-bold text-slate-900 mb-6">
+        <div className="bg-bg-primary border border-border rounded-lg p-8 mb-8">
+          <h2 className="text-xl font-bold text-text-primary mb-6">
             Quick Actions
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <Link
               to="/events"
-              className="flex items-center gap-3 p-4 border border-slate-200 hover:border-slate-900 hover:bg-slate-50 transition-colors group"
+              className="flex items-center gap-3 p-4 border border-border rounded-lg hover:border-primary hover:bg-bg-secondary transition-colors cursor-pointer group"
             >
-              <div className="w-10 h-10 bg-slate-100 group-hover:bg-slate-200 border border-slate-200 flex items-center justify-center transition-colors">
+              <div className="w-10 h-10 bg-bg-secondary group-hover:bg-bg-primary border border-border rounded-lg flex items-center justify-center transition-colors">
                 <svg
-                  className="w-5 h-5 text-slate-900"
+                  className="w-5 h-5 text-text-primary"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -322,18 +312,18 @@ const Profile = () => {
                 </svg>
               </div>
               <div>
-                <p className="font-semibold text-slate-900">Browse Events</p>
-                <p className="text-sm text-slate-600">Discover new events</p>
+                <p className="font-semibold text-text-primary">Browse Events</p>
+                <p className="text-sm text-text-secondary">Discover new events</p>
               </div>
             </Link>
 
             <Link
               to="/dashboard"
-              className="flex items-center gap-3 p-4 border border-slate-200 hover:border-slate-900 hover:bg-slate-50 transition-colors group"
+              className="flex items-center gap-3 p-4 border border-border rounded-lg hover:border-primary hover:bg-bg-secondary transition-colors cursor-pointer group"
             >
-              <div className="w-10 h-10 bg-slate-100 group-hover:bg-slate-200 border border-slate-200 flex items-center justify-center transition-colors">
+              <div className="w-10 h-10 bg-bg-secondary group-hover:bg-bg-primary border border-border rounded-lg flex items-center justify-center transition-colors">
                 <svg
-                  className="w-5 h-5 text-slate-900"
+                  className="w-5 h-5 text-text-primary"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -347,8 +337,8 @@ const Profile = () => {
                 </svg>
               </div>
               <div>
-                <p className="font-semibold text-slate-900">My Tickets</p>
-                <p className="text-sm text-slate-600">View your bookings</p>
+                <p className="font-semibold text-text-primary">My Tickets</p>
+                <p className="text-sm text-text-secondary">View your bookings</p>
               </div>
             </Link>
 
@@ -357,11 +347,11 @@ const Profile = () => {
             ) && (
               <Link
                 to="/organizer"
-                className="flex items-center gap-3 p-4 border border-slate-200 hover:border-slate-900 hover:bg-slate-50 transition-colors group"
+                className="flex items-center gap-3 p-4 border border-border rounded-lg hover:border-primary hover:bg-bg-secondary transition-colors cursor-pointer group"
               >
-                <div className="w-10 h-10 bg-slate-100 group-hover:bg-slate-200 border border-slate-200 flex items-center justify-center transition-colors">
+                <div className="w-10 h-10 bg-bg-secondary group-hover:bg-bg-primary border border-border rounded-lg flex items-center justify-center transition-colors">
                   <svg
-                    className="w-5 h-5 text-slate-900"
+                    className="w-5 h-5 text-text-primary"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -375,10 +365,10 @@ const Profile = () => {
                   </svg>
                 </div>
                 <div>
-                  <p className="font-semibold text-slate-900">
+                  <p className="font-semibold text-text-primary">
                     Organizer Panel
                   </p>
-                  <p className="text-sm text-slate-600">Manage your events</p>
+                  <p className="text-sm text-text-secondary">Manage your events</p>
                 </div>
               </Link>
             )}
@@ -386,20 +376,20 @@ const Profile = () => {
         </div>
 
         {/* Account Settings */}
-        <div className="bg-white border border-slate-200 p-8">
-          <h2 className="text-xl font-bold text-slate-900 mb-6">
+        <div className="bg-bg-primary border border-border rounded-lg p-8">
+          <h2 className="text-xl font-bold text-text-primary mb-6">
             Account Settings
           </h2>
           <div className="space-y-4">
-            <div className="p-4 bg-red-50 border border-red-200">
-              <h3 className="font-semibold text-red-800 mb-2">Danger Zone</h3>
-              <p className="text-red-600 text-sm mb-4">
+            <div className="p-4 bg-error/10 border border-error rounded-lg">
+              <h3 className="font-semibold text-error mb-2">Danger Zone</h3>
+              <p className="text-error text-sm mb-4">
                 Once you delete your account, there is no going back. Please be
                 certain.
               </p>
               <button
                 onClick={() => setShowModal(true)}
-                className="flex items-center gap-2 bg-red-600 text-white px-6 py-2 font-semibold hover:bg-red-700 transition-colors"
+                className="flex items-center gap-2 bg-error text-white px-6 py-2 rounded-lg font-semibold hover:bg-error/90 transition-colors cursor-pointer"
               >
                 <svg
                   className="w-4 h-4"

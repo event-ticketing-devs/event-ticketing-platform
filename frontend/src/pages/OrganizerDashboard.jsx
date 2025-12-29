@@ -192,10 +192,11 @@ export default function OrganizerDashboard() {
     return verifier && !isMainOrganizer(event) && !isCoOrganizer(event);
   };
 
-  // Split events into upcoming and past
+  // Split events into upcoming, past, and cancelled
   const now = new Date();
-  const upcomingEvents = events.filter((event) => new Date(event.date) >= now);
-  const pastEvents = events.filter((event) => new Date(event.date) < now);
+  const upcomingEvents = events.filter((event) => !event.cancelled && new Date(event.date) >= now);
+  const pastEvents = events.filter((event) => !event.cancelled && new Date(event.date) < now);
+  const cancelledEvents = events.filter((event) => event.cancelled);
 
   const formatEventDate = (dateString) => {
     try {
@@ -220,15 +221,15 @@ export default function OrganizerDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="bg-white border border-slate-200 p-8">
+      <div className="min-h-screen bg-bg-primary flex items-center justify-center">
+        <div className="bg-bg-primary border border-border p-8 rounded-lg">
           <div className="flex items-center gap-4">
-            <div className="w-8 h-8 border-b-2 border-slate-900 rounded-full border-t-transparent animate-spin"></div>
+            <div className="w-8 h-8 border-b-2 border-primary rounded-full border-t-transparent animate-spin"></div>
             <div>
-              <h2 className="text-xl font-semibold text-slate-800">
+              <h2 className="text-xl font-semibold text-text-primary">
                 Loading your events...
               </h2>
-              <p className="text-slate-600">
+              <p className="text-text-secondary">
                 Please wait while we fetch your event data
               </p>
             </div>
@@ -239,15 +240,15 @@ export default function OrganizerDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-white py-8">
+    <div className="min-h-screen bg-bg-primary py-8">
       <div className="max-w-7xl mx-auto px-6">
         {/* Header */}
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-slate-900 flex items-center justify-center">
+              <div className="w-12 h-12 bg-primary flex items-center justify-center rounded-lg">
                 <svg
-                  className="w-6 h-6 text-white"
+                  className="w-6 h-6 text-bg-primary"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -261,10 +262,10 @@ export default function OrganizerDashboard() {
                 </svg>
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-slate-800">
+                <h1 className="text-3xl font-bold text-text-primary">
                   Organizer Dashboard
                 </h1>
-                <p className="text-slate-600">
+                <p className="text-text-secondary">
                   Manage your events and track attendees
                 </p>
               </div>
@@ -272,7 +273,7 @@ export default function OrganizerDashboard() {
             <div className="flex gap-3">
               <button
                 onClick={() => navigate("/organizer/contacts")}
-                className="inline-flex items-center gap-2 bg-white border border-slate-200 text-slate-700 px-6 py-3 font-medium hover:bg-slate-50 transition-colors"
+                className="inline-flex items-center gap-2 bg-bg-primary border border-border text-text-primary px-6 py-3 font-medium hover:bg-bg-secondary transition-colors rounded-lg cursor-pointer"
               >
                 <svg
                   className="w-5 h-5"
@@ -291,7 +292,7 @@ export default function OrganizerDashboard() {
               </button>
               <button
                 onClick={() => navigate("/events/create")}
-                className="inline-flex items-center gap-2 bg-slate-900 text-white px-6 py-3 font-semibold hover:bg-slate-800 transition-colors"
+                className="inline-flex items-center gap-2 bg-primary text-bg-primary px-6 py-3 font-semibold hover:bg-primary/90 transition-colors rounded-lg cursor-pointer"
               >
                 <svg
                   className="w-5 h-5"
@@ -311,69 +312,52 @@ export default function OrganizerDashboard() {
             </div>
           </div>
 
+          {/* Stats - keeping existing stats cards */}
           {/* Tabs */}
-          <div className="bg-white border-2 border-slate-200 overflow-hidden">
-            <div className="flex border-b border-slate-200">
-              <button
-                className={`flex-1 px-6 py-4 font-semibold transition-colors ${
-                  activeTab === "upcoming"
-                    ? "bg-slate-900 text-white"
-                    : "text-slate-600 hover:bg-slate-50"
-                }`}
-                onClick={() => setActiveTab("upcoming")}
-              >
-                <div className="flex items-center justify-center gap-2">
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
-                    />
-                  </svg>
-                  Upcoming Events ({upcomingEvents.length})
-                </div>
-              </button>
-              <button
-                className={`flex-1 px-6 py-4 font-semibold transition-colors ${
-                  activeTab === "past"
-                    ? "bg-slate-900 text-white"
-                    : "text-slate-600 hover:bg-slate-50"
-                }`}
-                onClick={() => setActiveTab("past")}
-              >
-                <div className="flex items-center justify-center gap-2">
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                  Past Events ({pastEvents.length})
-                </div>
-              </button>
+          <div className="bg-bg-primary border border-border rounded-lg p-6 mb-8">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-semibold text-text-primary">My Events</h3>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setActiveTab("upcoming")}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium cursor-pointer transition-colors ${
+                    activeTab === "upcoming"
+                      ? "bg-primary text-bg-primary"
+                      : "bg-bg-secondary text-text-primary hover:bg-border"
+                  }`}
+                >
+                  Upcoming ({upcomingEvents.length})
+                </button>
+                <button
+                  onClick={() => setActiveTab("past")}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium cursor-pointer transition-colors ${
+                    activeTab === "past"
+                      ? "bg-primary text-bg-primary"
+                      : "bg-bg-secondary text-text-primary hover:bg-border"
+                  }`}
+                >
+                  Past ({pastEvents.length})
+                </button>
+                <button
+                  onClick={() => setActiveTab("cancelled")}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium cursor-pointer transition-colors ${
+                    activeTab === "cancelled"
+                      ? "bg-primary text-bg-primary"
+                      : "bg-bg-secondary text-text-primary hover:bg-border"
+                  }`}
+                >
+                  Cancelled ({cancelledEvents.length})
+                </button>
+              </div>
             </div>
 
             {/* Events Content */}
-            <div className="p-6">
-              {activeTab === "upcoming" ? (
-                upcomingEvents.length === 0 ? (
-                  <div className="text-center py-12">
-                    <div className="w-20 h-20 bg-slate-100 border border-slate-200 flex items-center justify-center mx-auto mb-4">
+            {activeTab === "upcoming" ? (
+              upcomingEvents.length === 0 ? (
+                <div className="text-center py-12">
+                  <div className="w-20 h-20 bg-bg-secondary border border-border flex items-center justify-center mx-auto mb-4 rounded-lg">
                       <svg
-                        className="w-10 h-10 text-slate-400"
+                        className="w-10 h-10 text-text-secondary"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -386,16 +370,16 @@ export default function OrganizerDashboard() {
                         />
                       </svg>
                     </div>
-                    <h3 className="text-xl font-semibold text-slate-800 mb-2">
+                    <h3 className="text-xl font-semibold text-text-primary mb-2">
                       No Upcoming Events
                     </h3>
-                    <p className="text-slate-600 mb-6">
+                    <p className="text-text-secondary mb-6">
                       You haven't created any upcoming events yet. Start by
                       creating your first event!
                     </p>
                     <button
                       onClick={() => navigate("/events/create")}
-                      className="bg-slate-900 text-white px-6 py-3 font-semibold hover:bg-slate-800 transition-colors"
+                      className="bg-primary text-bg-primary px-6 py-3 font-semibold hover:bg-primary/90 transition-colors rounded-lg cursor-pointer"
                     >
                       Create Your First Event
                     </button>
@@ -405,19 +389,19 @@ export default function OrganizerDashboard() {
                     {upcomingEvents.map((event) => (
                       <div
                         key={event._id}
-                        className={`bg-slate-50 border border-slate-200 p-6 transition-colors ${
+                        className={`bg-bg-secondary border border-border p-6 transition-colors rounded-lg ${
                           event.cancelled
                             ? "opacity-60"
-                            : "hover:border-slate-300"
+                            : "hover:border-primary"
                         }`}
                       >
                         {/* Event Header */}
                         <div className="flex items-start justify-between mb-4">
                           <div className="flex-1">
-                            <h3 className="text-xl font-bold text-slate-800 mb-2">
+                            <h3 className="text-xl font-bold text-text-primary mb-2">
                               {event.title}
                             </h3>
-                            <div className="flex items-center gap-2 text-sm text-slate-600 mb-2">
+                            <div className="flex items-center gap-2 text-sm text-text-secondary mb-2">
                               <svg
                                 className="w-4 h-4"
                                 fill="none"
@@ -433,7 +417,7 @@ export default function OrganizerDashboard() {
                               </svg>
                               {formatEventDate(event.date)}
                             </div>
-                            <div className="flex items-center gap-2 text-sm text-slate-600">
+                            <div className="flex items-center gap-2 text-sm text-text-secondary">
                               <svg
                                 className="w-4 h-4"
                                 fill="none"
@@ -458,14 +442,14 @@ export default function OrganizerDashboard() {
                           </div>
                           <div className="flex flex-col gap-2">
                             {event.categoryId && (
-                              <span className="px-3 py-1 text-xs bg-blue-100 text-blue-800 border border-blue-200 font-semibold">
+                              <span className="px-3 py-1 text-xs bg-primary/10 text-primary border border-primary/20 font-semibold rounded-md">
                                 {typeof event.categoryId === "object"
                                   ? event.categoryId.name
                                   : event.categoryId}
                               </span>
                             )}
                             {event.cancelled && (
-                              <span className="px-3 py-1 text-xs bg-red-100 text-red-800 border border-red-200 font-semibold">
+                              <span className="px-3 py-1 text-xs bg-error/10 text-error border border-error/20 font-semibold rounded-md">
                                 Cancelled
                               </span>
                             )}
@@ -474,9 +458,9 @@ export default function OrganizerDashboard() {
 
                         {/* Event Details */}
                         <div className="grid grid-cols-2 gap-4 mb-6">
-                          <div className="bg-white border border-slate-200 p-3">
-                            <p className="text-xs text-slate-500 mb-1">Price</p>
-                            <p className="font-semibold text-slate-800">
+                          <div className="bg-bg-primary border border-border p-3 rounded-lg">
+                            <p className="text-xs text-text-secondary mb-1">Price</p>
+                            <p className="font-semibold text-text-primary">
                               {event.hasTicketCategories &&
                               event.ticketCategories
                                 ? `${formatCurrency(
@@ -489,11 +473,11 @@ export default function OrganizerDashboard() {
                                 : formatCurrency(event.price || 0)}
                             </p>
                           </div>
-                          <div className="bg-white border border-slate-200 p-3">
-                            <p className="text-xs text-slate-500 mb-1">
+                          <div className="bg-bg-primary border border-border p-3 rounded-lg">
+                            <p className="text-xs text-text-secondary mb-1">
                               Total Seats
                             </p>
-                            <p className="font-semibold text-slate-800">
+                            <p className="font-semibold text-text-primary">
                               {event.hasTicketCategories &&
                               event.ticketCategories
                                 ? event.ticketCategories.reduce(
@@ -515,10 +499,10 @@ export default function OrganizerDashboard() {
                                   navigate(`/events/edit/${event._id}`)
                                 }
                                 disabled={event.cancelled}
-                                className={`flex items-center gap-1 px-3 py-2 text-sm font-semibold transition-colors ${
+                                className={`flex items-center gap-1 px-3 py-2 text-sm font-semibold transition-colors rounded-lg ${
                                   event.cancelled
-                                    ? "bg-slate-100 text-slate-400 cursor-not-allowed"
-                                    : "bg-yellow-100 text-yellow-800 hover:bg-yellow-200 border border-yellow-200"
+                                    ? "bg-bg-secondary text-text-secondary cursor-not-allowed"
+                                    : "bg-warning/10 text-warning hover:bg-warning/20 border border-warning/20 cursor-pointer"
                                 }`}
                               >
                                 <svg
@@ -540,7 +524,7 @@ export default function OrganizerDashboard() {
                               {!event.cancelled && (
                                 <button
                                   onClick={() => handleDelete(event._id, false)}
-                                  className="flex items-center gap-1 px-3 py-2 bg-red-100 text-red-800 border border-red-200 text-sm font-semibold hover:bg-red-200 transition-colors"
+                                  className="flex items-center gap-1 px-3 py-2 bg-error/10 text-error border border-error/20 text-sm font-semibold hover:bg-error/20 transition-colors rounded-lg cursor-pointer"
                                 >
                                   <svg
                                     className="w-4 h-4"
@@ -564,7 +548,7 @@ export default function OrganizerDashboard() {
                           {/* Show Details button for everyone */}
                           <button
                             onClick={() => viewDetails(event)}
-                            className="flex items-center gap-1 px-3 py-2 bg-blue-100 text-blue-800 border border-blue-200 text-sm font-semibold hover:bg-blue-200 transition-colors"
+                            className="flex items-center gap-1 px-3 py-2 bg-primary/10 text-primary border border-primary/20 text-sm font-semibold hover:bg-primary/20 transition-colors rounded-lg cursor-pointer"
                           >
                             <svg
                               className="w-4 h-4"
@@ -590,7 +574,7 @@ export default function OrganizerDashboard() {
 
                           <Link
                             to={`/events/verify/${event._id}`}
-                            className="flex items-center gap-1 px-3 py-2 bg-green-100 text-green-800 border border-green-200 text-sm font-semibold hover:bg-green-200 transition-colors"
+                            className="flex items-center gap-1 px-3 py-2 bg-success/10 text-success border border-success/20 text-sm font-semibold hover:bg-success/20 transition-colors rounded-lg cursor-pointer"
                           >
                             <svg
                               className="w-4 h-4"
@@ -612,7 +596,7 @@ export default function OrganizerDashboard() {
                           {!isVerifierOnly(event) && isMainOrganizer(event) && (
                             <button
                               onClick={() => handleManageCoOrganizers(event)}
-                              className="flex items-center gap-1 px-3 py-2 bg-purple-100 text-purple-800 border border-purple-200 text-sm font-semibold hover:bg-purple-200 transition-colors"
+                              className="flex items-center gap-1 px-3 py-2 bg-secondary/10 text-secondary border border-secondary/20 text-sm font-semibold hover:bg-secondary/20 transition-colors rounded-lg cursor-pointer"
                             >
                               <svg
                                 className="w-4 h-4"
@@ -635,7 +619,7 @@ export default function OrganizerDashboard() {
                           {!isVerifierOnly(event) && (
                             <button
                               onClick={() => handleManageVerifiers(event)}
-                              className="flex items-center gap-1 px-3 py-2 bg-indigo-100 text-indigo-800 border border-indigo-200 text-sm font-semibold hover:bg-indigo-200 transition-colors"
+                              className="flex items-center gap-1 px-3 py-2 bg-primary/10 text-primary border border-primary/20 text-sm font-semibold hover:bg-primary/20 transition-colors rounded-lg cursor-pointer"
                             >
                               <svg
                                 className="w-4 h-4"
@@ -658,11 +642,12 @@ export default function OrganizerDashboard() {
                     ))}
                   </div>
                 )
-              ) : pastEvents.length === 0 ? (
+              ) : activeTab === "past" ? (
+                pastEvents.length === 0 ? (
                 <div className="text-center py-12">
-                  <div className="w-20 h-20 bg-slate-100 border border-slate-200 flex items-center justify-center mx-auto mb-4">
+                  <div className="w-20 h-20 bg-bg-secondary border border-border flex items-center justify-center mx-auto mb-4 rounded-lg">
                     <svg
-                      className="w-10 h-10 text-slate-400"
+                      className="w-10 h-10 text-text-secondary"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -675,10 +660,10 @@ export default function OrganizerDashboard() {
                       />
                     </svg>
                   </div>
-                  <h3 className="text-xl font-semibold text-slate-800 mb-2">
+                  <h3 className="text-xl font-semibold text-text-primary mb-2">
                     No Past Events
                   </h3>
-                  <p className="text-slate-600">
+                  <p className="text-text-secondary">
                     You don't have any completed events yet.
                   </p>
                 </div>
@@ -687,16 +672,16 @@ export default function OrganizerDashboard() {
                   {pastEvents.map((event) => (
                     <div
                       key={event._id}
-                      className={`bg-slate-50 border border-slate-200 p-6 transition-colors ${
+                      className={`bg-bg-secondary border border-border p-6 transition-colors rounded-lg ${
                         event.cancelled
                           ? "opacity-60"
-                          : "hover:border-slate-300"
+                          : "hover:border-primary"
                       }`}
                     >
                       {/* Event Header */}
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex-1">
-                          <h3 className="text-xl font-bold text-slate-800 mb-2">
+                          <h3 className="text-xl font-bold text-text-primary mb-2">
                             {event.title}
                           </h3>
                           <div className="flex items-center gap-2 text-sm text-slate-600 mb-2">
@@ -715,7 +700,7 @@ export default function OrganizerDashboard() {
                             </svg>
                             {formatEventDate(event.date)}
                           </div>
-                          <div className="flex items-center gap-2 text-sm text-slate-600">
+                          <div className="flex items-center gap-2 text-sm text-text-secondary">
                             <svg
                               className="w-4 h-4"
                               fill="none"
@@ -740,14 +725,14 @@ export default function OrganizerDashboard() {
                         </div>
                         <div className="flex flex-col gap-2">
                           {event.categoryId && (
-                            <span className="px-3 py-1 text-xs bg-blue-100 text-blue-800 border border-blue-200 font-semibold">
+                            <span className="px-3 py-1 text-xs bg-primary/10 text-primary border border-primary/20 font-semibold rounded-md">
                               {typeof event.categoryId === "object"
                                 ? event.categoryId.name
                                 : event.categoryId}
                             </span>
                           )}
                           {event.cancelled && (
-                            <span className="px-3 py-1 text-xs bg-red-100 text-red-800 border border-red-200 font-semibold">
+                            <span className="px-3 py-1 text-xs bg-error/10 text-error border border-error/20 font-semibold rounded-md">
                               Cancelled
                             </span>
                           )}
@@ -756,8 +741,8 @@ export default function OrganizerDashboard() {
 
                       {/* Event Details */}
                       <div className="grid grid-cols-2 gap-4 mb-6">
-                        <div className="bg-white border border-slate-200 p-3">
-                          <p className="text-xs text-slate-500 mb-1">
+                        <div className="bg-bg-primary border border-border p-3 rounded-lg">
+                          <p className="text-xs text-text-secondary mb-1">
                             {event.hasTicketCategories ? "Pricing" : "Price"}
                           </p>
                           {event.hasTicketCategories &&
@@ -768,29 +753,29 @@ export default function OrganizerDashboard() {
                                 .map((category, index) => (
                                   <p
                                     key={index}
-                                    className="text-xs font-medium text-slate-700"
+                                    className="text-xs font-medium text-text-primary"
                                   >
                                     {category.name}:{" "}
                                     {formatCurrency(category.price)}
                                   </p>
                                 ))}
                               {event.ticketCategories.length > 2 && (
-                                <p className="text-xs text-slate-500">
+                                <p className="text-xs text-text-secondary">
                                   +{event.ticketCategories.length - 2} more
                                 </p>
                               )}
                             </div>
                           ) : (
-                            <p className="font-semibold text-slate-800">
+                            <p className="font-semibold text-text-primary">
                               {formatCurrency(event.price || 0)}
                             </p>
                           )}
                         </div>
-                        <div className="bg-white border border-slate-200 p-3">
-                          <p className="text-xs text-slate-500 mb-1">
+                        <div className="bg-bg-primary border border-border p-3 rounded-lg">
+                          <p className="text-xs text-text-secondary mb-1">
                             Total Seats
                           </p>
-                          <p className="font-semibold text-slate-800">
+                          <p className="font-semibold text-text-primary">
                             {event.hasTicketCategories && event.ticketCategories
                               ? event.ticketCategories.reduce(
                                   (sum, cat) => sum + cat.totalSeats,
@@ -805,7 +790,7 @@ export default function OrganizerDashboard() {
                       <div className="flex flex-wrap gap-2">
                         <button
                           onClick={() => viewDetails(event)}
-                          className="flex items-center gap-1 px-3 py-2 bg-blue-100 text-blue-800 border border-blue-200 text-sm font-semibold hover:bg-blue-200 transition-colors"
+                          className="flex items-center gap-1 px-3 py-2 bg-primary/10 text-primary border border-primary/20 text-sm font-semibold hover:bg-primary/20 transition-colors rounded-lg cursor-pointer"
                         >
                           <svg
                             className="w-4 h-4"
@@ -831,7 +816,7 @@ export default function OrganizerDashboard() {
 
                         <Link
                           to={`/organizer/verify/${event._id}`}
-                          className="flex items-center gap-1 px-3 py-2 bg-green-100 text-green-800 border border-green-200 text-sm font-semibold hover:bg-green-200 transition-colors"
+                          className="flex items-center gap-1 px-3 py-2 bg-success/10 text-success border border-success/20 text-sm font-semibold hover:bg-success/20 transition-colors rounded-lg cursor-pointer"
                         >
                           <svg
                             className="w-4 h-4"
@@ -852,8 +837,174 @@ export default function OrganizerDashboard() {
                     </div>
                   ))}
                 </div>
-              )}
-            </div>
+              )
+            ) : activeTab === "cancelled" ? (
+              cancelledEvents.length === 0 ? (
+                <div className="text-center py-12">
+                  <div className="w-20 h-20 bg-bg-secondary border border-border flex items-center justify-center mx-auto mb-4 rounded-lg">
+                    <svg
+                      className="w-10 h-10 text-text-secondary"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </div>
+                  <h3 className="text-xl font-semibold text-text-primary mb-2">
+                    No Cancelled Events
+                  </h3>
+                  <p className="text-text-secondary">
+                    You don't have any cancelled events.
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {cancelledEvents.map((event) => (
+                    <div
+                      key={event._id}
+                      className="bg-bg-secondary border border-border p-6 transition-colors rounded-lg opacity-75"
+                    >
+                      {/* Event Header */}
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex-1">
+                          <h3 className="text-xl font-bold text-text-primary mb-2">
+                            {event.title}
+                          </h3>
+                          <div className="flex items-center gap-2 text-sm text-text-secondary mb-2">
+                            <svg
+                              className="w-4 h-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                              />
+                            </svg>
+                            {formatEventDate(event.date)}
+                          </div>
+                          <div className="flex items-center gap-2 text-sm text-text-secondary">
+                            <svg
+                              className="w-4 h-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                              />
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                              />
+                            </svg>
+                            {event.city}
+                          </div>
+                        </div>
+                        <div className="flex flex-col gap-2">
+                          {event.categoryId && (
+                            <span className="px-3 py-1 text-xs bg-primary/10 text-primary border border-primary/20 font-semibold rounded-md">
+                              {typeof event.categoryId === "object"
+                                ? event.categoryId.name
+                                : event.categoryId}
+                            </span>
+                          )}
+                          <span className="px-3 py-1 text-xs bg-error/10 text-error border border-error/20 font-semibold rounded-md">
+                            Cancelled
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Event Details */}
+                      <div className="grid grid-cols-2 gap-4 mb-6">
+                        <div className="bg-bg-primary border border-border p-3 rounded-lg">
+                          <p className="text-xs text-text-secondary mb-1">
+                            {event.hasTicketCategories ? "Pricing" : "Price"}
+                          </p>
+                          {event.hasTicketCategories && event.ticketCategories ? (
+                            <div className="space-y-1">
+                              {event.ticketCategories.slice(0, 2).map((category, index) => (
+                                <p
+                                  key={index}
+                                  className="text-xs font-medium text-text-primary"
+                                >
+                                  {category.name}: {formatCurrency(category.price)}
+                                </p>
+                              ))}
+                              {event.ticketCategories.length > 2 && (
+                                <p className="text-xs text-text-secondary">
+                                  +{event.ticketCategories.length - 2} more
+                                </p>
+                              )}
+                            </div>
+                          ) : (
+                            <p className="font-semibold text-text-primary">
+                              {formatCurrency(event.price || 0)}
+                            </p>
+                          )}
+                        </div>
+                        <div className="bg-bg-primary border border-border p-3 rounded-lg">
+                          <p className="text-xs text-text-secondary mb-1">
+                            Total Seats
+                          </p>
+                          <p className="font-semibold text-text-primary">
+                            {event.hasTicketCategories && event.ticketCategories
+                              ? event.ticketCategories.reduce(
+                                  (sum, cat) => sum + cat.totalSeats,
+                                  0
+                                )
+                              : event.totalSeats}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Action Buttons */}
+                      <div className="flex flex-wrap gap-2">
+                        <button
+                          onClick={() => viewDetails(event)}
+                          className="flex items-center gap-1 px-3 py-2 bg-primary/10 text-primary border border-primary/20 text-sm font-semibold hover:bg-primary/20 transition-colors rounded-lg cursor-pointer"
+                        >
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                            />
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                            />
+                          </svg>
+                          View Details
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )
+            ) : null}
           </div>
         </div>
       </div>

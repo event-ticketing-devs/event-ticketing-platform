@@ -20,24 +20,24 @@ export default function Navbar() {
 
   const linkClassName = (path) => {
     const isActive = isActiveLink(path);
-    return `relative px-3 py-2 text-sm font-medium transition-colors duration-200 ${
+    return `relative px-3 py-2 text-sm font-medium transition-colors duration-200 cursor-pointer ${
       isActive
-        ? "text-slate-900"
-        : "text-slate-600 hover:text-slate-900"
-    } ${isActive ? "after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-slate-900" : ""}`;
+        ? "text-primary"
+        : "text-text-primary hover:text-primary/80"
+    } ${isActive ? "after:absolute after:bottom-0 after:left-0 after:right-0 after:h-0.5 after:bg-primary" : ""}`;
   };
 
   return (
-    <nav className="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+    <nav className="bg-bg-primary border-b border-border sticky top-0 z-50 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link
             to="/"
-            className="flex items-center gap-2 group"
+            className="flex items-center gap-2 group cursor-pointer"
             onClick={handleCloseMenu}
           >
-            <div className="w-8 h-8 bg-slate-900 flex items-center justify-center group-hover:bg-slate-800 transition-colors duration-200">
+            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center group-hover:bg-primary/90 transition-colors duration-200">
               <svg
                 className="w-5 h-5 text-white"
                 fill="none"
@@ -52,7 +52,7 @@ export default function Navbar() {
                 />
               </svg>
             </div>
-            <span className="text-xl font-bold text-slate-900">Eventify</span>
+            <span className="text-xl font-bold text-text-primary">Eventify</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -98,18 +98,18 @@ export default function Navbar() {
               <div className="relative">
                 <button
                   onClick={() => setProfileMenuOpen(!profileMenuOpen)}
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-slate-50 transition-colors duration-200"
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-bg-secondary transition-colors duration-200 cursor-pointer"
                 >
-                  <div className="w-8 h-8 bg-slate-900 rounded-full flex items-center justify-center">
+                  <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center">
                     <span className="text-white font-semibold text-sm">
                       {currentUser.name?.charAt(0)?.toUpperCase() || "U"}
                     </span>
                   </div>
-                  <span className="text-sm font-medium text-slate-700 max-w-[120px] truncate">
+                  <span className="text-sm font-medium text-text-primary max-w-[120px] truncate">
                     {currentUser.name}
                   </span>
                   <svg
-                    className={`w-4 h-4 text-slate-600 transition-transform duration-200 ${profileMenuOpen ? "rotate-180" : ""}`}
+                    className={`w-4 h-4 text-text-secondary transition-transform duration-200 ${profileMenuOpen ? "rotate-180" : ""}`}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -125,10 +125,10 @@ export default function Navbar() {
                       className="fixed inset-0 z-10"
                       onClick={() => setProfileMenuOpen(false)}
                     />
-                    <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-slate-200 py-2 z-20">
+                    <div className="absolute right-0 mt-2 w-56 bg-bg-primary rounded-lg shadow-lg border border-border py-2 z-20">
                       <Link
                         to="/profile"
-                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-text-primary hover:bg-bg-secondary transition-colors cursor-pointer"
                         onClick={() => {
                           setProfileMenuOpen(false);
                           handleCloseMenu();
@@ -139,14 +139,14 @@ export default function Navbar() {
                         </svg>
                         Your Profile
                       </Link>
-                      <hr className="my-2 border-slate-200" />
+                      <hr className="my-2 border-border" />
                       <button
                         onClick={() => {
                           logout();
                           setProfileMenuOpen(false);
                           handleCloseMenu();
                         }}
-                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-error hover:bg-error/10 transition-colors cursor-pointer"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -161,14 +161,14 @@ export default function Navbar() {
               <>
                 <Link
                   to="/login"
-                  className="px-4 py-2 text-sm font-medium text-slate-700 hover:text-slate-900 transition-colors duration-200"
+                  className="px-4 py-2 text-sm font-medium text-text-primary hover:text-primary transition-colors duration-200 cursor-pointer"
                   onClick={handleCloseMenu}
                 >
                   Sign In
                 </Link>
                 <Link
                   to="/register"
-                  className="px-4 py-2 text-sm font-medium bg-slate-900 text-white hover:bg-slate-800 transition-colors duration-200"
+                  className="px-4 py-2 rounded-lg text-sm font-medium bg-primary text-white hover:bg-primary/90 transition-colors duration-200 cursor-pointer"
                   onClick={handleCloseMenu}
                 >
                   Sign Up
@@ -180,11 +180,11 @@ export default function Navbar() {
           {/* Mobile Menu Button */}
           <div className="md:hidden">
             <button
-              className="p-2 rounded-lg hover:bg-slate-100 transition-colors duration-200"
+              className="p-2 rounded-lg hover:bg-bg-secondary transition-colors duration-200 cursor-pointer"
               onClick={handleMenuToggle}
               aria-label="Toggle menu"
             >
-              <svg className="w-6 h-6 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6 text-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 {menuOpen ? (
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 ) : (
@@ -198,12 +198,12 @@ export default function Navbar() {
 
       {/* Mobile Menu */}
       {menuOpen && (
-        <div className="md:hidden border-t border-slate-200 bg-white">
+        <div className="md:hidden border-t border-border bg-bg-primary">
           <div className="px-4 py-4 space-y-1">
             <Link
               to="/"
-              className={`block px-3 py-2 rounded-lg text-sm font-medium ${
-                isActiveLink("/") ? "bg-slate-100 text-slate-900" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+              className={`block px-3 py-2 rounded-lg text-sm font-medium cursor-pointer ${
+                isActiveLink("/") ? "bg-primary/10 text-primary" : "text-text-primary hover:bg-bg-secondary hover:text-primary"
               }`}
               onClick={handleCloseMenu}
             >
@@ -211,8 +211,8 @@ export default function Navbar() {
             </Link>
             <Link
               to="/events"
-              className={`block px-3 py-2 rounded-lg text-sm font-medium ${
-                isActiveLink("/events") ? "bg-slate-100 text-slate-900" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+              className={`block px-3 py-2 rounded-lg text-sm font-medium cursor-pointer ${
+                isActiveLink("/events") ? "bg-primary/10 text-primary" : "text-text-primary hover:bg-bg-secondary hover:text-primary"
               }`}
               onClick={handleCloseMenu}
             >
@@ -220,8 +220,8 @@ export default function Navbar() {
             </Link>
             <Link
               to="/contact"
-              className={`block px-3 py-2 rounded-lg text-sm font-medium ${
-                isActiveLink("/contact") ? "bg-slate-100 text-slate-900" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+              className={`block px-3 py-2 rounded-lg text-sm font-medium cursor-pointer ${
+                isActiveLink("/contact") ? "bg-primary/10 text-primary" : "text-text-primary hover:bg-bg-secondary hover:text-primary"
               }`}
               onClick={handleCloseMenu}
             >
@@ -232,8 +232,8 @@ export default function Navbar() {
               <>
                 <Link
                   to="/dashboard"
-                  className={`block px-3 py-2 rounded-lg text-sm font-medium ${
-                    isActiveLink("/dashboard") ? "bg-slate-100 text-slate-900" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                  className={`block px-3 py-2 rounded-lg text-sm font-medium cursor-pointer ${
+                    isActiveLink("/dashboard") ? "bg-primary/10 text-primary" : "text-text-primary hover:bg-bg-secondary hover:text-primary"
                   }`}
                   onClick={handleCloseMenu}
                 >
@@ -241,8 +241,8 @@ export default function Navbar() {
                 </Link>
                 <Link
                   to="/venue-enquiries"
-                  className={`block px-3 py-2 rounded-lg text-sm font-medium ${
-                    isActiveLink("/venue-enquiries") ? "bg-slate-100 text-slate-900" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                  className={`block px-3 py-2 rounded-lg text-sm font-medium cursor-pointer ${
+                    isActiveLink("/venue-enquiries") ? "bg-primary/10 text-primary" : "text-text-primary hover:bg-bg-secondary hover:text-primary"
                   }`}
                   onClick={handleCloseMenu}
                 >
@@ -250,8 +250,8 @@ export default function Navbar() {
                 </Link>
                 <Link
                   to="/organizer"
-                  className={`block px-3 py-2 rounded-lg text-sm font-medium ${
-                    isActiveLink("/organizer") ? "bg-slate-100 text-slate-900" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                  className={`block px-3 py-2 rounded-lg text-sm font-medium cursor-pointer ${
+                    isActiveLink("/organizer") ? "bg-primary/10 text-primary" : "text-text-primary hover:bg-bg-secondary hover:text-primary"
                   }`}
                   onClick={handleCloseMenu}
                 >
@@ -263,8 +263,8 @@ export default function Navbar() {
             {currentUser?.role?.toLowerCase() === "admin" && (
               <Link
                 to="/admin"
-                className={`block px-3 py-2 rounded-lg text-sm font-medium ${
-                  isActiveLink("/admin") ? "bg-slate-100 text-slate-900" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                className={`block px-3 py-2 rounded-lg text-sm font-medium cursor-pointer ${
+                  isActiveLink("/admin") ? "bg-primary/10 text-primary" : "text-text-primary hover:bg-bg-secondary hover:text-primary"
                 }`}
                 onClick={handleCloseMenu}
               >
@@ -273,22 +273,22 @@ export default function Navbar() {
             )}
 
             {/* Mobile Auth */}
-            <div className="pt-4 mt-4 border-t border-slate-200">
+            <div className="pt-4 mt-4 border-t border-border">
               {currentUser ? (
                 <>
                   <Link
                     to="/profile"
-                    className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-50"
+                    className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-bg-secondary cursor-pointer"
                     onClick={handleCloseMenu}
                   >
-                    <div className="w-10 h-10 bg-slate-900 rounded-full flex items-center justify-center">
+                    <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
                       <span className="text-white font-semibold text-sm">
                         {currentUser.name?.charAt(0)?.toUpperCase() || "U"}
                       </span>
                     </div>
                     <div className="flex-1">
-                      <p className="text-sm font-medium text-slate-900">{currentUser.name}</p>
-                      <p className="text-xs text-slate-500">View profile</p>
+                      <p className="text-sm font-medium text-text-primary">{currentUser.name}</p>
+                      <p className="text-xs text-text-secondary">View profile</p>
                     </div>
                   </Link>
                   <button
@@ -296,7 +296,7 @@ export default function Navbar() {
                       logout();
                       handleCloseMenu();
                     }}
-                    className="w-full mt-3 px-4 py-2.5 bg-slate-900 text-white text-sm font-medium rounded-lg hover:bg-slate-800 transition-colors"
+                    className="w-full mt-3 px-4 py-2.5 bg-error text-white text-sm font-medium rounded-lg hover:bg-error/90 transition-colors cursor-pointer"
                   >
                     Sign Out
                   </button>
@@ -305,14 +305,14 @@ export default function Navbar() {
                 <div className="space-y-2">
                   <Link
                     to="/login"
-                    className="block px-4 py-2.5 text-center text-sm font-medium text-slate-700 border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors"
+                    className="block px-4 py-2.5 text-center text-sm font-medium text-text-primary border border-border rounded-lg hover:bg-bg-secondary transition-colors cursor-pointer"
                     onClick={handleCloseMenu}
                   >
                     Sign In
                   </Link>
                   <Link
                     to="/register"
-                    className="block px-4 py-2.5 text-center text-sm font-medium bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition-colors"
+                    className="block px-4 py-2.5 text-center text-sm font-medium bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors cursor-pointer"
                     onClick={handleCloseMenu}
                   >
                     Sign Up

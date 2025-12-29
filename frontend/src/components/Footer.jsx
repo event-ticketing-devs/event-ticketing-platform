@@ -4,7 +4,7 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-slate-900 text-white border-t border-slate-800 mt-auto">
+    <footer className="bg-text-primary text-white border-t border-text-primary/20 mt-auto">
       {/* Main Footer Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -28,7 +28,7 @@ export default function Footer() {
                 Eventify
               </span>
             </div>
-            <p className="text-slate-400 text-sm leading-relaxed mb-6">
+            <p className="text-bg-primary/80 text-sm leading-relaxed mb-6">
               Your premier destination for discovering and booking amazing
               events. From concerts to conferences, we make event booking simple
               and secure.
@@ -38,7 +38,7 @@ export default function Footer() {
             <div className="flex gap-3">
               <a
                 href="#"
-                className="w-9 h-9 bg-slate-800 hover:bg-slate-700 flex items-center justify-center transition-colors"
+                className="w-9 h-9 bg-white/10 hover:bg-secondary rounded-lg flex items-center justify-center transition-colors cursor-pointer"
                 aria-label="Facebook"
               >
                 <svg
@@ -51,7 +51,7 @@ export default function Footer() {
               </a>
               <a
                 href="#"
-                className="w-9 h-9 bg-slate-800 hover:bg-slate-700 flex items-center justify-center transition-colors"
+                className="w-9 h-9 bg-white/10 hover:bg-secondary rounded-lg flex items-center justify-center transition-colors cursor-pointer"
                 aria-label="Twitter"
               >
                 <svg
@@ -64,7 +64,7 @@ export default function Footer() {
               </a>
               <a
                 href="#"
-                className="w-9 h-9 bg-slate-800 hover:bg-slate-700 flex items-center justify-center transition-colors"
+                className="w-9 h-9 bg-white/10 hover:bg-secondary rounded-lg flex items-center justify-center transition-colors cursor-pointer"
                 aria-label="Instagram"
               >
                 <svg
@@ -77,7 +77,7 @@ export default function Footer() {
               </a>
               <a
                 href="#"
-                className="w-9 h-9 bg-slate-800 hover:bg-slate-700 flex items-center justify-center transition-colors"
+                className="w-9 h-9 bg-white/10 hover:bg-secondary rounded-lg flex items-center justify-center transition-colors cursor-pointer"
                 aria-label="LinkedIn"
               >
                 <svg
@@ -100,7 +100,7 @@ export default function Footer() {
               <li>
                 <Link
                   to="/events"
-                  className="text-slate-400 hover:text-white transition-colors text-sm"
+                  className="text-bg-primary/80 hover:text-bg-primary transition-colors text-sm cursor-pointer"
                 >
                   Browse Events
                 </Link>
@@ -108,7 +108,7 @@ export default function Footer() {
               <li>
                 <Link
                   to="/profile"
-                  className="text-slate-400 hover:text-white transition-colors text-sm"
+                  className="text-bg-primary/80 hover:text-bg-primary transition-colors text-sm cursor-pointer"
                 >
                   My Account
                 </Link>
@@ -116,7 +116,7 @@ export default function Footer() {
               <li>
                 <Link
                   to="/organizer"
-                  className="text-slate-400 hover:text-white transition-colors text-sm"
+                  className="text-bg-primary/80 hover:text-bg-primary transition-colors text-sm cursor-pointer"
                 >
                   Create Event
                 </Link>
@@ -131,7 +131,7 @@ export default function Footer() {
               <li>
                 <a
                   href="#"
-                  className="text-slate-400 hover:text-white transition-colors text-sm"
+                  className="text-bg-primary/80 hover:text-bg-primary transition-colors text-sm cursor-pointer"
                 >
                   Help Center
                 </a>
@@ -139,7 +139,7 @@ export default function Footer() {
               <li>
                 <a
                   href="#"
-                  className="text-slate-400 hover:text-white transition-colors text-sm"
+                  className="text-bg-primary/80 hover:text-bg-primary transition-colors text-sm cursor-pointer"
                 >
                   Contact Us
                 </a>
@@ -147,7 +147,7 @@ export default function Footer() {
               <li>
                 <a
                   href="#"
-                  className="text-slate-400 hover:text-white transition-colors text-sm"
+                  className="text-bg-primary/80 hover:text-bg-primary transition-colors text-sm cursor-pointer"
                 >
                   FAQ
                 </a>
@@ -155,7 +155,7 @@ export default function Footer() {
               <li>
                 <a
                   href="#"
-                  className="text-slate-400 hover:text-white transition-colors text-sm"
+                  className="text-bg-primary/80 hover:text-bg-primary transition-colors text-sm cursor-pointer"
                 >
                   Terms & Conditions
                 </a>
@@ -171,7 +171,7 @@ export default function Footer() {
             <div className="space-y-3">
               <div className="flex items-start gap-2">
                 <svg
-                  className="w-4 h-4 text-slate-400 flex-shrink-0 mt-0.5"
+                  className="w-4 h-4 text-bg-primary/80 flex-shrink-0 mt-0.5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -189,7 +189,7 @@ export default function Footer() {
                     d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
                   />
                 </svg>
-                <p className="text-slate-400 text-sm">
+                <p className="text-bg-primary/80 text-sm">
                   123 Event Street, Mumbai,
                   <br />
                   Maharashtra 400001, India
@@ -198,7 +198,7 @@ export default function Footer() {
 
               <div className="flex items-center gap-2">
                 <svg
-                  className="w-4 h-4 text-slate-400 flex-shrink-0"
+                  className="w-4 h-4 text-bg-primary/80 flex-shrink-0"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -212,7 +212,7 @@ export default function Footer() {
                 </svg>
                 <a
                   href="mailto:hello@eventify.com"
-                  className="text-slate-400 hover:text-white transition-colors text-sm"
+                  className="text-bg-primary/80 hover:text-bg-primary transition-colors text-sm cursor-pointer"
                 >
                   hello@eventify.com
                 </a>
@@ -220,7 +220,7 @@ export default function Footer() {
 
               <div className="flex items-center gap-2">
                 <svg
-                  className="w-4 h-4 text-slate-400 flex-shrink-0"
+                  className="w-4 h-4 text-bg-primary/80 flex-shrink-0"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -234,7 +234,7 @@ export default function Footer() {
                 </svg>
                 <a
                   href="tel:+911234567890"
-                  className="text-slate-400 hover:text-white transition-colors text-sm"
+                  className="text-bg-primary/80 hover:text-bg-primary transition-colors text-sm cursor-pointer"
                 >
                   +91 123 456 7890
                 </a>
@@ -245,29 +245,29 @@ export default function Footer() {
       </div>
 
       {/* Bottom Section */}
-      <div className="border-t border-slate-800">
+      <div className="border-t border-text-primary/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex flex-col sm:flex-row justify-between items-center gap-3 text-sm">
-            <div className="text-slate-400">
-              &copy; {currentYear} <span className="text-white font-medium">Eventify</span>. All rights reserved.
+            <div className="text-bg-primary/80">
+              &copy; {currentYear} <span className="text-bg-primary font-medium">Eventify</span>. All rights reserved.
             </div>
 
             <div className="flex items-center gap-6">
               <a
                 href="#"
-                className="text-slate-400 hover:text-white transition-colors"
+                className="text-bg-primary/80 hover:text-bg-primary transition-colors cursor-pointer"
               >
                 Privacy Policy
               </a>
               <a
                 href="#"
-                className="text-slate-400 hover:text-white transition-colors"
+                className="text-bg-primary/80 hover:text-bg-primary transition-colors cursor-pointer"
               >
                 Cookie Policy
               </a>
               <a
                 href="#"
-                className="text-slate-400 hover:text-white transition-colors"
+                className="text-bg-primary/80 hover:text-bg-primary transition-colors cursor-pointer"
               >
                 Refund Policy
               </a>

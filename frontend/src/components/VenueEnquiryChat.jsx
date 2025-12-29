@@ -183,25 +183,25 @@ export default function VenueEnquiryChat({ requestId }) {
 
   if (loading) {
     return (
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <h2 className="text-xl font-semibold text-gray-800 mb-4">Chat</h2>
+      <div className="bg-bg-primary border border-border rounded-lg p-6">
+        <h2 className="text-xl font-semibold text-text-primary mb-4">Chat</h2>
         <div className="flex items-center justify-center py-8">
-          <div className="text-gray-500">Loading messages...</div>
+          <div className="text-text-secondary">Loading messages...</div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
-      <h2 className="text-xl font-semibold text-gray-800 mb-4">Chat</h2>
+    <div className="bg-bg-primary border border-border rounded-lg p-6">
+      <h2 className="text-xl font-semibold text-text-primary mb-4">Chat</h2>
 
       {/* Messages Container */}
-      <div className="border border-gray-200 rounded-lg h-96 overflow-y-auto p-4 mb-4 bg-gray-50">
+      <div className="border border-border rounded-lg h-96 overflow-y-auto p-4 mb-4 bg-bg-secondary">
         {messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center">
             <svg
-              className="h-12 w-12 text-gray-400 mb-3"
+              className="h-12 w-12 text-text-secondary/50 mb-3"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -213,8 +213,8 @@ export default function VenueEnquiryChat({ requestId }) {
                 d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
               />
             </svg>
-            <p className="text-gray-500">No messages yet</p>
-            <p className="text-sm text-gray-400 mt-1">
+            <p className="text-text-primary">No messages yet</p>
+            <p className="text-sm text-text-secondary mt-1">
               Start a conversation to discuss venue details
             </p>
           </div>
@@ -230,19 +230,19 @@ export default function VenueEnquiryChat({ requestId }) {
                   <div
                     className={`max-w-xs lg:max-w-md ${
                       isCurrentUser
-                        ? "bg-blue-600 text-white"
-                        : "bg-white border border-gray-200 text-gray-900"
+                        ? "bg-primary text-bg-primary"
+                        : "bg-bg-primary border border-border text-text-primary"
                     } rounded-lg px-4 py-2 shadow-sm`}
                   >
                     {!isCurrentUser && (
-                      <p className="text-xs font-semibold mb-1 text-gray-600">
+                      <p className="text-xs font-semibold mb-1 text-text-secondary">
                         {msg.sender.name}
                       </p>
                     )}
                     <p className="text-sm break-words">{msg.message}</p>
                     <p
                       className={`text-xs mt-1 ${
-                        isCurrentUser ? "text-blue-100" : "text-gray-500"
+                        isCurrentUser ? "text-bg-primary/80" : "text-text-secondary"
                       }`}
                     >
                       {formatTime(msg.createdAt)}
@@ -257,7 +257,7 @@ export default function VenueEnquiryChat({ requestId }) {
         
         {/* Typing Indicator */}
         {typingUser && (
-          <div className="text-sm text-gray-500 italic mt-2">
+          <div className="text-sm text-text-secondary italic mt-2">
             {typingUser} is typing...
           </div>
         )}
@@ -273,13 +273,13 @@ export default function VenueEnquiryChat({ requestId }) {
             handleTyping();
           }}
           placeholder="Type your message..."
-          className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="flex-1 px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
           disabled={sending}
         />
         <button
           type="submit"
           disabled={sending || !newMessage.trim()}
-          className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+          className="bg-primary text-bg-primary px-6 py-2 rounded-lg hover:bg-primary/90 transition-colors disabled:bg-bg-secondary disabled:text-text-secondary disabled:cursor-not-allowed"
         >
           {sending ? "Sending..." : "Send"}
         </button>

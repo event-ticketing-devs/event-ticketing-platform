@@ -391,15 +391,15 @@ export default function EventFormPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="bg-white border border-slate-200 p-8">
+      <div className="min-h-screen bg-bg-primary flex items-center justify-center">
+        <div className="bg-bg-primary border border-border p-8 rounded-lg">
           <div className="flex items-center gap-4">
-            <div className="w-8 h-8 border-b-2 border-slate-900 rounded-full border-t-transparent animate-spin"></div>
+            <div className="w-8 h-8 border-b-2 border-primary rounded-full border-t-transparent animate-spin"></div>
             <div>
-              <h2 className="text-xl font-semibold text-slate-800">
+              <h2 className="text-xl font-semibold text-text-primary">
                 Loading event form...
               </h2>
-              <p className="text-slate-600">
+              <p className="text-text-secondary">
                 Please wait while we fetch the event data
               </p>
             </div>
@@ -434,9 +434,9 @@ export default function EventFormPage() {
             Back to Organizer Dashboard
           </button>
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 bg-slate-900 flex items-center justify-center">
+            <div className="w-12 h-12 bg-primary flex items-center justify-center rounded-lg">
               <svg
-                className="w-6 h-6 text-white"
+                className="w-6 h-6 text-bg-primary"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -450,10 +450,10 @@ export default function EventFormPage() {
               </svg>
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-slate-800">
+              <h1 className="text-3xl font-bold text-text-primary">
                 {isEditing ? "Edit Event" : "Create New Event"}
               </h1>
-              <p className="text-slate-600">
+              <p className="mt-1 text-text-secondary">
                 {isEditing
                   ? "Update your event details and venue information"
                   : "Fill in the details to create your event"}
@@ -463,7 +463,7 @@ export default function EventFormPage() {
         </div>
 
         {/* Form Card */}
-        <div className="bg-white border-2 border-slate-200 overflow-hidden">
+        <div className="bg-bg-primary border-2 border-border overflow-hidden rounded-lg">
           <form onSubmit={handleSubmit}>
             {/* Form Content */}
             <div className="p-8">
@@ -472,13 +472,13 @@ export default function EventFormPage() {
                 <div className="space-y-6">
                   {/* Event Title */}
                   <div>
-                    <label className="block text-sm font-semibold text-slate-800 mb-2">
+                    <label className="block text-sm font-semibold text-text-primary mb-2">
                       Event Title
                     </label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <svg
-                          className="w-5 h-5 text-slate-400"
+                          className="w-5 h-5 text-text-secondary"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -495,7 +495,7 @@ export default function EventFormPage() {
                         type="text"
                         name="title"
                         placeholder="Enter event title"
-                        className="block w-full pl-10 pr-4 py-3 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900 bg-slate-50 transition-colors"
+                        className="block w-full pl-10 pr-4 py-3 border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary bg-bg-primary transition-colors rounded-lg cursor-pointer"
                         value={form.title}
                         onChange={handleChange}
                         required
@@ -505,13 +505,13 @@ export default function EventFormPage() {
 
                   {/* Event Description */}
                   <div>
-                    <label className="block text-sm font-semibold text-slate-800 mb-2">
+                    <label className="block text-sm font-semibold text-text-primary mb-2">
                       Description
                     </label>
                     <div className="relative">
                       <div className="absolute top-3 left-3 pointer-events-none">
                         <svg
-                          className="w-5 h-5 text-slate-400"
+                          className="w-5 h-5 text-text-secondary"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -528,7 +528,7 @@ export default function EventFormPage() {
                         name="description"
                         placeholder="Describe your event..."
                         rows={4}
-                        className="block w-full pl-10 pr-4 py-3 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900 bg-slate-50 transition-colors resize-none"
+                        className="block w-full pl-10 pr-4 py-3 border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary bg-bg-primary transition-colors resize-none rounded-lg cursor-pointer"
                         value={form.description}
                         onChange={handleChange}
                         required
@@ -538,13 +538,13 @@ export default function EventFormPage() {
 
                   {/* Date and Time */}
                   <div>
-                    <label className="block text-sm font-semibold text-slate-800 mb-2">
+                    <label className="block text-sm font-semibold text-text-primary mb-2">
                       Event Date & Time
                     </label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <svg
-                          className="w-5 h-5 text-slate-400"
+                          className="w-5 h-5 text-text-secondary"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -560,7 +560,7 @@ export default function EventFormPage() {
                       <input
                         type="datetime-local"
                         name="date"
-                        className="block w-full pl-10 pr-4 py-3 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900 bg-slate-50 transition-colors"
+                        className="block w-full pl-10 pr-4 py-3 border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary bg-bg-primary transition-colors rounded-lg cursor-pointer"
                         value={form.date}
                         onChange={handleChange}
                         required
@@ -570,13 +570,13 @@ export default function EventFormPage() {
 
                   {/* Category */}
                   <div>
-                    <label className="block text-sm font-semibold text-slate-800 mb-2">
+                    <label className="block text-sm font-semibold text-text-primary mb-2">
                       Category
                     </label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <svg
-                          className="w-5 h-5 text-slate-400"
+                          className="w-5 h-5 text-text-secondary"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -591,7 +591,7 @@ export default function EventFormPage() {
                       </div>
                       <select
                         name="categoryId"
-                        className="block w-full pl-10 pr-4 py-3 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900 bg-slate-50 transition-colors appearance-none"
+                        className="block w-full pl-10 pr-4 py-3 border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary bg-bg-primary transition-colors appearance-none rounded-lg cursor-pointer"
                         value={form.categoryId}
                         onChange={handleChange}
                         required
@@ -605,7 +605,7 @@ export default function EventFormPage() {
                       </select>
                       <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                         <svg
-                          className="w-4 h-4 text-slate-400"
+                          className="w-4 h-4 text-text-secondary"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -655,7 +655,7 @@ export default function EventFormPage() {
                         type="text"
                         name="city"
                         placeholder="Enter city name"
-                        className="block w-full pl-10 pr-4 py-3 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900 bg-slate-50 transition-colors"
+                        className="block w-full pl-10 pr-4 py-3 border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary bg-bg-primary transition-colors rounded-lg cursor-pointer"
                         value={form.city}
                         onChange={handleChange}
                         required
@@ -665,7 +665,7 @@ export default function EventFormPage() {
 
                   {/* Pricing Type Toggle */}
                   <div className="col-span-2">
-                    <div className="bg-slate-50 p-4 border border-slate-200">
+                    <div className="bg-bg-secondary p-4 border border-border rounded-lg">
                       <div className="flex items-center space-x-4">
                         <label className="flex items-center cursor-pointer">
                           <input
@@ -677,9 +677,9 @@ export default function EventFormPage() {
                                 hasTicketCategories: false,
                               }))
                             }
-                            className="mr-2 text-slate-900"
+                            className="mr-2 text-primary cursor-pointer"
                           />
-                          <span className="text-sm font-medium text-slate-700">
+                          <span className="text-sm font-medium text-text-primary">
                             Simple Pricing (One price for all tickets)
                           </span>
                         </label>
@@ -688,9 +688,9 @@ export default function EventFormPage() {
                             type="radio"
                             checked={form.hasTicketCategories}
                             onChange={toggleTicketCategories}
-                            className="mr-2 text-slate-900"
+                            className="mr-2 text-primary cursor-pointer"
                           />
-                          <span className="text-sm font-medium text-slate-700">
+                          <span className="text-sm font-medium text-text-primary">
                             Multiple Ticket Categories
                           </span>
                         </label>
@@ -702,18 +702,18 @@ export default function EventFormPage() {
                     <>
                       {/* Price */}
                       <div>
-                        <label className="block text-sm font-semibold text-slate-800 mb-2">
+                        <label className="block text-sm font-semibold text-text-primary mb-2">
                           Ticket Price (₹)
                         </label>
                         <div className="relative">
                           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <span className="text-slate-400 font-bold">₹</span>
+                            <span className="text-text-secondary font-bold">₹</span>
                           </div>
                           <input
                             type="number"
                             name="price"
                             placeholder="0.00"
-                            className="block w-full pl-10 pr-4 py-3 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900 bg-slate-50 transition-colors"
+                            className="block w-full pl-10 pr-4 py-3 border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary bg-bg-primary transition-colors rounded-lg cursor-pointer"
                             value={form.price}
                             onChange={handleChange}
                             min={0}
@@ -725,13 +725,13 @@ export default function EventFormPage() {
 
                       {/* Total Seats */}
                       <div>
-                        <label className="block text-sm font-semibold text-slate-800 mb-2">
+                        <label className="block text-sm font-semibold text-text-primary mb-2">
                           Total Seats
                         </label>
                         <div className="relative">
                           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <svg
-                              className="w-5 h-5 text-slate-400"
+                              className="w-5 h-5 text-text-secondary"
                               fill="none"
                               stroke="currentColor"
                               viewBox="0 0 24 24"
@@ -748,7 +748,7 @@ export default function EventFormPage() {
                             type="number"
                             name="totalSeats"
                             placeholder="Enter number of seats"
-                            className="block w-full pl-10 pr-4 py-3 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900 bg-slate-50 transition-colors"
+                            className="block w-full pl-10 pr-4 py-3 border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary bg-bg-primary transition-colors rounded-lg cursor-pointer"
                             value={form.totalSeats}
                             onChange={handleChange}
                             min={1}
@@ -762,14 +762,14 @@ export default function EventFormPage() {
                       {/* Ticket Categories */}
                       <div className="col-span-2">
                         <div className="flex items-center justify-between mb-4">
-                          <label className="block text-sm font-semibold text-slate-800">
+                          <label className="block text-sm font-semibold text-text-primary">
                             Ticket Categories
                           </label>
                           <button
                             type="button"
                             onClick={addTicketCategory}
                             disabled={form.ticketCategories.length >= 5}
-                            className="inline-flex items-center px-3 py-1 bg-slate-900 text-white text-sm font-medium hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                            className="inline-flex items-center px-3 py-1 bg-primary text-bg-primary text-sm font-medium hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 rounded-lg cursor-pointer"
                           >
                             <svg
                               className="w-4 h-4 mr-1"
@@ -792,17 +792,17 @@ export default function EventFormPage() {
                           {form.ticketCategories.map((category, index) => (
                             <div
                               key={index}
-                              className="bg-slate-50 p-4 border border-slate-200"
+                              className="bg-bg-secondary p-4 border border-border rounded-lg"
                             >
                               <div className="flex items-center justify-between mb-3">
-                                <h4 className="text-sm font-medium text-slate-700">
+                                <h4 className="text-sm font-medium text-text-primary">
                                   Category {index + 1}
                                 </h4>
                                 {form.ticketCategories.length > 1 && (
                                   <button
                                     type="button"
                                     onClick={() => removeTicketCategory(index)}
-                                    className="text-red-500 hover:text-red-700 transition-colors duration-200"
+                                    className="text-error hover:text-error/80 transition-colors duration-200 cursor-pointer"
                                   >
                                     <svg
                                       className="w-4 h-4"
@@ -823,7 +823,7 @@ export default function EventFormPage() {
 
                               <div className="grid grid-cols-2 gap-3">
                                 <div>
-                                  <label className="block text-xs font-medium text-slate-600 mb-1">
+                                  <label className="block text-xs font-medium text-text-secondary mb-1">
                                     Category Name *
                                   </label>
                                   <input
@@ -837,13 +837,13 @@ export default function EventFormPage() {
                                         e.target.value
                                       )
                                     }
-                                    className="w-full px-3 py-2 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-blue-500 text-sm"
+                                    className="w-full px-3 py-2 border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm bg-bg-primary rounded-lg cursor-pointer"
                                     required
                                   />
                                 </div>
 
                                 <div>
-                                  <label className="block text-xs font-medium text-slate-600 mb-1">
+                                  <label className="block text-xs font-medium text-text-secondary mb-1">
                                     Price (₹) *
                                   </label>
                                   <input
@@ -857,7 +857,7 @@ export default function EventFormPage() {
                                         e.target.value
                                       )
                                     }
-                                    className="w-full px-3 py-2 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-blue-500 text-sm"
+                                    className="w-full px-3 py-2 border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm bg-bg-primary rounded-lg cursor-pointer"
                                     min={0}
                                     step="0.01"
                                     required
@@ -865,7 +865,7 @@ export default function EventFormPage() {
                                 </div>
 
                                 <div>
-                                  <label className="block text-xs font-medium text-slate-600 mb-1">
+                                  <label className="block text-xs font-medium text-text-secondary mb-1">
                                     Available Seats *
                                   </label>
                                   <input
@@ -879,14 +879,14 @@ export default function EventFormPage() {
                                         e.target.value
                                       )
                                     }
-                                    className="w-full px-3 py-2 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-blue-500 text-sm"
+                                    className="w-full px-3 py-2 border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm bg-bg-primary rounded-lg cursor-pointer"
                                     min={1}
                                     required
                                   />
                                 </div>
 
                                 <div>
-                                  <label className="block text-xs font-medium text-slate-600 mb-1">
+                                  <label className="block text-xs font-medium text-text-secondary mb-1">
                                     Description
                                   </label>
                                   <input
@@ -900,7 +900,7 @@ export default function EventFormPage() {
                                         e.target.value
                                       )
                                     }
-                                    className="w-full px-3 py-2 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-blue-500 text-sm"
+                                    className="w-full px-3 py-2 border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm bg-bg-primary rounded-lg cursor-pointer"
                                   />
                                 </div>
                               </div>
@@ -908,7 +908,7 @@ export default function EventFormPage() {
                           ))}
                         </div>
 
-                        <p className="text-xs text-slate-500 mt-2">
+                        <p className="text-xs text-text-secondary mt-2">
                           You can create up to 5 different ticket categories
                           with different prices and seat allocations.
                         </p>
@@ -918,7 +918,7 @@ export default function EventFormPage() {
 
                   {/* Image Upload */}
                   <div>
-                    <label className="block text-sm font-semibold text-slate-800 mb-2">
+                    <label className="block text-sm font-semibold text-text-primary mb-2">
                       Event Image
                     </label>
 
@@ -933,11 +933,11 @@ export default function EventFormPage() {
                       />
                       <label
                         htmlFor="photo-upload"
-                        className="flex items-center justify-center w-full h-32 border-2 border-dashed border-slate-300 cursor-pointer hover:border-slate-400 transition-colors bg-slate-50 hover:bg-slate-100"
+                        className="flex items-center justify-center w-full h-32 border-2 border-dashed border-border cursor-pointer hover:border-primary/40 transition-colors bg-bg-secondary hover:bg-bg-secondary/80 rounded-lg"
                       >
                         <div className="text-center">
                           <svg
-                            className="w-8 h-8 text-slate-400 mx-auto mb-2"
+                            className="w-8 h-8 text-text-secondary mx-auto mb-2"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -949,10 +949,10 @@ export default function EventFormPage() {
                               d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
                             />
                           </svg>
-                          <p className="text-sm text-slate-600">
+                          <p className="text-sm text-text-secondary">
                             Click to upload an image
                           </p>
-                          <p className="text-xs text-slate-400 mt-1">
+                          <p className="text-xs text-text-secondary mt-1">
                             PNG, JPG, JPEG up to 5MB
                           </p>
                         </div>
@@ -962,7 +962,7 @@ export default function EventFormPage() {
                     {/* Image Preview */}
                     {imagePreview && (
                       <div className="mt-4 relative">
-                        <div className="relative w-full h-48 overflow-hidden bg-slate-100 border border-slate-200">
+                        <div className="relative w-full h-48 overflow-hidden bg-bg-secondary border border-border rounded-lg">
                           <img
                             src={imagePreview}
                             alt="Event preview"
@@ -971,7 +971,7 @@ export default function EventFormPage() {
                           <button
                             type="button"
                             onClick={removeImage}
-                            className="absolute top-2 right-2 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors duration-200"
+                            className="absolute top-2 right-2 w-8 h-8 bg-error text-bg-primary rounded-full flex items-center justify-center hover:bg-error/90 transition-colors duration-200 cursor-pointer"
                           >
                             <svg
                               className="w-4 h-4"
@@ -988,7 +988,7 @@ export default function EventFormPage() {
                             </svg>
                           </button>
                         </div>
-                        <p className="text-sm text-slate-500 mt-2">
+                        <p className="text-sm text-text-secondary mt-2">
                           {selectedFile
                             ? `Selected: ${selectedFile.name}`
                             : "Current event image"}
@@ -996,7 +996,7 @@ export default function EventFormPage() {
                       </div>
                     )}
 
-                    <p className="text-sm text-slate-500 mt-2">
+                    <p className="text-sm text-text-secondary mt-2">
                       Optional: Add an image for your event
                     </p>
                   </div>
@@ -1005,12 +1005,12 @@ export default function EventFormPage() {
 
               {/* Refund Policy Section - Full Width */}
               <div className="mt-8">
-                <div className="bg-slate-50 border border-slate-200 p-6">
+                <div className="bg-bg-secondary border border-border p-6 rounded-lg">
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="w-8 h-8 bg-slate-100 border border-slate-200 flex items-center justify-center">
-                      <span className="text-slate-900 font-bold text-lg">₹</span>
+                    <div className="w-8 h-8 bg-bg-secondary border border-border flex items-center justify-center rounded-lg">
+                      <span className="text-primary font-bold text-lg">₹</span>
                     </div>
-                    <h3 className="text-lg font-semibold text-slate-800">
+                    <h3 className="text-lg font-semibold text-text-primary">
                       Refund Policy
                     </h3>
                   </div>
@@ -1026,13 +1026,13 @@ export default function EventFormPage() {
                         className="sr-only"
                       />
                       <div className={`w-4 h-4 rounded-full border-2 mr-2 flex items-center justify-center ${
-                        form.useDefaultRefundPolicy ? 'border-slate-900 bg-slate-900' : 'border-slate-300'
+                        form.useDefaultRefundPolicy ? 'border-primary bg-primary' : 'border-border'
                       }`}>
                         {form.useDefaultRefundPolicy && (
-                          <div className="w-2 h-2 bg-white rounded-full"></div>
+                          <div className="w-2 h-2 bg-bg-primary rounded-full"></div>
                         )}
                       </div>
-                      <span className="text-sm font-medium text-slate-700">
+                      <span className="text-sm font-medium text-text-primary">
                         Use Default Policy
                       </span>
                     </label>
@@ -1046,13 +1046,13 @@ export default function EventFormPage() {
                         className="sr-only"
                       />
                       <div className={`w-4 h-4 rounded-full border-2 mr-2 flex items-center justify-center ${
-                        !form.useDefaultRefundPolicy ? 'border-slate-900 bg-slate-900' : 'border-slate-300'
+                        !form.useDefaultRefundPolicy ? 'border-primary bg-primary' : 'border-border'
                       }`}>
                         {!form.useDefaultRefundPolicy && (
-                          <div className="w-2 h-2 bg-white rounded-full"></div>
+                          <div className="w-2 h-2 bg-bg-primary rounded-full"></div>
                         )}
                       </div>
-                      <span className="text-sm font-medium text-slate-700">
+                      <span className="text-sm font-medium text-text-primary">
                         Custom Policy
                       </span>
                     </label>
@@ -1060,35 +1060,35 @@ export default function EventFormPage() {
 
                   {/* Default Policy Display */}
                   {form.useDefaultRefundPolicy ? (
-                    <div className="bg-white p-4 border border-slate-200">
-                      <h4 className="text-sm font-semibold text-slate-700 mb-3">
+                    <div className="bg-bg-primary p-4 border border-border rounded-lg">
+                      <h4 className="text-sm font-semibold text-text-primary mb-3">
                         Default Refund Policy:
                       </h4>
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm text-slate-600">
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm text-text-secondary">
                         <div className="flex justify-between sm:flex-col sm:items-center sm:text-center">
                           <span className="sm:mb-1">7+ days before event:</span>
-                          <span className="font-medium text-green-600">100% refund</span>
+                          <span className="font-medium text-success">100% refund</span>
                         </div>
                         <div className="flex justify-between sm:flex-col sm:items-center sm:text-center">
                           <span className="sm:mb-1">1-7 days before event:</span>
-                          <span className="font-medium text-yellow-600">50% refund</span>
+                          <span className="font-medium text-warning">50% refund</span>
                         </div>
                         <div className="flex justify-between sm:flex-col sm:items-center sm:text-center">
                           <span className="sm:mb-1">Less than 24 hours:</span>
-                          <span className="font-medium text-red-600">No refund</span>
+                          <span className="font-medium text-error">No refund</span>
                         </div>
                       </div>
                     </div>
                   ) : (
                     /* Custom Policy Form */
-                    <div className="bg-white p-4 border border-slate-200 space-y-4">
-                      <h4 className="text-sm font-semibold text-slate-700 mb-3">
+                    <div className="bg-bg-primary p-4 border border-border space-y-4 rounded-lg">
+                      <h4 className="text-sm font-semibold text-text-primary mb-3">
                         Custom Refund Policy:
                       </h4>
                       
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <div>
-                          <label className="block text-xs font-medium text-slate-600 mb-1">
+                          <label className="block text-xs font-medium text-text-secondary mb-1">
                             7+ Days Before Event (%)
                           </label>
                           <input
@@ -1097,12 +1097,12 @@ export default function EventFormPage() {
                             max="100"
                             value={form.customRefundPolicy.sevenDaysOrMore}
                             onChange={(e) => handleCustomRefundPolicyChange('sevenDaysOrMore', e.target.value)}
-                            className="w-full px-3 py-2 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900 text-sm"
+                            className="w-full px-3 py-2 border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm bg-bg-primary rounded-lg cursor-pointer"
                           />
                         </div>
                         
                         <div>
-                          <label className="block text-xs font-medium text-slate-600 mb-1">
+                          <label className="block text-xs font-medium text-text-secondary mb-1">
                             1-7 Days Before Event (%)
                           </label>
                           <input
@@ -1111,12 +1111,12 @@ export default function EventFormPage() {
                             max="100"
                             value={form.customRefundPolicy.oneToDays}
                             onChange={(e) => handleCustomRefundPolicyChange('oneToDays', e.target.value)}
-                            className="w-full px-3 py-2 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900 text-sm"
+                            className="w-full px-3 py-2 border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm bg-bg-primary rounded-lg cursor-pointer"
                           />
                         </div>
                         
                         <div>
-                          <label className="block text-xs font-medium text-slate-600 mb-1">
+                          <label className="block text-xs font-medium text-text-secondary mb-1">
                             Less Than 24 Hours (%)
                           </label>
                           <input
@@ -1125,20 +1125,20 @@ export default function EventFormPage() {
                             max="100"
                             value={form.customRefundPolicy.lessThanDay}
                             onChange={(e) => handleCustomRefundPolicyChange('lessThanDay', e.target.value)}
-                            className="w-full px-3 py-2 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900 text-sm"
+                            className="w-full px-3 py-2 border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm bg-bg-primary rounded-lg cursor-pointer"
                           />
                         </div>
                       </div>
                       
                       <div>
-                        <label className="block text-xs font-medium text-slate-600 mb-1">
+                        <label className="block text-xs font-medium text-text-secondary mb-1">
                           Policy Description (Optional)
                         </label>
                         <textarea
                           value={form.customRefundPolicy.description}
                           onChange={(e) => handleCustomRefundPolicyChange('description', e.target.value)}
                           placeholder="Describe your refund policy in detail..."
-                          className="w-full px-3 py-2 border border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900 text-sm"
+                          className="w-full px-3 py-2 border border-border focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm bg-bg-primary rounded-lg cursor-pointer"
                           rows="3"
                         />
                       </div>
@@ -1149,36 +1149,36 @@ export default function EventFormPage() {
 
               {/* Venue Selector - Full Width */}
               <div className="mt-8">
-                <label className="block text-sm font-semibold text-slate-800 mb-2">
+                <label className="block text-sm font-semibold text-text-primary mb-2">
                   Venue Location
                 </label>
-                <div className="bg-slate-50 border border-slate-300 p-4">
+                <div className="bg-bg-secondary border border-border p-4 rounded-lg">
                   <VenueSelector
                     onVenueSelect={handleVenueSelect}
                     selectedVenue={form.venue}
                     city={form.city}
                   />
                 </div>
-                <p className="text-sm text-slate-500 mt-2">
+                <p className="text-sm text-text-secondary mt-2">
                   Click on the map to select your event venue location
                 </p>
               </div>
             </div>
 
             {/* Action Buttons */}
-            <div className="px-8 py-6 bg-slate-50 border-t border-slate-200">
+            <div className="px-8 py-6 bg-bg-secondary border-t border-border">
               <div className="flex flex-col sm:flex-row gap-3">
                 <button
                   type="button"
                   onClick={() => navigate("/organizer")}
-                  className="flex-1 bg-white border border-slate-200 text-slate-700 py-3 px-6 font-semibold hover:bg-slate-50 transition-colors"
+                  className="flex-1 bg-bg-primary border border-border text-text-secondary py-3 px-6 font-semibold hover:bg-bg-secondary transition-colors rounded-lg cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="flex-1 bg-slate-900 text-white py-3 px-6 font-semibold hover:bg-slate-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="flex-1 bg-primary text-bg-primary py-3 px-6 font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 rounded-lg cursor-pointer"
                 >
                   {submitting ? (
                     <>

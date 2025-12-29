@@ -29,16 +29,16 @@ const TicketView = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="bg-white border border-slate-200 p-8">
+      <div className="min-h-screen bg-bg-primary flex items-center justify-center">
+        <div className="bg-bg-primary border border-border rounded-lg p-8">
           <div className="flex items-center gap-4">
-            <div className="w-8 h-8 border-b-2 border-slate-900 rounded-full border-t-transparent animate-spin">
+            <div className="w-8 h-8 border-b-2 border-primary rounded-full border-t-transparent animate-spin">
             </div>
             <div>
-              <h2 className="text-xl font-semibold text-slate-800">
+              <h2 className="text-xl font-semibold text-text-primary">
                 Loading your ticket...
               </h2>
-              <p className="text-slate-600">
+              <p className="text-text-secondary">
                 Please wait while we fetch your digital ticket
               </p>
             </div>
@@ -50,11 +50,11 @@ const TicketView = () => {
 
   if (!ticket) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="bg-white border border-slate-200 p-12 text-center max-w-md mx-auto">
-          <div className="w-20 h-20 bg-red-100 border border-red-200 flex items-center justify-center mx-auto mb-6">
+      <div className="min-h-screen bg-bg-primary flex items-center justify-center">
+        <div className="bg-bg-primary border border-border rounded-lg p-12 text-center max-w-md mx-auto">
+          <div className="w-20 h-20 bg-error/10 border border-error/20 rounded-lg flex items-center justify-center mx-auto mb-6">
             <svg
-              className="w-10 h-10 text-red-600"
+              className="w-10 h-10 text-error"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -67,16 +67,16 @@ const TicketView = () => {
               />
             </svg>
           </div>
-          <h2 className="text-2xl font-bold text-slate-800 mb-2">
+          <h2 className="text-2xl font-bold text-text-primary mb-2">
             Ticket Not Found
           </h2>
-          <p className="text-slate-600 mb-6">
+          <p className="text-text-secondary mb-6">
             We couldn't find the ticket you're looking for. It may have been
             moved or doesn't exist.
           </p>
           <button
             onClick={() => navigate("/dashboard")}
-            className="bg-slate-900 text-white px-6 py-3 font-semibold hover:bg-slate-800 transition-colors"
+            className="bg-primary text-bg-primary px-6 py-3 rounded-lg font-semibold hover:bg-primary/90 transition-colors cursor-pointer"
           >
             Back to Dashboard
           </button>
@@ -114,13 +114,13 @@ const TicketView = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white py-8">
+    <div className="min-h-screen bg-bg-primary py-8">
       <div className="max-w-md mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-6">
           <button
             onClick={() => navigate("/dashboard")}
-            className="inline-flex items-center gap-2 text-slate-600 hover:text-slate-800 transition-colors mb-4"
+            className="inline-flex items-center gap-2 text-text-secondary hover:text-text-primary transition-colors mb-4 cursor-pointer"
           >
             <svg
               className="w-4 h-4"
@@ -137,16 +137,16 @@ const TicketView = () => {
             </svg>
             Back to Dashboard
           </button>
-          <h1 className="text-2xl font-bold text-slate-800">Digital Ticket</h1>
-          <p className="text-slate-600">Present this at the event entrance</p>
+          <h1 className="text-2xl font-bold text-text-primary">Digital Ticket</h1>
+          <p className="text-text-secondary">Present this at the event entrance</p>
         </div>
 
         {/* Ticket Card */}
-        <div className="bg-white border-2 border-slate-200 overflow-hidden">
+        <div className="bg-bg-primary border-2 border-border rounded-lg overflow-hidden">
           {/* Ticket Header */}
-          <div className="bg-slate-900 p-6 text-white relative">
+          <div className="bg-primary p-6 text-bg-primary relative rounded-t-lg">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 bg-white/20 border border-white/30 flex items-center justify-center">
+              <div className="w-12 h-12 bg-bg-primary/20 border border-bg-primary/30 rounded-lg flex items-center justify-center">
                 <svg
                   className="w-6 h-6"
                   fill="none"
@@ -165,7 +165,7 @@ const TicketView = () => {
                 <h2 className="text-xl font-bold">
                   {ticket.event?.title || "Event Ticket"}
                 </h2>
-                <p className="text-white/80 text-sm">
+                <p className="text-bg-primary/80 text-sm">
                   {ticket.event?.date &&
                     format(new Date(ticket.event.date), "PPP 'at' p")}
                 </p>
@@ -175,10 +175,10 @@ const TicketView = () => {
             {/* Status Badge */}
             <div className="flex justify-between items-center">
               <span
-                className={`inline-flex items-center gap-1 px-3 py-1 text-sm font-semibold ${
+                className={`inline-flex items-center gap-1 px-3 py-1 rounded-md text-sm font-semibold border ${
                   ticket.verified
-                    ? "bg-green-100 text-green-800 border border-green-200"
-                    : "bg-orange-100 text-orange-800 border border-orange-200"
+                    ? "bg-success/10 text-success border-success/20"
+                    : "bg-warning/10 text-warning border-warning/20"
                 }`}
               >
                 {ticket.verified ? (
@@ -216,29 +216,29 @@ const TicketView = () => {
             </div>
 
             {/* Decorative Elements */}
-            <div className="absolute -right-4 top-1/2 transform -translate-y-1/2 w-8 h-8 bg-white rounded-full"></div>
-            <div className="absolute -left-4 top-1/2 transform -translate-y-1/2 w-8 h-8 bg-white rounded-full"></div>
+            <div className="absolute -right-4 top-1/2 transform -translate-y-1/2 w-8 h-8 bg-bg-primary rounded-full"></div>
+            <div className="absolute -left-4 top-1/2 transform -translate-y-1/2 w-8 h-8 bg-bg-primary rounded-full"></div>
           </div>
 
           {/* QR Code Section */}
-          <div className="p-8 text-center border-b border-slate-100">
-            <div className="inline-block p-6 bg-slate-50 border-2 border-slate-200 mb-4">
+          <div className="p-8 text-center border-b border-border">
+            <div className="inline-block p-6 bg-bg-secondary border-2 border-border rounded-lg mb-4">
               <img
                 src={ticket.qrCode}
                 alt="Ticket QR Code"
                 className="w-48 h-48 mx-auto"
               />
             </div>
-            <p className="text-slate-600 text-sm">
+            <p className="text-text-secondary text-sm">
               Scan this QR code for event entry
             </p>
           </div>
 
           {/* Ticket Details */}
           <div className="p-6">
-            <h3 className="font-semibold text-slate-800 mb-4 flex items-center gap-2">
+            <h3 className="font-semibold text-text-primary mb-4 flex items-center gap-2">
               <svg
-                className="w-5 h-5 text-slate-900"
+                className="w-5 h-5 text-primary"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -254,27 +254,27 @@ const TicketView = () => {
             </h3>
 
             <div className="space-y-4">
-              <div className="p-3 bg-slate-50 border border-slate-200">
-                <span className="text-slate-600 font-medium text-sm block mb-2">
+              <div className="p-3 bg-bg-secondary border border-border rounded-lg">
+                <span className="text-text-secondary font-medium text-sm block mb-2">
                   Ticket ID
                 </span>
-                <span className="font-mono text-sm bg-slate-100 px-3 py-1 border border-slate-200 text-slate-800">
+                <span className="font-mono text-sm bg-bg-secondary border border-border rounded-md px-3 py-1 text-text-primary">
                   {ticket.ticketId}
                 </span>
               </div>
 
               {ticket.event?.location && (
-                <div className="flex justify-between items-center p-3 bg-slate-50 border border-slate-200">
-                  <span className="text-slate-600 font-medium">Venue</span>
-                  <span className="text-slate-800 font-semibold">
+                <div className="flex justify-between items-center p-3 bg-bg-secondary border border-border rounded-lg">
+                  <span className="text-text-secondary font-medium">Venue</span>
+                  <span className="text-text-primary font-semibold">
                     {ticket.event.location}
                   </span>
                 </div>
               )}
 
               {(ticket.seats || ticket.ticketItems) && (
-                <div className="p-3 bg-slate-50 border border-slate-200">
-                  <span className="text-slate-600 font-medium text-sm block mb-2">
+                <div className="p-3 bg-bg-secondary border border-border rounded-lg">
+                  <span className="text-text-secondary font-medium text-sm block mb-2">
                     {ticket.hasTicketCategories ? "Tickets Booked" : "Seats"}
                   </span>
                   {ticket.hasTicketCategories && ticket.ticketItems ? (
@@ -282,29 +282,29 @@ const TicketView = () => {
                       {ticket.ticketItems.map((item, index) => (
                         <div
                           key={index}
-                          className="flex justify-between items-center bg-slate-100 px-3 py-2 border border-slate-200"
+                          className="flex justify-between items-center bg-bg-primary px-3 py-2 border border-border rounded-md"
                         >
-                          <span className="text-slate-700 font-medium">
+                          <span className="text-text-primary font-medium">
                             {item.categoryName}
                           </span>
-                          <span className="text-slate-800 font-semibold">
+                          <span className="text-text-primary font-semibold">
                             {item.quantity} ticket
                             {item.quantity !== 1 ? "s" : ""}
                           </span>
                         </div>
                       ))}
-                      <div className="flex justify-between items-center bg-blue-100 px-3 py-2 border border-blue-200">
-                        <span className="text-blue-700 font-semibold">
+                      <div className="flex justify-between items-center bg-primary/10 px-3 py-2 border border-primary/20 rounded-md">
+                        <span className="text-primary font-semibold">
                           Total
                         </span>
-                        <span className="text-blue-800 font-bold">
+                        <span className="text-primary font-bold">
                           {ticket.totalQuantity} ticket
                           {ticket.totalQuantity !== 1 ? "s" : ""}
                         </span>
                       </div>
                     </div>
                   ) : (
-                    <span className="font-mono text-sm bg-slate-100 px-3 py-1 border border-slate-200 text-slate-800">
+                    <span className="font-mono text-sm bg-bg-primary px-3 py-1 border border-border rounded-md text-text-primary">
                       {ticket.seats}
                     </span>
                   )}
@@ -317,7 +317,7 @@ const TicketView = () => {
           <div className="p-6 pt-0 space-y-3">
             <button
               onClick={downloadQR}
-              className="w-full flex items-center justify-center gap-2 bg-slate-900 text-white py-3 px-4 font-semibold hover:bg-slate-800 transition-colors"
+              className="w-full flex items-center justify-center gap-2 bg-primary text-bg-primary py-3 px-4 rounded-lg font-semibold hover:bg-primary/90 transition-colors cursor-pointer"
             >
               <svg
                 className="w-5 h-5"
@@ -337,7 +337,7 @@ const TicketView = () => {
 
             <button
               onClick={shareTicket}
-              className="w-full flex items-center justify-center gap-2 bg-slate-100 text-slate-700 py-3 px-4 font-semibold hover:bg-slate-200 transition-colors border border-slate-200"
+              className="w-full flex items-center justify-center gap-2 bg-bg-secondary text-text-primary py-3 px-4 rounded-lg font-semibold hover:bg-bg-secondary/80 transition-colors border border-border cursor-pointer"
             >
               <svg
                 className="w-5 h-5"
@@ -358,11 +358,11 @@ const TicketView = () => {
 
           {/* Security Notice */}
           <div className="p-6 pt-0">
-            <div className="bg-amber-50 border border-amber-200 p-4">
+            <div className="bg-warning/10 border border-warning/20 rounded-lg p-4">
               <div className="flex gap-3">
-                <div className="w-6 h-6 bg-amber-100 border border-amber-200 flex items-center justify-center flex-shrink-0">
+                <div className="w-6 h-6 bg-warning/20 border border-warning/30 rounded-md flex items-center justify-center flex-shrink-0">
                   <svg
-                    className="w-4 h-4 text-amber-600"
+                    className="w-4 h-4 text-warning"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -376,10 +376,10 @@ const TicketView = () => {
                   </svg>
                 </div>
                 <div>
-                  <h4 className="font-semibold text-amber-800 mb-1">
+                  <h4 className="font-semibold text-warning mb-1">
                     Security Notice
                   </h4>
-                  <p className="text-sm text-amber-700">
+                  <p className="text-sm text-warning">
                     Keep this QR code secure. Screenshots are valid for entry.
                     Only share at the event entrance.
                   </p>
