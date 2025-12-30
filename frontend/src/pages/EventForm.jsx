@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import apiClient from "../api/apiClient";
 import toast from "react-hot-toast";
 import VenueSelector from "../components/VenueSelector";
+import VerificationNotice from "../components/VerificationNotice";
 import { ArrowLeft, Upload, X, Calendar, MapPin, Users, Tag, Plus, Trash2, ChevronDown, Check } from 'lucide-react';
 
 export default function EventFormPage() {
@@ -413,6 +414,9 @@ export default function EventFormPage() {
   return (
     <div className="min-h-screen bg-white py-8">
       <div className="max-w-4xl mx-auto px-6">
+        {/* Verification Notice */}
+        <VerificationNotice />
+        
         {/* Header */}
         <div className="mb-8">
           <button

@@ -39,7 +39,10 @@ export const getProfile = async () => {
 
 export const updateProfile = async (userData) => {
   const response = await apiClient.patch("/users/update", userData);
-  return response.data.user; // updated user object
+  return {
+    user: response.data.user,
+    emailChanged: response.data.emailChanged || false,
+  };
 };
 
 export const deleteAccount = async () => {

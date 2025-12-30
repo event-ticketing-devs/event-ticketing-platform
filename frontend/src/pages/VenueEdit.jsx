@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Loader } from "@googlemaps/js-api-loader";
 import apiClient from "../api/apiClient";
 import toast from "react-hot-toast";
+import VerificationNotice from "../components/VerificationNotice";
 import { Upload, X, CheckCircle2, AlertTriangle } from 'lucide-react';
 
 const VenueEdit = () => {
@@ -376,6 +377,9 @@ const VenueEdit = () => {
   return (
     <div className="min-h-screen bg-bg-secondary py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Verification Notice */}
+        <VerificationNotice />
+        
         <div className="mb-6">
           <button
             onClick={() => navigate("/venue-partner")}

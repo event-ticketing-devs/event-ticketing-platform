@@ -43,6 +43,7 @@ import AdminVenueActivity from "./pages/AdminVenueActivity";
 import VenueOptionsManagement from "./pages/VenueOptionsManagement";
 import ComparisonTray from "./components/ComparisonTray";
 import SpaceComparisonModal from "./components/SpaceComparisonModal";
+import VerifyEmail from "./pages/VerifyEmail";
 
 function App() {
   return (
@@ -60,6 +61,7 @@ function App() {
                 <Route path="/contact" element={<ContactUs />} />
                 <Route path="/venues" element={<Venues />} />
                 <Route path="/venues/:id" element={<VenueDetails />} />
+                <Route path="/verify-email" element={<VerifyEmail />} />
                 <Route path="*" element={<NotFound />} />
                 <Route
                   path="/login"

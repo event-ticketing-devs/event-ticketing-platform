@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Loader } from "@googlemaps/js-api-loader";
 import apiClient from "../api/apiClient";
 import toast from "react-hot-toast";
+import VerificationNotice from "../components/VerificationNotice";
 import { Upload, X } from 'lucide-react';
 
 const VenueRegistration = () => {
@@ -293,6 +294,9 @@ const VenueRegistration = () => {
   return (
     <div className="min-h-screen bg-bg-secondary py-8">
       <div className="max-w-5xl mx-auto px-4">
+        {/* Verification Notice */}
+        <VerificationNotice />
+        
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-text-primary">Register Your Venue</h1>
           <p className="text-text-secondary mt-2">

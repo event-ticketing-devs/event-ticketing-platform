@@ -6,10 +6,11 @@ import { useNavigate } from "react-router-dom";
 import { deleteAccount } from "../services/authService";
 import ConfirmModal from "../components/ConfirmModal";
 import apiClient from "../api/apiClient";
-import { User, Mail, Phone, Edit, Trash2, Calendar, Ticket, CheckCircle2, Check } from 'lucide-react';
+import { User, Mail, Phone, Edit, Trash2, Calendar, Ticket, CheckCircle2, Check, MailCheck, AlertCircle } from 'lucide-react';
 
 const Profile = () => {
   const [showModal, setShowModal] = useState(false);
+  const [sendingVerification, setSendingVerification] = useState(false);
   const [userStats, setUserStats] = useState({
     totalBookings: 0,
     upcomingEvents: 0,
@@ -17,8 +18,18 @@ const Profile = () => {
     totalSpent: 0,
   });
   const [loading, setLoading] = useState(true);
-  const { currentUser, logout } = useAuth();
+  const { currentUser, logout, updateUser, refreshUser } = useAuth();
   const navigate = useNavigate();
+
+  // Refresh user data on mount to ensure isVerified is up-to-date
+  useEffect(() => {
+    const refreshUserData = async () => {
+      if (refreshUser) {
+        await refreshUser();
+      }
+    };
+    refreshUserData();
+  }, [refreshUser]);
 
   useEffect(() => {
     const fetchUserStats = async () => {
@@ -75,6 +86,28 @@ const Profile = () => {
       navigate("/");
     } catch (err) {
       toast.error(err.response?.data?.message || "Failed to delete account");
+    }
+  };
+
+  const handleResendVerification = async () => {
+    if (!currentUser?.email) {
+      toast.error("Please add an email address to your profile to get verified");
+      navigate("/profile/update");
+      return;
+    }
+
+    try {
+      setSendingVerification(true);
+      await apiClient.post("/auth/resend-verification", {
+        email: currentUser.email,
+      });
+      toast.success("Verification email sent! Please check your inbox.");
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || "Failed to send verification email"
+      );
+    } finally {
+      setSendingVerification(false);
     }
   };
 
@@ -137,7 +170,7 @@ const Profile = () => {
                     currentUser?.role
                   )}`}
                 >
-                  {currentUser?.role || "User"}
+                  {currentUser?.role ? currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1) : "User"}
                 </span>
               </div>
               <div className="space-y-1.5 sm:space-y-2 text-text-secondary text-sm sm:text-base">
@@ -156,6 +189,16 @@ const Profile = () => {
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row md:flex-col gap-2 sm:gap-3 w-full md:w-auto">
+              {!currentUser?.isVerified && (
+                <button
+                  onClick={handleResendVerification}
+                  disabled={sendingVerification}
+                  className="flex items-center justify-center gap-2 bg-warning text-white px-4 sm:px-6 py-2 rounded-lg font-semibold hover:bg-warning/90 transition-colors cursor-pointer text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <MailCheck className="w-4 h-4" />
+                  {sendingVerification ? "Sending..." : "Verify Email"}
+                </button>
+              )}
               <Link
                 to="/profile/update"
                 className="flex items-center justify-center gap-2 bg-primary text-white px-4 sm:px-6 py-2 rounded-lg font-semibold hover:bg-primary/90 transition-colors cursor-pointer text-sm sm:text-base"
@@ -173,6 +216,53 @@ const Profile = () => {
             </div>
           </div>
         </div>
+
+        {/* Verification Status Section */}
+        {!currentUser?.isVerified && (
+          <div className="bg-warning/10 border border-warning rounded-lg p-6 mb-8">
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0">
+                <div className="w-12 h-12 bg-warning/20 rounded-full flex items-center justify-center">
+                  <AlertCircle className="w-6 h-6 text-warning" />
+                </div>
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="text-lg font-semibold text-text-primary mb-2">
+                  Email Verification Required
+                </h3>
+                {currentUser?.email ? (
+                  <>
+                    <p className="text-text-secondary mb-4">
+                      Your email address <strong>{currentUser.email}</strong> needs to be verified. 
+                      You won't be able to create or edit events and venues until you verify your email.
+                    </p>
+                    <button
+                      onClick={handleResendVerification}
+                      disabled={sendingVerification}
+                      className="inline-flex items-center gap-2 bg-warning text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-warning/90 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <MailCheck className="w-4 h-4" />
+                      {sendingVerification ? "Sending..." : "Send Verification Email"}
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-text-secondary mb-4">
+                      You need to add an email address to your profile to get verified and access all features.
+                    </p>
+                    <Link
+                      to="/profile/update"
+                      className="inline-flex items-center gap-2 bg-warning text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-warning/90 transition-colors cursor-pointer"
+                    >
+                      <Mail className="w-4 h-4" />
+                      Add Email Address
+                    </Link>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Stats Section */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
