@@ -93,6 +93,11 @@ const venueSchema = new mongoose.Schema(
     photo: {
       type: String,
     },
+    description: {
+      type: String,
+      trim: true,
+      maxlength: 2000,
+    },
   },
   {
     timestamps: true,

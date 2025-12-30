@@ -21,6 +21,7 @@ const VenueEdit = () => {
     name: "",
     city: "",
     fullAddress: "",
+    description: "",
     location: {
       coordinates: {
         lat: null,
@@ -63,6 +64,7 @@ const VenueEdit = () => {
         name: venue.name || "",
         city: venue.city || "",
         fullAddress: venue.fullAddress || "",
+        description: venue.description || "",
         location: venue.location || {
           coordinates: { lat: null, lng: null },
           placeId: "",
@@ -333,6 +335,7 @@ const VenueEdit = () => {
       formData.append("name", form.name);
       formData.append("city", form.city);
       formData.append("fullAddress", form.fullAddress);
+      formData.append("description", form.description);
       formData.append("location", JSON.stringify(form.location));
       formData.append("parking", JSON.stringify(form.parking));
       formData.append("primaryContact", JSON.stringify(form.primaryContact));
@@ -615,6 +618,27 @@ const VenueEdit = () => {
                   className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-transparent"
                 />
               )}
+            </div>
+          </div>
+
+          {/* Venue Description */}
+          <div className="bg-bg-primary border border-border rounded-lg p-4 sm:p-6">
+            <h2 className="text-xl font-semibold text-text-primary mb-4">Venue Description</h2>
+            <textarea
+              value={form.description}
+              onChange={(e) => setForm({ ...form, description: e.target.value })}
+              rows={4}
+              maxLength={2000}
+              placeholder="Describe your venue, its unique features, ambiance, and what makes it special..."
+              className="w-full px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-transparent resize-none"
+            />
+            <div className="flex justify-between mt-2">
+              <p className="text-xs sm:text-sm text-text-secondary">
+                Help potential clients understand what makes your venue unique
+              </p>
+              <p className="text-xs text-text-secondary">
+                {form.description.length}/2000
+              </p>
             </div>
           </div>
 

@@ -20,6 +20,7 @@ const VenueRegistration = () => {
     name: "",
     city: "",
     fullAddress: "",
+    description: "",
     location: {
       coordinates: {
         lat: null,
@@ -262,6 +263,7 @@ const VenueRegistration = () => {
       formData.append("name", form.name);
       formData.append("city", form.city);
       formData.append("fullAddress", form.fullAddress);
+      formData.append("description", form.description);
       formData.append("location", JSON.stringify(form.location));
       formData.append("parking", JSON.stringify(form.parking));
       formData.append("primaryContact", JSON.stringify(form.primaryContact));
@@ -437,6 +439,27 @@ const VenueRegistration = () => {
                   className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20"
                 />
               )}
+            </div>
+          </div>
+
+          {/* Venue Description */}
+          <div className="bg-bg-primary border border-border rounded-lg p-4 sm:p-6">
+            <h2 className="text-xl font-semibold mb-4">Venue Description</h2>
+            <textarea
+              value={form.description}
+              onChange={(e) => setForm({ ...form, description: e.target.value })}
+              rows={4}
+              maxLength={2000}
+              placeholder="Describe your venue, its unique features, ambiance, and what makes it special..."
+              className="w-full px-3 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 resize-none"
+            />
+            <div className="flex justify-between mt-2">
+              <p className="text-xs sm:text-sm text-text-secondary">
+                Help potential clients understand what makes your venue unique
+              </p>
+              <p className="text-xs text-text-secondary">
+                {form.description.length}/2000
+              </p>
             </div>
           </div>
 

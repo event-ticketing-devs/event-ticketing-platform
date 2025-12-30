@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import apiClient from "../api/apiClient";
 import toast from "react-hot-toast";
-import { STANDARD_AMENITIES, STANDARD_POLICY_ITEMS } from "../constants/venueConstants";
+import { useVenueOptions } from "../utils/venueOptions";
 import ConfirmModal from "../components/ConfirmModal";
 import { ArrowLeft, Plus, Building2, Users, X, Image, Maximize } from 'lucide-react';
 
@@ -10,6 +10,12 @@ const SpaceManagement = () => {
   const { venueId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
+  
+  // Fetch dynamic options from API
+  const { options: amenityOptions, loading: amenitiesLoading } = useVenueOptions('amenity');
+  const { options: eventTypeOptions, loading: eventTypesLoading } = useVenueOptions('eventType');
+  const { options: policyItemOptions, loading: policyItemsLoading } = useVenueOptions('policyItem');
+  
   const [venue, setVenue] = useState(null);
   const [spaces, setSpaces] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -28,6 +34,7 @@ const SpaceManagement = () => {
     name: "",
     type: "hall",
     indoorOutdoor: "indoor",
+    description: "",
     maxPax: "",
     areaSqFt: "",
     supportedEventTypes: [],
@@ -40,7 +47,6 @@ const SpaceManagement = () => {
     }
   });
 
-  const eventTypes = ["wedding", "conference", "concert", "birthday", "corporate", "exhibition"];
   const spaceTypes = ["hall", "lawn", "auditorium", "open-area"];
 
   useEffect(() => {
@@ -76,6 +82,7 @@ const SpaceManagement = () => {
       name: "",
       type: "hall",
       indoorOutdoor: "indoor",
+      description: "",
       maxPax: "",
       areaSqFt: "",
       supportedEventTypes: [],
@@ -114,6 +121,7 @@ const SpaceManagement = () => {
       name: space.name || "",
       type: space.type || "hall",
       indoorOutdoor: space.indoorOutdoor || "indoor",
+      description: space.description || "",
       maxPax: space.maxPax || "",
       areaSqFt: space.areaSqFt || "",
       supportedEventTypes: space.supportedEventTypes || [],
@@ -338,6 +346,29 @@ const SpaceManagement = () => {
                     className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                   />
                 </div>
+
+                {/* Space Description */}
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-text-primary mb-2">
+                    Space Description
+                  </label>
+                  <textarea
+                    value={form.description}
+                    onChange={(e) => setForm({ ...form, description: e.target.value })}
+                    rows={3}
+                    maxLength={2000}
+                    placeholder="Describe this space, its features, ideal use cases, and what makes it unique..."
+                    className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+                  />
+                  <div className="flex justify-between mt-1">
+                    <p className="text-xs text-text-secondary">
+                      Help clients understand what makes this space special
+                    </p>
+                    <p className="text-xs text-text-secondary">
+                      {form.description.length}/2000
+                    </p>
+                  </div>
+                </div>
               </div>
 
               {/* Photos */}
@@ -398,27 +429,31 @@ const SpaceManagement = () => {
                 <label className="block text-sm font-medium text-text-primary mb-3">
                   Supported Event Types
                 </label>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                  {eventTypes.map(type => (
-                    <label
-                      key={type}
-                      className="flex items-center gap-3 p-3 border border-border rounded-lg hover:border-primary/30 cursor-pointer transition-colors"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={form.supportedEventTypes.some(t => t === type || t.startsWith(type))}
-                        onChange={() => 
-                          setForm({
-                            ...form,
-                            supportedEventTypes: toggleArrayItem(form.supportedEventTypes.filter(t => !t.startsWith('other:')), type)
-                          })
-                        }
-                        className="w-4 h-4 text-primary focus:ring-primary"
-                      />
-                      <span className="text-text-primary capitalize">{type}</span>
-                    </label>
-                  ))}
-                </div>
+                {eventTypesLoading ? (
+                  <p className="text-sm text-text-secondary">Loading event types...</p>
+                ) : (
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    {eventTypeOptions.map(option => (
+                      <label
+                        key={option.value}
+                        className="flex items-center gap-3 p-3 border border-border rounded-lg hover:border-primary/30 cursor-pointer transition-colors"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={form.supportedEventTypes.some(t => t === option.value || t.startsWith(option.value))}
+                          onChange={() => 
+                            setForm({
+                              ...form,
+                              supportedEventTypes: toggleArrayItem(form.supportedEventTypes.filter(t => !t.startsWith('other:')), option.value)
+                            })
+                          }
+                          className="w-4 h-4 text-primary focus:ring-primary"
+                        />
+                        <span className="text-text-primary capitalize">{option.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                )}
 
                 {/* Custom Event Types */}
                 <div className="mt-4">
@@ -499,32 +534,36 @@ const SpaceManagement = () => {
                 <label className="block text-sm font-medium text-text-primary mb-3">
                   Amenities
                 </label>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                  {STANDARD_AMENITIES.map(amenity => (
-                    <label
-                      key={amenity.value}
-                      className="flex items-center gap-3 p-3 border border-border rounded-lg hover:border-primary/30 cursor-pointer transition-colors"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={form.amenities.standard.includes(amenity.value)}
-                        onChange={() =>
-                          setForm({
-                            ...form,
-                            amenities: {
-                              ...form.amenities,
-                              standard: toggleArrayItem(form.amenities.standard, amenity.value)
-                            }
-                          })
-                        }
-                        className="w-4 h-4 text-primary focus:ring-primary"
-                      />
-                      <span className="text-text-primary">
-                        {amenity.label}
-                      </span>
-                    </label>
-                  ))}
-                </div>
+                {amenitiesLoading ? (
+                  <p className="text-sm text-text-secondary">Loading amenities...</p>
+                ) : (
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    {amenityOptions.map(option => (
+                      <label
+                        key={option.value}
+                        className="flex items-center gap-3 p-3 border border-border rounded-lg hover:border-primary/30 cursor-pointer transition-colors"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={form.amenities.standard.includes(option.value)}
+                          onChange={() =>
+                            setForm({
+                              ...form,
+                              amenities: {
+                                ...form.amenities,
+                                standard: toggleArrayItem(form.amenities.standard, option.value)
+                              }
+                            })
+                          }
+                          className="w-4 h-4 text-primary focus:ring-primary"
+                        />
+                        <span className="text-text-primary">
+                          {option.label}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                )}
 
                 {/* Custom Amenities */}
                 <div className="mt-4">
@@ -615,35 +654,39 @@ const SpaceManagement = () => {
                   {/* Allowed Items */}
                   <div>
                     <h4 className="text-sm font-medium text-success mb-3">Allowed</h4>
-                    <div className="space-y-2">
-                      {STANDARD_POLICY_ITEMS.map(item => (
-                        <label
-                          key={item.value}
-                          className="flex items-center gap-3 p-3 border border-border rounded-lg hover:border-success/30 cursor-pointer transition-colors"
-                        >
-                          <input
-                            type="checkbox"
-                            checked={form.policies.allowedItems.standard.includes(item.value)}
-                            onChange={() =>
-                              setForm({
-                                ...form,
-                                policies: {
-                                  ...form.policies,
-                                  allowedItems: {
-                                    ...form.policies.allowedItems,
-                                    standard: toggleArrayItem(form.policies.allowedItems.standard, item.value)
+                    {policyItemsLoading ? (
+                      <p className="text-sm text-text-secondary">Loading policy items...</p>
+                    ) : (
+                      <div className="space-y-2">
+                        {policyItemOptions.map(option => (
+                          <label
+                            key={option.value}
+                            className="flex items-center gap-3 p-3 border border-border rounded-lg hover:border-success/30 cursor-pointer transition-colors"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={form.policies.allowedItems.standard.includes(option.value)}
+                              onChange={() =>
+                                setForm({
+                                  ...form,
+                                  policies: {
+                                    ...form.policies,
+                                    allowedItems: {
+                                      ...form.policies.allowedItems,
+                                      standard: toggleArrayItem(form.policies.allowedItems.standard, option.value)
+                                    }
                                   }
-                                }
-                              })
-                            }
-                            className="w-4 h-4 text-success focus:ring-success"
-                          />
-                          <span className="text-text-primary">
-                            {item.label}
-                          </span>
-                        </label>
-                      ))}
-                    </div>
+                                })
+                              }
+                              className="w-4 h-4 text-success focus:ring-success"
+                            />
+                            <span className="text-text-primary">
+                              {option.label}
+                            </span>
+                          </label>
+                        ))}
+                      </div>
+                    )}
 
                     {/* Custom Allowed Items */}
                     <div className="mt-4">
@@ -736,35 +779,39 @@ const SpaceManagement = () => {
                   {/* Banned Items */}
                   <div>
                     <h4 className="text-sm font-medium text-error mb-3">Banned</h4>
-                    <div className="space-y-2">
-                      {STANDARD_POLICY_ITEMS.map(item => (
-                        <label
-                          key={item.value}
-                          className="flex items-center gap-3 p-3 border border-border rounded-lg hover:border-error/30 cursor-pointer transition-colors"
-                        >
-                          <input
-                            type="checkbox"
-                            checked={form.policies.bannedItems.standard.includes(item.value)}
-                            onChange={() =>
-                              setForm({
-                                ...form,
-                                policies: {
-                                  ...form.policies,
-                                  bannedItems: {
-                                    ...form.policies.bannedItems,
-                                    standard: toggleArrayItem(form.policies.bannedItems.standard, item.value)
+                    {policyItemsLoading ? (
+                      <p className="text-sm text-text-secondary">Loading policy items...</p>
+                    ) : (
+                      <div className="space-y-2">
+                        {policyItemOptions.map(option => (
+                          <label
+                            key={option.value}
+                            className="flex items-center gap-3 p-3 border border-border rounded-lg hover:border-error/30 cursor-pointer transition-colors"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={form.policies.bannedItems.standard.includes(option.value)}
+                              onChange={() =>
+                                setForm({
+                                  ...form,
+                                  policies: {
+                                    ...form.policies,
+                                    bannedItems: {
+                                      ...form.policies.bannedItems,
+                                      standard: toggleArrayItem(form.policies.bannedItems.standard, option.value)
+                                    }
                                   }
-                                }
-                              })
-                            }
-                            className="w-4 h-4 text-error focus:ring-error"
-                          />
-                          <span className="text-text-primary">
-                            {item.label}
-                          </span>
-                        </label>
-                      ))}
-                    </div>
+                                })
+                              }
+                              className="w-4 h-4 text-error focus:ring-error"
+                            />
+                            <span className="text-text-primary">
+                              {option.label}
+                            </span>
+                          </label>
+                        ))}
+                      </div>
+                    )}
 
                     {/* Custom Banned Items */}
                     <div className="mt-4">
