@@ -78,7 +78,9 @@ const VenueEdit = () => {
           phone: "",
           email: "",
         },
-        teamMembers: venue.teamMembers || [],
+        teamMembers: venue.teamMembers ? venue.teamMembers.map(tm => 
+          typeof tm === 'object' && tm.email ? tm.email : tm
+        ) : [],
         isListed: venue.isListed !== undefined ? venue.isListed : true,
       });
 
@@ -347,11 +349,12 @@ const VenueEdit = () => {
         formData.append("photo", selectedFile);
       }
 
-      await apiClient.patch(`/venues/${venueId}`, formData, {
+      const response = await apiClient.patch(`/venues/${venueId}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
+      
       toast.success("Venue updated successfully!");
       navigate("/venue-partner");
     } catch (err) {
@@ -547,7 +550,7 @@ const VenueEdit = () => {
           <div className="bg-bg-primary border border-border rounded-lg p-6">
             <h2 className="text-xl font-semibold text-text-primary mb-4">Team Members</h2>
             <p className="text-sm text-text-secondary mb-4">
-              Add team members who can manage spaces and respond to enquiries
+              Add team members who can manage spaces and respond to enquiries. Team members must be registered users (email or Google login).
             </p>
 
             <div className="flex gap-2 mb-4">
