@@ -54,7 +54,7 @@ const notifyUsersAboutDateChange = async (eventId, oldDate, newDate) => {
                   hour: '2-digit',
                   minute: '2-digit'
                 })}</p>
-                <p><strong>Venue:</strong> ${event.venue?.name || event.venue}</p>
+                <p><strong>Venue:</strong> ${typeof event.venue === 'object' && event.venue?.name ? event.venue.name : event.venue || 'Venue details in event description'}</p>
               </div>
               
               <p><strong>Your ticket remains valid</strong> for the new date. If you cannot attend the new date, you may be eligible for a refund according to our refund policy.</p>

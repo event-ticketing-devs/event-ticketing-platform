@@ -75,23 +75,12 @@ const spaceSchema = new mongoose.Schema(
       standard: {
         type: [String],
         default: [],
-        validate: {
-          validator: function(arr) {
-            const validAmenities = [
-              'sound_system', 'microphones', 'projector', 'stage', 'lighting',
-              'green_room', 'power_backup', 'air_conditioning', 'wifi', 'washrooms'
-            ];
-            return arr.every(item => validAmenities.includes(item));
-          },
-          message: 'Invalid standard amenity value'
-        }
       },
       custom: {
         type: [String],
         default: [],
         validate: {
           validator: function(arr) {
-            // No commas allowed in custom values
             return arr.every(item => !item.includes(','));
           },
           message: 'Custom amenities cannot contain commas'
@@ -103,16 +92,6 @@ const spaceSchema = new mongoose.Schema(
         standard: {
           type: [String],
           default: [],
-          validate: {
-            validator: function(arr) {
-              const validItems = [
-                'outside_food', 'alcohol', 'decorations', 'loud_music',
-                'dj', 'fireworks', 'smoking', 'pets', 'tobacco', 'confetti', 'fire_props'
-              ];
-              return arr.every(item => validItems.includes(item));
-            },
-            message: 'Invalid standard policy item value'
-          }
         },
         custom: {
           type: [String],
@@ -129,16 +108,6 @@ const spaceSchema = new mongoose.Schema(
         standard: {
           type: [String],
           default: [],
-          validate: {
-            validator: function(arr) {
-              const validItems = [
-                'outside_food', 'alcohol', 'decorations', 'loud_music',
-                'dj', 'fireworks', 'smoking', 'pets', 'tobacco', 'confetti', 'fire_props'
-              ];
-              return arr.every(item => validItems.includes(item));
-            },
-            message: 'Invalid standard policy item value'
-          }
         },
         custom: {
           type: [String],
@@ -170,6 +139,11 @@ const spaceSchema = new mongoose.Schema(
         },
         message: 'Maximum 5 photos allowed per space'
       }
+    },
+    description: {
+      type: String,
+      trim: true,
+      maxlength: 2000,
     },
     isActive: {
       type: Boolean,

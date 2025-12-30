@@ -5,7 +5,7 @@ import OrganizerActions from "../components/OrganizerActions";
 import apiClient from "../api/apiClient";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
-import { Building2, Mail, AlertCircle, Plus } from "lucide-react";
+import { Building2, Mail, AlertCircle, Plus, Settings } from "lucide-react";
 
 export default function AdminDashboard() {
   const [events, setEvents] = useState([]);
@@ -148,10 +148,17 @@ export default function AdminDashboard() {
         <div className="flex flex-wrap gap-3 mb-8">
           <button
             onClick={() => navigate("/admin/venues")}
-            className="bg-secondary hover:bg-secondary/90 text-bg-primary px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 cursor-pointer"
+            className="inline-flex items-center gap-2 bg-primary text-bg-primary px-4 py-2 rounded-lg font-semibold hover:bg-primary/90 transition-colors cursor-pointer"
           >
-            <Building2 className="h-5 w-5" />
+            <Building2 className="w-4 h-4" />
             Manage Venues
+          </button>
+          <button
+            onClick={() => navigate("/admin/venue-options")}
+            className="inline-flex items-center gap-2 bg-primary text-bg-primary px-4 py-2 rounded-lg font-semibold hover:bg-primary/90 transition-colors cursor-pointer"
+          >
+            <Settings className="w-4 h-4" />
+            Venue Options
           </button>
           <button
             onClick={() => navigate("/admin/contacts")}
@@ -162,7 +169,7 @@ export default function AdminDashboard() {
           </button>
           <button
             onClick={() => navigate("/admin/flagged-events")}
-            className="inline-flex items-center gap-2 border border-border text-text-primary px-4 py-2 rounded-lg font-semibold hover:bg-bg-secondary transition-colors cursor-pointer"
+            className="inline-flex items-center gap-2 bg-primary text-bg-primary px-4 py-2 rounded-lg font-semibold hover:bg-primary/90 transition-colors cursor-pointer"
           >
             <AlertCircle className="w-4 h-4" />
             Flagged Events

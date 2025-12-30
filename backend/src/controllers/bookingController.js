@@ -30,7 +30,7 @@ export const createBooking = async (req, res) => {
     }
 
     // Validate eventId exists
-    const event = await Event.findById(eventId);
+    const event = await Event.findById(eventId).populate('venue', 'name city fullAddress location');
     if (!event) return res.status(404).json({ message: "Event not found" });
 
     // Validate userId exists (should always exist if authenticated, but for completeness)
@@ -271,7 +271,7 @@ export const createBooking = async (req, res) => {
         from: '"Event Ticketing" <tickets@eventify.com>',
         to: req.user.email,
         subject: `Your Ticket for ${event.title}`,
-        text: `Thank you for booking!\n\nYour ticket ID: ${booking.ticketId}\nEvent: ${event.title}\nDate: ${event.date}\nVenue: ${event.venue}\n\nPlease present the QR code at the event entrance.`,
+        text: `Thank you for booking!\n\nYour ticket ID: ${booking.ticketId}\nEvent: ${event.title}\nDate: ${event.date}\nVenue: ${typeof event.venue === 'object' && event.venue?.name ? event.venue.name : event.venue || 'Venue details in event description'}\n\nPlease present the QR code at the event entrance.`,
         html: `
         <div style="font-family: Arial, sans-serif; background: #f9f9f9; padding: 24px;">
           <div style="max-width: 500px; margin: auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); padding: 24px;">
@@ -300,11 +300,13 @@ export const createBooking = async (req, res) => {
                 event.date
               ).toLocaleString()}</li>
               <li><strong>Venue:</strong> ${
-                event.venue.name || event.venue
+                typeof event.venue === 'object' && event.venue?.name
+                  ? event.venue.name
+                  : event.venue || 'Venue details in event description'
               }</li>
               ${
-                event.venue.address
-                  ? `<li><strong>Address:</strong> ${event.venue.address}</li>`
+                typeof event.venue === 'object' && event.venue?.fullAddress
+                  ? `<li><strong>Address:</strong> ${event.venue.fullAddress}</li>`
                   : ""
               }
               ${
@@ -316,16 +318,16 @@ export const createBooking = async (req, res) => {
             </ul>
             
             ${
-              event.venue.coordinates
+              typeof event.venue === 'object' && event.venue?.location?.coordinates?.lat && event.venue?.location?.coordinates?.lng
                 ? `
             <!-- Venue Map Section -->
             <div style="margin: 20px 0; padding: 16px; background: #f8f9fa; border-radius: 8px; text-align: center;">
               <h3 style="color: #333; margin: 0 0 12px 0;">Venue Location</h3>
-              <img src="https://maps.googleapis.com/maps/api/staticmap?center=${event.venue.coordinates.lat},${event.venue.coordinates.lng}&zoom=15&size=400x200&markers=color:red%7C${event.venue.coordinates.lat},${event.venue.coordinates.lng}&key=${process.env.GOOGLE_MAPS_API_KEY}" 
+              <img src="https://maps.googleapis.com/maps/api/staticmap?center=${event.venue.location.coordinates.lat},${event.venue.location.coordinates.lng}&zoom=15&size=400x200&markers=color:red%7C${event.venue.location.coordinates.lat},${event.venue.location.coordinates.lng}&key=${process.env.GOOGLE_MAPS_API_KEY}" 
                    alt="Venue Map" 
                    style="max-width: 100%; border-radius: 6px; border: 1px solid #ddd;" />
               <div style="margin-top: 10px;">
-                <a href="https://www.google.com/maps/search/?api=1&query=${event.venue.coordinates.lat},${event.venue.coordinates.lng}" 
+                <a href="https://www.google.com/maps/search/?api=1&query=${event.venue.location.coordinates.lat},${event.venue.location.coordinates.lng}" 
                    style="background: #4285f4; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-size: 14px;">
                   Open in Google Maps
                 </a>
@@ -370,7 +372,7 @@ export const cancelBooking = async (req, res) => {
       return res.status(400).json({ message: "Booking is already cancelled" });
     }
 
-    const event = await Event.findById(booking.eventId);
+    const event = await Event.findById(booking.eventId).populate('venue', 'name city fullAddress');
     if (!event) {
       return res.status(404).json({ message: "Associated event not found" });
     }
@@ -513,11 +515,11 @@ export const cancelBooking = async (req, res) => {
                       }`
                 }</p>
                 <p><strong>Original Amount:</strong> ₹${
-                  refundCalc.fullAmount
+                  originalAmount.toLocaleString()
                 }</p>
                 <p><strong>Cancellation Date:</strong> ${new Date().toLocaleString()}</p>
                 <p><strong>Days Before Event:</strong> ${
-                  refundCalc.daysUntilEvent
+                  Math.max(0, Math.round(refundCalc.daysDifference * 10) / 10)
                 } days</p>
                 ${
                   refundResult?.success
@@ -551,7 +553,9 @@ export const cancelBooking = async (req, res) => {
                   event.date
                 ).toLocaleString()}</li>
                 <li><strong>Venue:</strong> ${
-                  event.venue?.name || event.venue
+                  typeof event.venue === 'object' && event.venue?.name
+                    ? event.venue.name
+                    : event.venue || 'Venue details in event description'
                 }</li>
               </ul>
               <hr style="margin: 16px 0;">

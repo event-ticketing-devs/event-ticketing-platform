@@ -64,6 +64,7 @@ export const createVenue = async (req, res) => {
       name,
       city,
       fullAddress,
+      description: req.body.description || "",
       location,
       parking: parkingData,
       primaryContact,
@@ -109,20 +110,31 @@ export const updateVenue = async (req, res) => {
     if (typeof req.body.primaryContact === 'string') {
       req.body.primaryContact = JSON.parse(req.body.primaryContact);
     }
+    if (typeof req.body.teamMembers === 'string') {
+      req.body.teamMembers = JSON.parse(req.body.teamMembers);
+    }
 
     // Handle team members - convert emails to ObjectIds
     if (req.body.teamMembers !== undefined) {
-      const teamMemberEmails = req.body.teamMembers;
+      const teamMemberEmails = Array.isArray(req.body.teamMembers) ? req.body.teamMembers : [];
       const teamMemberIds = [];
+      const notFoundEmails = [];
       
       for (const email of teamMemberEmails) {
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ email: email.toLowerCase() });
         if (user) {
           teamMemberIds.push(user._id);
+        } else {
+          notFoundEmails.push(email);
         }
       }
       
       venue.teamMembers = teamMemberIds;
+      
+      // Store not found emails to return in response
+      if (notFoundEmails.length > 0) {
+        req.notFoundTeamMembers = notFoundEmails;
+      }
     }
 
     // Fields that can be updated (excluding teamMembers, parking - handled below)
@@ -130,6 +142,7 @@ export const updateVenue = async (req, res) => {
       "name",
       "city",
       "fullAddress",
+      "description",
       "location",
       "primaryContact",
       "isListed",
@@ -169,7 +182,14 @@ export const updateVenue = async (req, res) => {
       .populate("owner", "name email")
       .populate("teamMembers", "name email");
 
-    res.json(updatedVenue);
+    const response = { venue: updatedVenue };
+    
+    if (req.notFoundTeamMembers && req.notFoundTeamMembers.length > 0) {
+      response.warning = `The following email(s) were not found and not added: ${req.notFoundTeamMembers.join(', ')}`;
+      response.notFoundEmails = req.notFoundTeamMembers;
+    }
+
+    res.json(response);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -292,6 +312,7 @@ export const getVenueById = async (req, res) => {
   try {
     const venue = await Venue.findById(req.params.id)
       .populate("owner", "name email")
+      .populate("teamMembers", "name email")
       .lean();
 
     if (!venue) {
@@ -421,6 +442,7 @@ export const createSpace = async (req, res) => {
       name,
       type,
       indoorOutdoor,
+      description,
       maxPax,
       areaSqFt,
       supportedEventTypes,
@@ -505,6 +527,7 @@ export const createSpace = async (req, res) => {
       name,
       type,
       indoorOutdoor,
+      description: description || "",
       maxPax,
       areaSqFt,
       supportedEventTypes,
@@ -564,6 +587,7 @@ export const updateSpace = async (req, res) => {
       "name",
       "type",
       "indoorOutdoor",
+      "description",
       "maxPax",
       "areaSqFt",
       "supportedEventTypes",

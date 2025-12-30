@@ -182,9 +182,10 @@ export default function FlaggedEventsPage() {
                       </div>
                     </td>
                     <td className="py-4 px-6">
-                      <div className="flex items-center">
-                        <span className="inline-flex px-3 py-1 text-xs font-semibold rounded-md bg-error/10 text-error border border-error/20">
-                          {event.reportCount} reports
+                      <div className="flex items-center justify-center">
+                        <span className="inline-flex flex-col sm:flex-row items-center justify-center gap-1 px-3 py-1 text-xs font-semibold rounded-md bg-error/10 text-error border border-error/20 text-center">
+                          <span>{event.reportCount}</span>
+                          <span>{event.reportCount === 1 ? 'report' : 'reports'}</span>
                         </span>
                       </div>
                     </td>
@@ -212,14 +213,14 @@ export default function FlaggedEventsPage() {
                       <div className="flex gap-2">
                         <button
                           onClick={() => viewEvent(event)}
-                          className="bg-primary hover:bg-primary/90 text-bg-primary px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer"
+                          className="bg-primary hover:bg-primary/90 text-bg-primary px-3 py-1.5 rounded-lg text-sm font-medium transition-colors cursor-pointer"
                           title="View detailed event statistics"
                         >
                           Details
                         </button>
                         <button
                           onClick={() => viewReports(event)}
-                          className="bg-secondary hover:bg-secondary/90 text-bg-primary px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer"
+                          className="bg-secondary hover:bg-secondary/90 text-bg-primary px-3 py-1.5 rounded-lg text-sm font-medium transition-colors cursor-pointer"
                         >
                           Reports
                         </button>

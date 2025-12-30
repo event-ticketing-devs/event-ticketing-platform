@@ -106,6 +106,16 @@ const VenueDetails = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
+            {/* Venue Description */}
+            {venue.description && (
+              <div className="bg-bg-primary border border-border rounded-lg p-6">
+                <h2 className="text-xl font-semibold text-text-primary mb-3">About This Venue</h2>
+                <p className="text-text-secondary leading-relaxed whitespace-pre-wrap">
+                  {venue.description}
+                </p>
+              </div>
+            )}
+
             {/* Venue Info */}
             <div className="bg-bg-primary border border-border rounded-lg p-6">
               <h2 className="text-xl font-semibold text-text-primary mb-4">Venue Information</h2>
@@ -402,6 +412,16 @@ const SpaceDetailsModal = ({ space, onClose, onEnquire }) => {
                   </div>
                 ))}
               </div>
+            </div>
+          )}
+
+          {/* Space Description */}
+          {space.description && (
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold text-text-primary mb-2">About This Space</h3>
+              <p className="text-text-secondary leading-relaxed whitespace-pre-wrap">
+                {space.description}
+              </p>
             </div>
           )}
 

@@ -40,6 +40,7 @@ import SpaceAvailabilityManagement from "./pages/SpaceAvailabilityManagement";
 import VenueEdit from "./pages/VenueEdit";
 import AdminVenues from "./pages/AdminVenues";
 import AdminVenueActivity from "./pages/AdminVenueActivity";
+import VenueOptionsManagement from "./pages/VenueOptionsManagement";
 import ComparisonTray from "./components/ComparisonTray";
 import SpaceComparisonModal from "./components/SpaceComparisonModal";
 
@@ -233,6 +234,14 @@ function App() {
                 element={
                   <AdminRoute>
                     <AdminVenueActivity />
+                  </AdminRoute>
+                }
+              />
+              <Route
+                path="/admin/venue-options"
+                element={
+                  <AdminRoute>
+                    <VenueOptionsManagement />
                   </AdminRoute>
                 }
               />

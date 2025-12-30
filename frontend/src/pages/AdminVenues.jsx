@@ -368,6 +368,16 @@ export default function AdminVenues() {
                   </div>
                 )}
 
+                {/* Venue Description */}
+                {viewingVenue.description && (
+                  <div className="bg-bg-secondary border border-border rounded-lg p-6 mb-6">
+                    <h3 className="text-lg font-semibold text-text-primary mb-3">About This Venue</h3>
+                    <p className="text-text-secondary leading-relaxed whitespace-pre-wrap">
+                      {viewingVenue.description}
+                    </p>
+                  </div>
+                )}
+
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
                   {/* Venue Information */}
                   <div className="lg:col-span-2 bg-bg-secondary p-6 rounded-lg">
@@ -529,6 +539,16 @@ export default function AdminVenues() {
                                 </div>
                               )}
                             </div>
+
+                            {/* Space Description */}
+                            {space.description && (
+                              <div className="mt-3 pt-3 border-t border-border">
+                                <p className="text-xs text-text-secondary mb-1">About This Space</p>
+                                <p className="text-sm text-text-primary leading-relaxed whitespace-pre-wrap line-clamp-3">
+                                  {space.description}
+                                </p>
+                              </div>
+                            )}
 
                             {/* Amenities */}
                             {space.amenities?.standard && space.amenities.standard.length > 0 && (
