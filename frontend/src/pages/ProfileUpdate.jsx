@@ -3,12 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { updateProfile } from "../services/authService";
 import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
-import { ArrowLeft, Save, User, Mail, Phone, RotateCcw, Lock, Info } from 'lucide-react';
+import { ArrowLeft, Save, User, Mail, Phone, RotateCcw, Lock, Info, AlertCircle } from 'lucide-react';
 
 const ProfileUpdate = () => {
   const { currentUser, login } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [emailChanged, setEmailChanged] = useState(false);
 
   const [formData, setFormData] = useState({
     name: currentUser.name || "",
@@ -24,15 +25,28 @@ const ProfileUpdate = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setEmailChanged(false);
 
     try {
       const filteredData = Object.fromEntries(
         Object.entries(formData).filter(([_, value]) => value.trim() !== "")
       );
 
-      const updatedUser = await updateProfile(filteredData);
+      const response = await updateProfile(filteredData);
+      const updatedUser = response.user || response;
+      const wasEmailChanged = response.emailChanged;
+      
       login({ ...currentUser, ...updatedUser });
-      toast.success("Profile updated successfully!");
+      
+      if (wasEmailChanged) {
+        setEmailChanged(true);
+        toast.success("Profile updated! Please verify your new email address to regain full access.", {
+          duration: 5000,
+        });
+      } else {
+        toast.success("Profile updated successfully!");
+      }
+      
       setTimeout(() => navigate("/profile"), 1500);
     } catch (error) {
       toast.error(error.response?.data?.message || "Update failed");
@@ -148,6 +162,16 @@ const ProfileUpdate = () => {
                     required
                   />
                 </div>
+                {currentUser.isVerified && formData.email !== currentUser.email && (
+                  <div className="mt-2 bg-warning/10 border border-warning rounded-lg p-3">
+                    <p className="text-sm text-warning flex items-start gap-2">
+                      <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                      <span>
+                        Changing your email will require verification. You won't be able to create or edit events/venues until you verify the new email.
+                      </span>
+                    </p>
+                  </div>
+                )}
               </div>
 
               {/* Phone Field */}

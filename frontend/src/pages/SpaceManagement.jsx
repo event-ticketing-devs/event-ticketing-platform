@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import apiClient from "../api/apiClient";
 import toast from "react-hot-toast";
+import VerificationNotice from "../components/VerificationNotice";
 import { useVenueOptions } from "../utils/venueOptions";
 import ConfirmModal from "../components/ConfirmModal";
 import { ArrowLeft, Plus, Building2, Users, X, Image, Maximize } from 'lucide-react';
@@ -228,6 +229,9 @@ const SpaceManagement = () => {
   return (
     <div className="min-h-screen bg-bg-secondary py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Verification Notice */}
+        <VerificationNotice />
+        
         {/* Header */}
         <div className="mb-8">
           <button
@@ -986,10 +990,10 @@ const SpaceManagement = () => {
                       </h3>
                       <div className="flex gap-2">
                         <span className="text-xs bg-secondary/20 text-secondary px-2 py-1 rounded-md">
-                          {space.type}
+                          {space.type.charAt(0).toUpperCase() + space.type.slice(1)}
                         </span>
                         <span className="text-xs bg-primary/20 text-primary px-2 py-1 rounded-md">
-                          {space.indoorOutdoor}
+                          {space.indoorOutdoor.charAt(0).toUpperCase() + space.indoorOutdoor.slice(1)}
                         </span>
                       </div>
                     </div>

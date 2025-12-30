@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
+import apiClient from "../api/apiClient";
 
 const AuthContext = createContext();
 
@@ -10,7 +11,12 @@ export const AuthProvider = ({ children }) => {
     try {
       const stored = localStorage.getItem("user");
       if (stored) {
-        setCurrentUser(JSON.parse(stored));
+        const user = JSON.parse(stored);
+        setCurrentUser(user);
+        // Restore Authorization header if token exists
+        if (user.token) {
+          apiClient.defaults.headers.common["Authorization"] = `Bearer ${user.token}`;
+        }
       }
     } catch (err) {
       console.error("Failed to parse user from localStorage:", err);
@@ -35,11 +41,41 @@ export const AuthProvider = ({ children }) => {
   const login = (user) => {
     localStorage.setItem("user", JSON.stringify(user));
     setCurrentUser(user);
+    // Set Authorization header if token exists
+    if (user.token) {
+      apiClient.defaults.headers.common["Authorization"] = `Bearer ${user.token}`;
+    }
+  };
+
+  const updateUser = (userData) => {
+    const updatedUser = { ...currentUser, ...userData };
+    localStorage.setItem("user", JSON.stringify(updatedUser));
+    setCurrentUser(updatedUser);
+  };
+
+  const refreshUser = async () => {
+    try {
+      const response = await apiClient.get("/users/profile");
+      const freshUser = response.data.user;
+      if (freshUser) {
+        localStorage.setItem("user", JSON.stringify(freshUser));
+        setCurrentUser(freshUser);
+        return freshUser;
+      }
+    } catch (error) {
+      console.error("Failed to refresh user:", error);
+      // If profile fetch fails and we get 401, user might be logged out
+      if (error.response?.status === 401) {
+        logout();
+      }
+    }
   };
 
   const logout = () => {
     localStorage.removeItem("user");
     setCurrentUser(null);
+    // Clear Authorization header
+    delete apiClient.defaults.headers.common["Authorization"];
   };
 
   if (loading) {
@@ -51,7 +87,7 @@ export const AuthProvider = ({ children }) => {
   }
 
   return (
-    <AuthContext.Provider value={{ currentUser, login, logout }}>
+    <AuthContext.Provider value={{ currentUser, login, logout, updateUser, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );

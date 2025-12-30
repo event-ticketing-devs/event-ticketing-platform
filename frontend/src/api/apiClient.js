@@ -28,6 +28,8 @@ apiClient.interceptors.response.use(
     // Handle banned user responses
     if (error.response?.status === 403) {
       const message = error.response?.data?.message;
+      const requiresVerification = error.response?.data?.requiresVerification;
+      
       if (message && message.includes('banned')) {
         // User is banned, clear local storage and redirect to login
         localStorage.removeItem('user');
@@ -45,6 +47,11 @@ apiClient.interceptors.response.use(
         if (window.location.pathname !== '/login') {
           window.location.href = '/login';
         }
+      } else if (requiresVerification) {
+        // User needs to verify email - dispatch custom event
+        window.dispatchEvent(new CustomEvent('verificationRequired', {
+          detail: { message }
+        }));
       }
     }
     return Promise.reject(error);

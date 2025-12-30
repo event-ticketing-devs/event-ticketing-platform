@@ -1,4 +1,6 @@
+import crypto from "crypto";
 import User from "../models/User.js";
+import transporter from "../utils/mailer.js";
 
 // @desc   Get current user profile
 // @route  GET /api/users/profile
@@ -6,7 +8,7 @@ import User from "../models/User.js";
 export const getProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user._id).select(
-      "name email phone role"
+      "name email phone role isVerified googleId"
     );
 
     if (!user) return res.status(404).json({ message: "User not found" });
@@ -62,7 +64,50 @@ export const updateUser = async (req, res) => {
       const existingEmailUser = await User.findOne({ email });
       if (existingEmailUser)
         return res.status(400).json({ message: "Email already in use" });
+      
+      // Reset verification status when email changes
       user.email = email;
+      user.isVerified = false;
+      
+      // Generate new verification token
+      const verificationToken = crypto.randomBytes(32).toString("hex");
+      user.verificationToken = crypto
+        .createHash("sha256")
+        .update(verificationToken)
+        .digest("hex");
+      user.verificationTokenExpiry = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+      
+      // Send verification email to new address
+      const verificationUrl = `${process.env.FRONTEND_URL}/verify-email?token=${verificationToken}`;
+      try {
+        await transporter.sendMail({
+          from: '"Event Ticketing" <noreply@example.com>',
+          to: user.email,
+          subject: `Verify Your New Email Address - Event Ticketing Platform`,
+          html: `
+            <div style="font-family: Arial, sans-serif; background: #f9f9f9; padding: 24px;">
+              <div style="max-width: 500px; margin: auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); padding: 24px;">
+                <h1 style="color: #C75B39; text-align: center;">Verify Your New Email</h1>
+                <hr style="margin: 16px 0;">
+                <p style="font-size: 1.1em;">Hi ${user.name},</p>
+                <p style="font-size: 1.1em;">You recently updated your email address on <strong>Event Ticketing Platform</strong>.</p>
+                <p style="font-size: 1.1em;">Please verify your new email address by clicking the button below:</p>
+                <div style="text-align: center; margin: 24px 0;">
+                  <a href="${verificationUrl}" style="background: #C75B39; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; display: inline-block; font-size: 1.1em;">Verify Email</a>
+                </div>
+                <p style="font-size: 0.9em; color: #666;">Or copy and paste this link in your browser:</p>
+                <p style="font-size: 0.9em; color: #666; word-break: break-all;">${verificationUrl}</p>
+                <hr style="margin: 16px 0;">
+                <p style="text-align: center; color: #888; font-size: 0.9em;">This link will expire in 24 hours.</p>
+                <p style="text-align: center; color: #888; font-size: 0.9em;">You will not be able to create or edit events/venues until you verify your new email.</p>
+              </div>
+            </div>
+          `,
+        });
+      } catch (emailErr) {
+        console.error("Failed to send verification email:", emailErr.message);
+        // Continue anyway - email failure shouldn't block update
+      }
     }
 
     if (phone && phone !== user.phone) {
@@ -84,7 +129,10 @@ export const updateUser = async (req, res) => {
         name: user.name,
         email: user.email,
         phone: user.phone,
+        isVerified: user.isVerified,
+        googleId: user.googleId,
       },
+      emailChanged: email && email !== req.user.email,
     });
   } catch (err) {
     res.status(500).json({ message: "Server error", error: err.message });

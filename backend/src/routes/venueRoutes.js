@@ -31,16 +31,17 @@ import {
 } from "../controllers/venueController.js";
 import { protect } from "../middleware/authMiddleware.js";
 import { adminOnly } from "../middleware/roleMiddleware.js";
+import { requireVerification } from "../middleware/verificationMiddleware.js";
 import { venueUpload, spaceUpload } from "../utils/cloudinary.js";
 
 const router = express.Router();
 
 // Venue routes
-router.post("/venues", protect, venueUpload.single("photo"), createVenue);
+router.post("/venues", protect, requireVerification, venueUpload.single("photo"), createVenue);
 router.get("/venues/my-venues", protect, getMyVenues);
 router.get("/venues", getVenues);
 router.get("/venues/:id", getVenueById);
-router.patch("/venues/:id", protect, venueUpload.single("photo"), updateVenue);
+router.patch("/venues/:id", protect, requireVerification, venueUpload.single("photo"), updateVenue);
 
 // Venue request routes
 router.get("/venue-requests/my-enquiries", protect, getMyEnquiries);
@@ -58,12 +59,12 @@ router.post("/venue-requests/:requestId/messages", protect, sendChatMessage);
 router.post("/venue-quotes", protect, createVenueQuote);
 
 // Space routes
-router.post("/spaces", protect, spaceUpload.array("photos", 5), createSpace);
+router.post("/spaces", protect, requireVerification, spaceUpload.array("photos", 5), createSpace);
 router.get("/spaces/search", getPublicSpaces);
 router.get("/spaces/my-spaces", protect, getMySpaces);
 router.get("/spaces/:id", protect, getSpaceById);
 router.get("/spaces/:id/blocks", protect, getSpaceBlocks);
-router.patch("/spaces/:id", protect, spaceUpload.array("photos", 5), updateSpace);
+router.patch("/spaces/:id", protect, requireVerification, spaceUpload.array("photos", 5), updateSpace);
 router.delete("/spaces/:id", protect, deleteSpace);
 router.post("/spaces/:id/block", protect, blockSpaceAvailability);
 router.delete("/spaces/:id/unblock/:blockId", protect, unblockSpaceAvailability);

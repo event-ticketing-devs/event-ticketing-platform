@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import crypto from "crypto";
 import User from "../models/User.js";
 import transporter from "../utils/mailer.js";
 
@@ -52,31 +53,43 @@ export const register = async (req, res) => {
     // Create new user
     const user = await User.create({ name, email, phone, password });
 
-    // Send welcome email (Nodemailer + Mailhog) - non-blocking
+    // Generate verification token (valid for 24 hours)
+    const verificationToken = crypto.randomBytes(32).toString("hex");
+    user.verificationToken = crypto
+      .createHash("sha256")
+      .update(verificationToken)
+      .digest("hex");
+    user.verificationTokenExpiry = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+    await user.save();
+
+    // Send verification email (Nodemailer + Mailhog) - non-blocking
+    const verificationUrl = `${process.env.FRONTEND_URL}/verify-email?token=${verificationToken}`;
     try {
       await transporter.sendMail({
-        from: '"Event Ticketing" <welcome@example.com>',
+        from: '"Event Ticketing" <noreply@example.com>',
         to: user.email,
-        subject: `Welcome to Event Ticketing Platform!`,
+        subject: `Verify Your Email - Event Ticketing Platform`,
         html: `
           <div style="font-family: Arial, sans-serif; background: #f9f9f9; padding: 24px;">
             <div style="max-width: 500px; margin: auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); padding: 24px;">
-              <h1 style="color: #2d7ff9; text-align: center;">👋 Welcome, ${user.name}!</h1>
+              <h1 style="color: #2d7ff9; text-align: center;">Verify Your Email</h1>
               <hr style="margin: 16px 0;">
+              <p style="font-size: 1.1em;">Hi ${user.name},</p>
               <p style="font-size: 1.1em;">Thank you for registering at <strong>Event Ticketing Platform</strong>!</p>
-              <ul style="list-style: none; padding: 0; font-size: 1.1em;">
-                <li><strong>Name:</strong> ${user.name}</li>
-                <li><strong>Email:</strong> ${user.email}</li>
-                <li><strong>Phone:</strong> ${user.phone}</li>
-              </ul>
-              <hr style="margin: 16px 0;">
-              <p style="text-align: center; color: #888;">We're excited to have you join our events community!</p>
+              <p style="font-size: 1.1em;">Please verify your email address by clicking the button below:</p>
+              <div style="text-align: center; margin: 24px 0;">
+                <a href="${verificationUrl}" style="background: #2d7ff9; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; display: inline-block; font-size: 1.1em;">Verify Email</a>
+              </div>
+              <p style="font-size: 0.9em; color: #666;">Or copy and paste this link in your browser:</p>
+              <p style="font-size: 0.9em; color: #666; word-break: break-all;">${verificationUrl}</p>
+              <hr style="margin: 16px 0;">. Please check your email to verify your account.
+              <p style="text-align: center; color: #888; font-size: 0.9em;">This link will expire in 24 hours.</p>
             </div>
           </div>
         `,
       });
     } catch (emailErr) {
-      console.error("Failed to send welcome email:", emailErr.message);
+      console.error("Failed to send verification email:", emailErr.message);
       // Continue anyway - email failure shouldn't block registration
     }
 
@@ -146,4 +159,116 @@ export const logout = (req, res) => {
   res
     .status(200)
     .json({ message: "Logout successful — delete token on client" });
+};
+
+// @desc   Verify email address
+// @route  GET /api/auth/verify-email/:token
+// @access Public
+export const verifyEmail = async (req, res) => {
+  try {
+    const { token } = req.params;
+
+    if (!token) {
+      return res.status(400).json({ message: "Verification token is required" });
+    }
+
+    // Hash the token to compare with stored hash
+    const hashedToken = crypto
+      .createHash("sha256")
+      .update(token)
+      .digest("hex");
+
+    // Find user with matching token and check expiry
+    const user = await User.findOne({
+      verificationToken: hashedToken,
+      verificationTokenExpiry: { $gt: Date.now() },
+    });
+
+    if (!user) {
+      return res.status(400).json({ 
+        message: "Invalid or expired verification token. Please request a new verification email." 
+      });
+    }
+
+    // Mark user as verified and clear verification fields
+    user.isVerified = true;
+    user.verificationToken = undefined;
+    user.verificationTokenExpiry = undefined;
+    await user.save();
+
+    res.status(200).json({
+      message: "Email verified successfully! You can now log in and access all features.",
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+};
+
+// @desc   Resend verification email
+// @route  POST /api/auth/resend-verification
+// @access Public
+export const resendVerification = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ message: "Email is required" });
+    }
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (user.isVerified) {
+      return res.status(400).json({ message: "Email is already verified" });
+    }
+
+    // Generate new verification token
+    const verificationToken = crypto.randomBytes(32).toString("hex");
+    user.verificationToken = crypto
+      .createHash("sha256")
+      .update(verificationToken)
+      .digest("hex");
+    user.verificationTokenExpiry = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
+    await user.save();
+
+    // Send verification email
+    const verificationUrl = `${process.env.FRONTEND_URL}/verify-email?token=${verificationToken}`;
+    try {
+      await transporter.sendMail({
+        from: '"Event Ticketing" <noreply@example.com>',
+        to: user.email,
+        subject: `Verify Your Email - Event Ticketing Platform`,
+        html: `
+          <div style="font-family: Arial, sans-serif; background: #f9f9f9; padding: 24px;">
+            <div style="max-width: 500px; margin: auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); padding: 24px;">
+              <h1 style="color: #2d7ff9; text-align: center;">Verify Your Email</h1>
+              <hr style="margin: 16px 0;">
+              <p style="font-size: 1.1em;">Hi ${user.name},</p>
+              <p style="font-size: 1.1em;">You requested a new verification email for <strong>Event Ticketing Platform</strong>!</p>
+              <p style="font-size: 1.1em;">Please verify your email address by clicking the button below:</p>
+              <div style="text-align: center; margin: 24px 0;">
+                <a href="${verificationUrl}" style="background: #2d7ff9; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; display: inline-block; font-size: 1.1em;">Verify Email</a>
+              </div>
+              <p style="font-size: 0.9em; color: #666;">Or copy and paste this link in your browser:</p>
+              <p style="font-size: 0.9em; color: #666; word-break: break-all;">${verificationUrl}</p>
+              <hr style="margin: 16px 0;">
+              <p style="text-align: center; color: #888; font-size: 0.9em;">This link will expire in 24 hours.</p>
+            </div>
+          </div>
+        `,
+      });
+    } catch (emailErr) {
+      console.error("Failed to send verification email:", emailErr.message);
+      return res.status(500).json({ message: "Failed to send verification email" });
+    }
+
+    res.status(200).json({
+      message: "Verification email sent successfully. Please check your inbox.",
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
 };

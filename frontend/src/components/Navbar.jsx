@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { Menu, X, User, LogOut, Ticket, ChevronDown } from "lucide-react";
 
@@ -8,6 +8,7 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
 
   const handleMenuToggle = () => setMenuOpen((prev) => !prev);
   const handleCloseMenu = () => setMenuOpen(false);
@@ -125,6 +126,7 @@ export default function Navbar() {
                           logout();
                           setProfileMenuOpen(false);
                           handleCloseMenu();
+                          window.location.href = "/login";
                         }}
                         className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-error hover:bg-error/10 transition-colors cursor-pointer"
                       >
@@ -285,6 +287,9 @@ export default function Navbar() {
                     onClick={() => {
                       logout();
                       handleCloseMenu();
+                      setTimeout(() => {
+                        window.location.href = "/login";
+                      }, 100);
                     }}
                     className="w-full mt-3 px-4 py-2.5 bg-error text-white text-sm font-medium rounded-lg hover:bg-error/90 transition-colors cursor-pointer"
                   >
