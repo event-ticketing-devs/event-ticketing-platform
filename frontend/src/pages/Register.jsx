@@ -114,7 +114,7 @@ const Register = () => {
                   type="text"
                   name="name"
                   placeholder="Enter your full name"
-                  className={`block w-full px-3 py-2.5 border rounded-lg focus:ring-1 bg-bg-secondary focus:ring-primary transition-colors ${
+                  className={`block w-full px-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 bg-bg-secondary focus:ring-primary/20 transition-colors ${
                     errors.name ? 'border-error focus:border-error' : 'border-border focus:border-primary'
                   }`}
                   value={form.name}
@@ -137,7 +137,7 @@ const Register = () => {
                   type="email"
                   name="email"
                   placeholder="Enter your email address"
-                  className={`block w-full px-3 py-2.5 border rounded-lg focus:ring-1 bg-bg-secondary focus:ring-primary transition-colors ${
+                  className={`block w-full px-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 bg-bg-secondary focus:ring-primary/20 transition-colors ${
                     errors.email ? 'border-error focus:border-error' : 'border-border focus:border-primary'
                   }`}
                   value={form.email}
@@ -160,7 +160,7 @@ const Register = () => {
                   type="tel"
                   name="phone"
                   placeholder="Enter your phone number"
-                  className={`block w-full px-3 py-2.5 border rounded-lg focus:ring-1 bg-bg-secondary focus:ring-primary transition-colors ${
+                  className={`block w-full px-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 bg-bg-secondary focus:ring-primary/20 transition-colors ${
                     errors.phone ? 'border-error focus:border-error' : 'border-border focus:border-primary'
                   }`}
                   value={form.phone}
@@ -184,7 +184,7 @@ const Register = () => {
                     type={showPassword ? "text" : "password"}
                     name="password"
                     placeholder="Create a password"
-                    className={`block w-full px-3 py-2.5 border rounded-lg focus:ring-1 bg-bg-secondary focus:ring-primary transition-colors ${
+                    className={`block w-full px-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 bg-bg-secondary focus:ring-primary/20 transition-colors ${
                       errors.password ? 'border-error focus:border-error' : 'border-border focus:border-primary'
                     }`}
                     value={form.password}
@@ -220,7 +220,7 @@ const Register = () => {
                     type={showConfirmPassword ? "text" : "password"}
                     name="confirmPassword"
                     placeholder="Confirm your password"
-                    className={`block w-full px-3 py-2.5 border rounded-lg focus:ring-1 bg-bg-secondary focus:ring-primary transition-colors ${
+                    className={`block w-full px-3 py-2.5 border rounded-lg focus:outline-none focus:ring-2 bg-bg-secondary focus:ring-primary/20 transition-colors ${
                       errors.confirmPassword ? 'border-error focus:border-error' : 'border-border focus:border-primary'
                     }`}
                     value={form.confirmPassword}

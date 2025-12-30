@@ -116,7 +116,7 @@ const AdminContacts = () => {
             <div className="text-center py-12">
               <Inbox className="w-12 h-12 text-text-secondary mx-auto mb-4" />
               <h3 className="text-lg font-medium text-text-primary mb-2">No contacts found</h3>
-              <p className="text-slate-500">No contact inquiries match your current filter.</p>
+              <p className="text-text-secondary">No contact inquiries match your current filter.</p>
             </div>
           ) : (
             <>

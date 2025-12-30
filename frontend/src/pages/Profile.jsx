@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { deleteAccount } from "../services/authService";
 import ConfirmModal from "../components/ConfirmModal";
 import apiClient from "../api/apiClient";
-import { User, Mail, Phone, Edit, Trash2, Calendar, Ticket, CheckCircle2 } from 'lucide-react';
+import { User, Mail, Phone, Edit, Trash2, Calendar, Ticket, CheckCircle2, Check } from 'lucide-react';
 
 const Profile = () => {
   const [showModal, setShowModal] = useState(false);
@@ -98,11 +98,11 @@ const Profile = () => {
   const getRoleColor = (role) => {
     switch (role?.toLowerCase()) {
       case "admin":
-        return "bg-purple-100 text-purple-800 border-purple-200";
+        return "bg-warning/10 text-warning border-warning/20";
       case "organizer":
-        return "bg-green-100 text-green-800 border-green-200";
+        return "bg-success/10 text-success border-success/20";
       default:
-        return "bg-blue-100 text-blue-800 border-blue-200";
+        return "bg-primary/10 text-primary border-primary/20";
     }
   };
 
@@ -114,14 +114,16 @@ const Profile = () => {
           <div className="flex flex-col md:flex-row items-center gap-6">
             {/* Avatar */}
             <div className="relative">
-              <div className="w-24 h-24 bg-primary rounded-lg flex items-center justify-center">
+              <div className="w-24 h-24 bg-primary rounded-full flex items-center justify-center">
                 <span className="text-bg-primary font-bold text-2xl">
                   {getInitials(currentUser?.name)}
                 </span>
               </div>
-              <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-success border-4 border-bg-primary rounded-md flex items-center justify-center">
-                <CheckCircle2 className="w-4 h-4 text-bg-primary" />
-              </div>
+              {currentUser?.isVerified && (
+                <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-success border-4 border-bg-primary rounded-full flex items-center justify-center">
+                  <Check className="w-3 h-3 text-bg-primary stroke-[5]" />
+                </div>
+              )}
             </div>
 
             {/* User Info */}
@@ -131,7 +133,7 @@ const Profile = () => {
                   {currentUser?.name}
                 </h1>
                 <span
-                  className={`px-3 py-1 text-sm font-medium border ${getRoleColor(
+                  className={`px-3 py-1 text-sm rounded-md font-medium border ${getRoleColor(
                     currentUser?.role
                   )}`}
                 >

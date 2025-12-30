@@ -7,6 +7,9 @@ export default function EventDetailsModal({ open, event, attendees, onClose }) {
   // Use pre-calculated values from organizer dashboard if available, otherwise calculate
   let totalSeats, actualBookedSeats;
 
+  // Ensure attendees is an array
+  const attendeesList = Array.isArray(attendees) ? attendees : [];
+
   // Use totalSeats from event object (pre-calculated in organizer dashboard)
   totalSeats = event.totalSeats || 0;
 
@@ -23,28 +26,24 @@ export default function EventDetailsModal({ open, event, attendees, onClose }) {
       );
 
       // Calculate actual booked seats from non-cancelled attendees
-      actualBookedSeats = attendees
-        ? attendees
-            .filter((booking) => !booking.cancelled) // Only count non-cancelled bookings
-            .reduce((sum, booking) => {
-              if (booking.hasTicketCategories && booking.totalQuantity) {
-                return sum + booking.totalQuantity;
-              } else if (!booking.hasTicketCategories && booking.noOfSeats) {
-                return sum + booking.noOfSeats;
-              }
-              return sum;
-            }, 0)
-        : 0;
+      actualBookedSeats = attendeesList
+        .filter((booking) => !booking.cancelled) // Only count non-cancelled bookings
+        .reduce((sum, booking) => {
+          if (booking.hasTicketCategories && booking.totalQuantity) {
+            return sum + booking.totalQuantity;
+          } else if (!booking.hasTicketCategories && booking.noOfSeats) {
+            return sum + booking.noOfSeats;
+          }
+          return sum;
+        }, 0);
     } else {
       // For legacy events
       totalSeats = typeof event.totalSeats === "number" ? event.totalSeats : 0;
 
       // Calculate actual booked seats from non-cancelled attendees
-      actualBookedSeats = attendees
-        ? attendees
-            .filter((booking) => !booking.cancelled) // Only count non-cancelled bookings
-            .reduce((sum, booking) => sum + (booking.noOfSeats || 0), 0)
-        : 0;
+      actualBookedSeats = attendeesList
+        .filter((booking) => !booking.cancelled) // Only count non-cancelled bookings
+        .reduce((sum, booking) => sum + (booking.noOfSeats || 0), 0);
     }
   }
 
@@ -55,9 +54,7 @@ export default function EventDetailsModal({ open, event, attendees, onClose }) {
     : 0;
 
   // Count cancelled bookings for additional statistics
-  const cancelledBookings = attendees
-    ? attendees.filter((booking) => booking.cancelled)
-    : [];
+  const cancelledBookings = attendeesList.filter((booking) => booking.cancelled);
   const cancelledSeats = cancelledBookings.reduce((sum, booking) => {
     if (booking.hasTicketCategories && booking.totalQuantity) {
       return sum + booking.totalQuantity;
@@ -193,8 +190,8 @@ export default function EventDetailsModal({ open, event, attendees, onClose }) {
 
               <div className="bg-bg-secondary border border-border rounded-lg p-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-secondary/10 border border-secondary/20 rounded-lg flex items-center justify-center">
-                    <Users className="w-5 h-5 text-orange-600" />
+                  <div className="w-10 h-10 bg-warning/10 border border-warning/20 rounded-lg flex items-center justify-center">
+                    <Users className="w-5 h-5 text-warning" />
                   </div>
                   <div>
                     <p className="text-sm text-text-secondary">Total Capacity</p>
@@ -208,8 +205,8 @@ export default function EventDetailsModal({ open, event, attendees, onClose }) {
               {event.city && (
                 <div className="bg-bg-secondary border border-border rounded-lg p-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-primary/10 border border-primary/20 rounded-lg flex items-center justify-center">
-                      <MapPin className="w-5 h-5 text-purple-600" />
+                    <div className="w-10 h-10 bg-secondary/10 border border-secondary/20 rounded-lg flex items-center justify-center">
+                      <MapPin className="w-5 h-5 text-secondary" />
                     </div>
                     <div>
                       <p className="text-sm text-text-secondary">Location</p>
@@ -378,7 +375,7 @@ export default function EventDetailsModal({ open, event, attendees, onClose }) {
             </h3>
 
             <div className="bg-bg-secondary border border-border rounded-lg">
-              {attendees && attendees.length === 0 ? (
+              {attendeesList.length === 0 ? (
                 <div className="p-8 text-center">
                   <div className="w-16 h-16 bg-bg-secondary rounded-lg flex items-center justify-center mx-auto mb-4 border border-border">
                     <UserCheck className="w-8 h-8 text-text-secondary" />
@@ -391,7 +388,7 @@ export default function EventDetailsModal({ open, event, attendees, onClose }) {
               ) : (
                 <div className="max-h-64 overflow-y-auto">
                   <div className="divide-y divide-border">
-                    {attendees?.map((booking) => {
+                    {attendeesList.map((booking) => {
                       const { _id, userId, noOfSeats, cancelled } = booking;
                       return (
                         <div

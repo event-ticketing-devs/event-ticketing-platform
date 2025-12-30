@@ -59,7 +59,7 @@ const Login = () => {
                 <input
                   type="text"
                   placeholder="Enter your email or phone number"
-                  className="block w-full px-3 py-2.5 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary bg-bg-secondary transition-colors"
+                  className="block w-full px-3 py-2.5 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-bg-secondary transition-colors"
                   value={identifier}
                   onChange={(e) => setIdentifier(e.target.value)}
                   required
@@ -75,7 +75,7 @@ const Login = () => {
                   <input
                     type={showPassword ? "text" : "password"}
                     placeholder="Enter your password"
-                    className="block w-full px-3 py-2.5 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary bg-bg-secondary transition-colors"
+                    className="block w-full px-3 py-2.5 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-bg-secondary transition-colors"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
