@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Calendar, Mail, Phone, MapPin, Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
+import { Ticket, Mail, Phone, MapPin, Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -12,7 +12,9 @@ export default function Footer() {
           {/* Brand Section */}
           <div className="lg:col-span-1">
             <div className="flex items-center gap-2 mb-4">
-              <Calendar className="w-6 h-6 text-white" />
+              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                <Ticket className="w-5 h-5 text-white" />
+              </div>
               <span className="text-xl font-semibold text-white">
                 Eventify
               </span>
@@ -84,6 +86,14 @@ export default function Footer() {
                   className="text-bg-primary/80 hover:text-bg-primary transition-colors text-sm cursor-pointer"
                 >
                   Create Event
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/venue-partner"
+                  className="text-bg-primary/80 hover:text-bg-primary transition-colors text-sm cursor-pointer"
+                >
+                  Register Venue
                 </Link>
               </li>
             </ul>
