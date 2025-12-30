@@ -219,13 +219,13 @@ export default function AdminVenueActivity() {
 
         {/* Recent Requests */}
         <div className="bg-bg-primary border border-border rounded-lg p-6">
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
             <h2 className="text-lg font-semibold text-text-primary">
               Recent Requests ({requests.length})
             </h2>
             
             {/* Status Filter Pills */}
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <span className="px-3 py-1 bg-secondary/10 text-secondary rounded-md text-xs font-medium">
                 {requests.filter(r => r.status === 'open').length} Open
               </span>

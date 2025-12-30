@@ -268,7 +268,7 @@ export default function VenueEnquiryChat({ requestId }) {
         <button
           type="submit"
           disabled={sending || !newMessage.trim()}
-          className="bg-primary text-bg-primary px-6 py-2 rounded-lg hover:bg-primary/90 transition-colors disabled:bg-bg-secondary disabled:text-text-secondary disabled:cursor-not-allowed"
+          className="bg-primary text-bg-primary px-4 sm:px-6 py-2 rounded-lg hover:bg-primary/90 transition-colors disabled:bg-bg-secondary disabled:text-text-secondary disabled:cursor-not-allowed flex-shrink-0"
         >
           {sending ? "Sending..." : "Send"}
         </button>

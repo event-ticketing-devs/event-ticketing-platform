@@ -250,8 +250,8 @@ export default function CancelledBookings() {
                       <div className="space-y-3">
                         <div>
                           <p className="text-sm text-text-secondary">Ticket ID</p>
-                          <p className="font-semibold text-text-primary font-mono">
-                            {ticketId}
+                          <p className="font-semibold text-text-primary font-mono text-xs break-all" title={ticketId}>
+                            {ticketId ? `${ticketId.substring(0, 12)}...` : "N/A"}
                           </p>
                         </div>
                         <div>

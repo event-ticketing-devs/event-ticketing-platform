@@ -354,12 +354,12 @@ const VenuePartnerDashboard = () => {
 
             {/* Enquiries Section */}
             <div className="bg-bg-primary border border-border rounded-lg p-6">
-              <div className="flex items-center justify-between mb-6">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
                 <h3 className="text-xl font-semibold text-text-primary">Recent Enquiries</h3>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
                   <button
                     onClick={() => setStatusFilter("all")}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium cursor-pointer transition-colors ${
+                    className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium cursor-pointer transition-colors ${
                       statusFilter === "all"
                         ? "bg-primary text-bg-primary"
                         : "bg-bg-secondary text-text-primary hover:bg-border"
@@ -369,7 +369,7 @@ const VenuePartnerDashboard = () => {
                   </button>
                   <button
                     onClick={() => setStatusFilter("open")}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium cursor-pointer transition-colors ${
+                    className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium cursor-pointer transition-colors ${
                       statusFilter === "open"
                         ? "bg-primary text-bg-primary"
                         : "bg-bg-secondary text-text-primary hover:bg-border"
@@ -379,7 +379,7 @@ const VenuePartnerDashboard = () => {
                   </button>
                   <button
                     onClick={() => setStatusFilter("quoted")}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium cursor-pointer transition-colors ${
+                    className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium cursor-pointer transition-colors ${
                       statusFilter === "quoted"
                         ? "bg-primary text-bg-primary"
                         : "bg-bg-secondary text-text-primary hover:bg-border"
@@ -389,7 +389,7 @@ const VenuePartnerDashboard = () => {
                   </button>
                   <button
                     onClick={() => setStatusFilter("externally_booked")}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium cursor-pointer transition-colors ${
+                    className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium cursor-pointer transition-colors ${
                       statusFilter === "externally_booked"
                         ? "bg-primary text-bg-primary"
                         : "bg-bg-secondary text-text-primary hover:bg-border"

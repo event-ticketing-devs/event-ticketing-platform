@@ -97,7 +97,7 @@ const VenuePartnerEnquiryDetail = () => {
         <div className="text-center">
           <h2 className="text-xl font-semibold text-text-primary mb-2">Enquiry not found</h2>
           <button
-            onClick={() => navigate("/venue-partner/dashboard")}
+            onClick={() => navigate("/venue-partner")}
             className="text-primary hover:text-primary/80 cursor-pointer"
           >
             ← Back to dashboard
@@ -126,7 +126,7 @@ const VenuePartnerEnquiryDetail = () => {
         {/* Header */}
         <div className="mb-8">
           <button
-            onClick={() => navigate("/venue-partner/dashboard")}
+            onClick={() => navigate("/venue-partner")}
             className="text-primary hover:text-primary/80 mb-4 flex items-center gap-2 cursor-pointer transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -298,7 +298,7 @@ const VenuePartnerEnquiryDetail = () => {
                         <button
                           type="submit"
                           disabled={sendingQuote}
-                          className="flex-1 bg-primary text-bg-primary py-2 rounded-lg hover:bg-primary/90 disabled:bg-primary/60 disabled:cursor-not-allowed cursor-pointer font-medium"
+                          className="flex-1 bg-primary text-bg-primary py-2.5 px-4 rounded-lg hover:bg-primary/90 transition-colors cursor-pointer font-medium disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
                         >
                           {sendingQuote ? "Sending..." : "Send Quote"}
                         </button>

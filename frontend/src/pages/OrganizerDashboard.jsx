@@ -259,19 +259,19 @@ export default function OrganizerDashboard() {
                 </p>
               </div>
             </div>
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-2 sm:gap-3">
               <button
                 onClick={() => navigate("/organizer/contacts")}
-                className="inline-flex items-center gap-2 bg-bg-primary border border-border text-text-primary px-6 py-3 font-medium hover:bg-bg-secondary transition-colors rounded-lg cursor-pointer"
+                className="inline-flex items-center gap-2 bg-bg-primary border border-border text-text-primary px-4 sm:px-6 py-2 sm:py-3 font-medium hover:bg-bg-secondary transition-colors rounded-lg cursor-pointer text-sm sm:text-base"
               >
-                <Mail className="w-5 h-5" />
+                <Mail className="w-4 h-4 sm:w-5 sm:h-5" />
                 Messages
               </button>
               <button
                 onClick={() => navigate("/events/create")}
-                className="inline-flex items-center gap-2 bg-primary text-bg-primary px-6 py-3 font-semibold hover:bg-primary/90 transition-colors rounded-lg cursor-pointer"
+                className="inline-flex items-center gap-2 bg-primary text-bg-primary px-4 sm:px-6 py-2 sm:py-3 font-semibold hover:bg-primary/90 transition-colors rounded-lg cursor-pointer text-sm sm:text-base"
               >
-                <Plus className="w-5 h-5" />
+                <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
                 Create New Event
               </button>
             </div>
@@ -280,12 +280,12 @@ export default function OrganizerDashboard() {
           {/* Stats - keeping existing stats cards */}
           {/* Tabs */}
           <div className="bg-bg-primary border border-border rounded-lg p-6 mb-8">
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
               <h3 className="text-xl font-semibold text-text-primary">My Events</h3>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 <button
                   onClick={() => setActiveTab("upcoming")}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium cursor-pointer transition-colors ${
+                  className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium cursor-pointer transition-colors ${
                     activeTab === "upcoming"
                       ? "bg-primary text-bg-primary"
                       : "bg-bg-secondary text-text-primary hover:bg-border"
@@ -295,7 +295,7 @@ export default function OrganizerDashboard() {
                 </button>
                 <button
                   onClick={() => setActiveTab("past")}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium cursor-pointer transition-colors ${
+                  className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium cursor-pointer transition-colors ${
                     activeTab === "past"
                       ? "bg-primary text-bg-primary"
                       : "bg-bg-secondary text-text-primary hover:bg-border"
@@ -305,7 +305,7 @@ export default function OrganizerDashboard() {
                 </button>
                 <button
                   onClick={() => setActiveTab("cancelled")}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium cursor-pointer transition-colors ${
+                  className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium cursor-pointer transition-colors ${
                     activeTab === "cancelled"
                       ? "bg-primary text-bg-primary"
                       : "bg-bg-secondary text-text-primary hover:bg-border"

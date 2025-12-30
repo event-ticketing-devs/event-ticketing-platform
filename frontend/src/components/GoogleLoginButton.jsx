@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
 import apiClient from "../api/apiClient";
+import { X } from "lucide-react";
+import "./GoogleLoginButton.css";
 
 const GoogleLoginButton = () => {
   const { login } = useAuth();
@@ -74,47 +76,6 @@ const GoogleLoginButton = () => {
           </div>
         </div>
       )}
-
-      <style jsx>{`
-        .google-login-container :global(div[role="button"]) {
-          width: 100% !important;
-          height: 48px !important;
-          border: 1px solid #E8E4DF !important;
-          border-radius: 8px !important;
-          font-family: "Inter", "system-ui", sans-serif !important;
-          font-weight: 600 !important;
-          font-size: 16px !important;
-          transition: border-color 0.2s ease, background-color 0.2s ease !important;
-          box-shadow: none !important;
-        }
-
-        .google-login-container :global(div[role="button"]:hover) {
-          border-color: #C75B39 !important;
-          background-color: #F5F3F0 !important;
-          box-shadow: none !important;
-          transform: none !important;
-          cursor: pointer !important;
-        }
-
-        .google-login-container :global(div[role="button"]:focus) {
-          outline: none !important;
-          border: 1px solid #C75B39 !important;
-        }
-
-        .google-login-container :global(.ns01__text) {
-          font-size: 16px !important;
-          font-weight: 600 !important;
-          color: #2B2826 !important;
-        }
-
-        .google-login-container :global(.ns01__text)::after {
-          content: "Google" !important;
-        }
-
-        .google-login-container :global(.ns01__text) {
-          font-size: 0 !important;
-        }
-      `}</style>
     </div>
   );
 };

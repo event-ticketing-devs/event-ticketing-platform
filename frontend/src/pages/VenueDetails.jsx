@@ -6,7 +6,7 @@ import { useAuth } from "../context/AuthContext";
 import { useComparison } from "../context/ComparisonContext";
 import toast from "react-hot-toast";
 import { getAmenityLabel, getPolicyItemLabel } from "../constants/venueConstants";
-import { MapPin, CheckCircle2, ArrowLeft, ChevronDown, X } from "lucide-react";
+import { MapPin, CheckCircle2, ArrowLeft, ChevronDown, X, XCircle } from "lucide-react";
 
 const VenueDetails = () => {
   const { id } = useParams();
@@ -370,9 +370,9 @@ const SpaceDetailsModal = ({ space, onClose, onEnquire }) => {
   ];
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-bg-primary rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-white border-b border-border p-6">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-0 sm:p-4">
+      <div className="bg-bg-primary sm:rounded-lg max-w-3xl w-full h-full sm:h-auto sm:max-h-[90vh] overflow-y-auto">
+        <div className="sticky top-0 bg-white border-b border-border p-4 sm:p-6">
           <div className="flex justify-between items-start">
             <div>
               <h2 className="text-2xl font-bold text-text-primary">{space.name}</h2>

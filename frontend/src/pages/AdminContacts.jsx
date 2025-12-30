@@ -86,9 +86,9 @@ const AdminContacts = () => {
 
         {/* Filters */}
         <div className="bg-bg-primary border border-border rounded-lg p-6 mb-6">
-          <div className="flex flex-wrap gap-4 items-center">
+          <div className="flex flex-col sm:flex-row sm:flex-wrap gap-4 items-start sm:items-center">
             <label className="text-sm font-medium text-text-primary">Filter by status:</label>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               {['all', 'pending', 'in-progress', 'resolved', 'closed'].map((status) => (
                 <button
                   key={status}
