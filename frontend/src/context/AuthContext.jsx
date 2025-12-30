@@ -11,7 +11,12 @@ export const AuthProvider = ({ children }) => {
     try {
       const stored = localStorage.getItem("user");
       if (stored) {
-        setCurrentUser(JSON.parse(stored));
+        const user = JSON.parse(stored);
+        setCurrentUser(user);
+        // Restore Authorization header if token exists
+        if (user.token) {
+          apiClient.defaults.headers.common["Authorization"] = `Bearer ${user.token}`;
+        }
       }
     } catch (err) {
       console.error("Failed to parse user from localStorage:", err);
@@ -36,6 +41,10 @@ export const AuthProvider = ({ children }) => {
   const login = (user) => {
     localStorage.setItem("user", JSON.stringify(user));
     setCurrentUser(user);
+    // Set Authorization header if token exists
+    if (user.token) {
+      apiClient.defaults.headers.common["Authorization"] = `Bearer ${user.token}`;
+    }
   };
 
   const updateUser = (userData) => {
@@ -65,6 +74,8 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem("user");
     setCurrentUser(null);
+    // Clear Authorization header
+    delete apiClient.defaults.headers.common["Authorization"];
   };
 
   if (loading) {
