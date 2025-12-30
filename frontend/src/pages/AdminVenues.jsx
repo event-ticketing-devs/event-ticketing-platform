@@ -145,8 +145,8 @@ export default function AdminVenues() {
 
         {/* Stats Cards */}
         {!loading && venues.length > 0 && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <div className="bg-bg-primary border border-border rounded-lg p-6 text-center">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div className="bg-bg-primary border border-border rounded-lg p-4 sm:p-6 text-center">
               <p className="text-3xl font-bold text-text-primary">{venues.length}</p>
               <p className="text-sm text-text-secondary mt-1">Total Venues</p>
             </div>
@@ -227,15 +227,15 @@ export default function AdminVenues() {
             {venues.map((venue) => (
               <div 
                 key={venue._id} 
-                className="bg-bg-primary border border-border rounded-lg p-6 hover:border-primary/30 hover:shadow-md transition-all"
+                className="bg-bg-primary border border-border rounded-lg p-4 sm:p-6 hover:border-primary/30 hover:shadow-md transition-all"
               >
-                <div className="flex gap-6">
+                <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
                   {/* Venue Photo */}
                   {venue.photo && (
                     <img
                       src={venue.photo}
                       alt={venue.name}
-                      className="w-32 h-32 rounded-lg object-cover flex-shrink-0"
+                      className="w-full sm:w-32 h-48 sm:h-32 rounded-lg object-cover flex-shrink-0"
                     />
                   )}
 
@@ -260,7 +260,7 @@ export default function AdminVenues() {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-4">
                       <div>
                         <p className="text-xs text-text-secondary">Owner</p>
                         <p className="text-sm font-medium text-text-primary">{venue.owner?.name || "N/A"}</p>
@@ -291,7 +291,7 @@ export default function AdminVenues() {
                     </div>
 
                     {/* Actions */}
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap gap-2">
                       <button
                         onClick={() => handleViewDetails(venue)}
                         className="px-4 py-2 bg-secondary/10 text-secondary rounded-lg hover:bg-secondary/20 transition-colors cursor-pointer text-sm font-medium"

@@ -108,14 +108,14 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen bg-bg-primary py-8">
-      <div className="max-w-4xl mx-auto px-6">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6">
         {/* Header Section */}
-        <div className="bg-bg-primary border border-border rounded-lg p-8 mb-8">
-          <div className="flex flex-col md:flex-row items-center gap-6">
+        <div className="bg-bg-primary border border-border rounded-lg p-4 sm:p-6 md:p-8 mb-8 overflow-hidden">
+          <div className="flex flex-col md:flex-row items-center gap-4 sm:gap-6">
             {/* Avatar */}
-            <div className="relative">
-              <div className="w-24 h-24 bg-primary rounded-full flex items-center justify-center">
-                <span className="text-bg-primary font-bold text-2xl">
+            <div className="relative flex-shrink-0">
+              <div className="w-20 h-20 sm:w-24 sm:h-24 bg-primary rounded-full flex items-center justify-center">
+                <span className="text-bg-primary font-bold text-xl sm:text-2xl">
                   {getInitials(currentUser?.name)}
                 </span>
               </div>
@@ -127,27 +127,27 @@ const Profile = () => {
             </div>
 
             {/* User Info */}
-            <div className="flex-1 text-center md:text-left">
-              <div className="flex flex-col md:flex-row md:items-center gap-3 mb-2">
-                <h1 className="text-3xl font-bold text-text-primary">
+            <div className="flex-1 text-center md:text-left min-w-0">
+              <div className="flex flex-col md:flex-row md:items-center gap-2 sm:gap-3 mb-2">
+                <h1 className="text-2xl sm:text-3xl font-bold text-text-primary break-words">
                   {currentUser?.name}
                 </h1>
                 <span
-                  className={`px-3 py-1 text-sm rounded-md font-medium border ${getRoleColor(
+                  className={`px-2.5 sm:px-3 py-1 text-xs sm:text-sm rounded-md font-medium border self-center md:self-auto ${getRoleColor(
                     currentUser?.role
                   )}`}
                 >
                   {currentUser?.role || "User"}
                 </span>
               </div>
-              <div className="space-y-2 text-text-secondary">
+              <div className="space-y-1.5 sm:space-y-2 text-text-secondary text-sm sm:text-base">
                 <div className="flex items-center justify-center md:justify-start gap-2">
-                  <Mail className="w-4 h-4" />
-                  <span>{currentUser?.email}</span>
+                  <Mail className="w-4 h-4 flex-shrink-0" />
+                  <span className="break-all">{currentUser?.email}</span>
                 </div>
                 {currentUser?.phone && (
                   <div className="flex items-center justify-center md:justify-start gap-2">
-                    <Phone className="w-4 h-4" />
+                    <Phone className="w-4 h-4 flex-shrink-0" />
                     <span>{currentUser.phone}</span>
                   </div>
                 )}
@@ -155,17 +155,17 @@ const Profile = () => {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col sm:flex-row md:flex-col gap-2 sm:gap-3 w-full md:w-auto">
               <Link
                 to="/profile/update"
-                className="flex items-center gap-2 bg-primary text-white px-6 py-2 rounded-lg font-semibold hover:bg-primary/90 transition-colors cursor-pointer"
+                className="flex items-center justify-center gap-2 bg-primary text-white px-4 sm:px-6 py-2 rounded-lg font-semibold hover:bg-primary/90 transition-colors cursor-pointer text-sm sm:text-base"
               >
                 <Edit className="w-4 h-4" />
                 Edit Profile
               </Link>
               <Link
                 to="/dashboard"
-                className="flex items-center gap-2 bg-bg-primary text-text-primary px-6 py-2 rounded-lg font-semibold border border-border hover:bg-bg-secondary hover:border-border transition-colors cursor-pointer"
+                className="flex items-center justify-center gap-2 bg-bg-primary text-text-primary px-4 sm:px-6 py-2 rounded-lg font-semibold border border-border hover:bg-bg-secondary hover:border-border transition-colors cursor-pointer text-sm sm:text-base"
               >
                 <Calendar className="w-4 h-4" />
                 Dashboard

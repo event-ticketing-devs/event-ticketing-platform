@@ -460,7 +460,7 @@ export default function TeamChat({ eventId, eventTitle }) {
           <button
             type="submit"
             disabled={!newMessage.trim() || sending}
-            className="h-[50px] px-6 bg-primary text-bg-primary rounded-lg font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="h-[50px] px-4 sm:px-6 bg-primary text-bg-primary rounded-lg font-semibold hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 flex-shrink-0"
           >
             {sending ? (
               <div className="w-5 h-5 border-2 border-bg-primary/30 border-t-bg-primary rounded-full animate-spin"></div>

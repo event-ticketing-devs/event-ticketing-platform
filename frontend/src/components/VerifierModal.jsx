@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import apiClient from '../api/apiClient';
 import { toast } from 'react-hot-toast';
 import ConfirmModal from './ConfirmModal';
-import { CheckCircle2 } from 'lucide-react';
+import { AlertCircle, CheckCircle2 } from 'lucide-react';
 
 const VerifierModal = ({ isOpen, onClose, eventId, eventTitle }) => {
   const [verifiers, setVerifiers] = useState([]);
@@ -74,9 +74,9 @@ const VerifierModal = ({ isOpen, onClose, eventId, eventTitle }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-bg-primary border border-border rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="p-6">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-0 sm:p-4">
+      <div className="bg-bg-primary border-0 sm:border border-border sm:rounded-lg max-w-2xl w-full h-full sm:h-auto sm:max-h-[90vh] overflow-y-auto">
+        <div className="p-4 sm:p-6">
           {/* Header */}
           <div className="flex justify-between items-start mb-6">
             <div>

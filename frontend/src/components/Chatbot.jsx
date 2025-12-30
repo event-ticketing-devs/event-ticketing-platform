@@ -126,7 +126,7 @@ export default function Chatbot() {
 
       {/* Chatbot Window */}
       {isOpen && (
-        <div className="fixed bottom-6 right-6 z-50 w-96 h-[600px] bg-bg-primary rounded-lg flex flex-col overflow-hidden border border-border shadow-xl">
+        <div className="fixed bottom-0 sm:bottom-6 right-0 sm:right-6 z-50 w-full sm:w-96 h-[100vh] sm:h-[600px] bg-bg-primary sm:rounded-lg flex flex-col overflow-hidden border-t sm:border border-border sm:shadow-xl">
           {/* Header */}
           <div className="bg-primary text-bg-primary p-4 flex items-center justify-between rounded-t-lg">
             <div className="flex items-center gap-3">

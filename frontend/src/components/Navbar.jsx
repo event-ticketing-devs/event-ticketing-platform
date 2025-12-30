@@ -191,6 +191,15 @@ export default function Navbar() {
               Events
             </Link>
             <Link
+              to="/venues"
+              className={`block px-3 py-2 rounded-lg text-sm font-medium cursor-pointer ${
+                isActiveLink("/venues") ? "bg-primary/10 text-primary" : "text-text-primary hover:bg-bg-secondary hover:text-primary"
+              }`}
+              onClick={handleCloseMenu}
+            >
+              Venues
+            </Link>
+            <Link
               to="/contact"
               className={`block px-3 py-2 rounded-lg text-sm font-medium cursor-pointer ${
                 isActiveLink("/contact") ? "bg-primary/10 text-primary" : "text-text-primary hover:bg-bg-secondary hover:text-primary"
@@ -228,6 +237,15 @@ export default function Navbar() {
                   onClick={handleCloseMenu}
                 >
                   Organizer
+                </Link>
+                <Link
+                  to="/venue-partner"
+                  className={`block px-3 py-2 rounded-lg text-sm font-medium cursor-pointer ${
+                    isActiveLink("/venue-partner") ? "bg-primary/10 text-primary" : "text-text-primary hover:bg-bg-secondary hover:text-primary"
+                  }`}
+                  onClick={handleCloseMenu}
+                >
+                  Venue Partner
                 </Link>
               </>
             )}

@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import apiClient from "../api/apiClient";
 import { useComparison } from "../context/ComparisonContext";
 import { Search, X, RotateCcw, ArrowUpDown, Sliders, Building2, MapPin, ChevronRight, CheckCircle2 } from "lucide-react";
+import { STANDARD_AMENITIES, STANDARD_POLICY_ITEMS } from "../constants/venueConstants";
 
 const VenuesPage = () => {
   const { toggleSpace, isSelected, canAddMore } = useComparison();
@@ -367,7 +368,7 @@ const VenuesPage = () => {
             />
             
             {/* Side Panel */}
-            <div className="fixed top-0 left-0 h-full w-full sm:w-96 bg-bg-primary shadow-2xl z-50 transform transition-transform duration-300 ease-in-out overflow-y-auto">
+            <div className="fixed top-0 right-0 h-full w-full sm:w-96 bg-bg-primary shadow-2xl z-50 transform transition-transform duration-300 ease-in-out overflow-y-auto">
               <div className="sticky top-0 bg-primary px-6 py-4 flex items-center justify-between border-b border-primary z-10">
                 <h2 className="text-lg font-semibold text-bg-primary">Advanced Filters</h2>
                 <button

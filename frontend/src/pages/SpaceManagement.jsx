@@ -223,7 +223,7 @@ const SpaceManagement = () => {
         {/* Header */}
         <div className="mb-8">
           <button
-            onClick={() => navigate("/venue-partner/dashboard")}
+            onClick={() => navigate("/venue-partner")}
             className="text-primary hover:text-primary/80 mb-4 flex items-center gap-2 cursor-pointer transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />

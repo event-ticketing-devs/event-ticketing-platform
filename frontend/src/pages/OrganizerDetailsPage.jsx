@@ -185,7 +185,7 @@ const OrganizerDetailsPage = () => {
   if (showBanForm) {
     return (
       <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-50 p-4">
-        <div className="bg-bg-primary rounded-lg shadow-lg p-6 max-w-md w-full mx-4">
+        <div className="bg-bg-primary rounded-lg shadow-lg p-4 sm:p-6 max-w-md w-full mx-4">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-bold text-text-primary">Ban Organizer</h2>
             <button
@@ -272,37 +272,37 @@ const OrganizerDetailsPage = () => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto p-6">
+    <div className="max-w-7xl mx-auto p-4 sm:p-6">
       {/* Header */}
-      <div className="flex justify-between items-center mb-6">
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center px-3 py-2 text-text-secondary hover:text-text-primary hover:bg-bg-secondary rounded-lg transition-colors cursor-pointer"
+            className="flex items-center px-3 py-2 text-text-secondary hover:text-text-primary hover:bg-bg-secondary rounded-lg transition-colors cursor-pointer self-start"
           >
             <ArrowLeft className="w-5 h-5" />
-            <span className="ml-2 font-medium">Back to Dashboard</span>
+            <span className="ml-2 font-medium text-sm sm:text-base">Back to Dashboard</span>
           </button>
-          <h1 className="text-3xl font-bold text-text-primary">Organizer Details</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-text-primary">Organizer Details</h1>
         </div>
         
         {/* Action Buttons */}
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           <button
             onClick={handleContactOrganizer}
-            className="flex items-center px-4 py-2 bg-success text-bg-primary text-sm font-medium rounded-lg hover:bg-success/90 focus:outline-none focus:ring-2 focus:ring-success/20 focus:ring-offset-2 transition-colors cursor-pointer"
+            className="flex items-center px-3 sm:px-4 py-2 bg-success text-bg-primary text-xs sm:text-sm font-medium rounded-lg hover:bg-success/90 focus:outline-none focus:ring-2 focus:ring-success/20 focus:ring-offset-2 transition-colors cursor-pointer"
           >
             <Mail className="w-4 h-4" />
-            <span className="ml-2">Contact</span>
+            <span className="ml-1 sm:ml-2">Contact</span>
           </button>
           
           {organizer.phone ? (
             <button
               onClick={handleCallOrganizer}
-              className="flex items-center px-4 py-2 bg-primary text-bg-primary text-sm font-medium rounded-lg hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:ring-offset-2 transition-colors cursor-pointer"
+              className="flex items-center px-3 sm:px-4 py-2 bg-primary text-bg-primary text-xs sm:text-sm font-medium rounded-lg hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:ring-offset-2 transition-colors cursor-pointer"
             >
               <Phone className="w-4 h-4" />
-              <span className="ml-2">Call</span>
+              <span className="ml-1 sm:ml-2">Call</span>
             </button>
           ) : (
             <div className="relative group">
@@ -324,10 +324,10 @@ const OrganizerDetailsPage = () => {
             <button
               onClick={handleUnbanUser}
               disabled={actionLoading}
-              className="flex items-center px-4 py-2 bg-success text-bg-primary text-sm font-medium rounded-lg hover:bg-success/90 focus:outline-none focus:ring-2 focus:ring-success/20 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              className="flex items-center px-3 sm:px-4 py-2 bg-success text-bg-primary text-xs sm:text-sm font-medium rounded-lg hover:bg-success/90 focus:outline-none focus:ring-2 focus:ring-success/20 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               <Check className="w-4 h-4" />
-              <span className="ml-2">{actionLoading ? 'Unbanning...' : 'Unban User'}</span>
+              <span className="ml-1 sm:ml-2">{actionLoading ? 'Unbanning...' : 'Unban'}</span>
             </button>
           ) : organizer.role === 'admin' ? (
             <div className="relative group">
@@ -347,10 +347,10 @@ const OrganizerDetailsPage = () => {
             <button
               onClick={() => setShowBanForm(true)}
               disabled={actionLoading}
-              className="flex items-center px-4 py-2 bg-warning text-bg-primary text-sm font-medium rounded-lg hover:bg-warning/90 focus:outline-none focus:ring-2 focus:ring-warning/20 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              className="flex items-center px-3 sm:px-4 py-2 bg-warning text-bg-primary text-xs sm:text-sm font-medium rounded-lg hover:bg-warning/90 focus:outline-none focus:ring-2 focus:ring-warning/20 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               <Ban className="w-4 h-4" />
-              <span className="ml-2">Ban User</span>
+              <span className="ml-1 sm:ml-2"><span className="hidden sm:inline">Ban </span>User</span>
             </button>
           )}
 
@@ -372,10 +372,10 @@ const OrganizerDetailsPage = () => {
             <button
               onClick={() => setShowDeleteConfirm(true)}
               disabled={actionLoading}
-              className="flex items-center px-4 py-2 bg-error text-bg-primary text-sm font-medium rounded-lg hover:bg-error/90 focus:outline-none focus:ring-2 focus:ring-error/20 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              className="flex items-center px-3 sm:px-4 py-2 bg-error text-bg-primary text-xs sm:text-sm font-medium rounded-lg hover:bg-error/90 focus:outline-none focus:ring-2 focus:ring-error/20 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               <Trash2 className="w-4 h-4" />
-              <span className="ml-2">Delete</span>
+              <span className="ml-1 sm:ml-2">Delete</span>
             </button>
           )}
         </div>
@@ -384,15 +384,15 @@ const OrganizerDetailsPage = () => {
       {/* Organizer Profile Section */}
       <div className="bg-bg-primary rounded-lg shadow overflow-hidden mb-8">
         {/* Profile Header */}
-        <div className="bg-gradient-to-r from-primary to-primary/90 px-6 py-8">
-          <div className="flex items-center space-x-6">
-            <div className="bg-bg-primary/20 backdrop-blur-sm rounded-full p-6">
-              <User className="w-12 h-12 text-bg-primary" />
+        <div className="bg-gradient-to-r from-primary to-primary/90 px-4 sm:px-6 py-6 sm:py-8">
+          <div className="flex flex-col sm:flex-row items-center sm:items-center gap-4 sm:gap-6">
+            <div className="bg-bg-primary/20 backdrop-blur-sm rounded-full p-4 sm:p-6 flex-shrink-0">
+              <User className="w-10 h-10 sm:w-12 sm:h-12 text-bg-primary" />
             </div>
-            <div className="flex-1">
-              <div className="flex items-center space-x-4 mb-2">
-                <h2 className="text-3xl font-bold text-bg-primary">{organizer.name}</h2>
-                <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
+            <div className="flex-1 min-w-0 text-center sm:text-left">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-2">
+                <h2 className="text-2xl sm:text-3xl font-bold text-bg-primary break-words">{organizer.name}</h2>
+                <span className={`px-3 py-1 rounded-full text-xs sm:text-sm font-semibold self-center sm:self-auto flex-shrink-0 ${
                   organizer.role === 'admin' 
                     ? 'bg-bg-secondary/20 text-bg-secondary border border-bg-secondary/30' 
                     : 'bg-bg-primary/20 text-bg-primary border border-bg-primary/30'
@@ -400,8 +400,8 @@ const OrganizerDetailsPage = () => {
                   {organizer.role.toUpperCase()}
                 </span>
               </div>
-              <p className="text-bg-primary/80 text-lg">{organizer.email}</p>
-              <div className="flex items-center space-x-4 mt-3">
+              <p className="text-bg-primary/80 text-base sm:text-lg break-all mb-2 sm:mb-0">{organizer.email}</p>
+              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 sm:gap-4 mt-3">
                 {organizer.isVerified && (
                   <span className="flex items-center px-3 py-1 bg-success text-bg-primary rounded-full text-sm font-medium">
                     <Check className="w-4 h-4 mr-1" />

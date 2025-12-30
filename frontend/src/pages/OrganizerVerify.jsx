@@ -211,28 +211,28 @@ export default function OrganizerVerify() {
             <div className="flex gap-3">
               <button
                 onClick={() => setInputMode("qr")}
-                className={`flex-1 py-4 px-6 font-semibold transition-colors border-2 rounded-lg cursor-pointer ${
+                className={`flex-1 py-2.5 sm:py-4 px-4 sm:px-6 font-semibold transition-colors border-2 rounded-lg cursor-pointer ${
                   inputMode === "qr"
                     ? "bg-primary text-bg-primary border-transparent"
                     : "bg-bg-secondary text-text-primary border-border hover:bg-bg-secondary/80 hover:border-primary"
                 }`}
               >
-                <div className="flex items-center justify-center gap-3">
-                  <QrCode className="w-5 h-5" />
-                  <span>QR Scanner</span>
+                <div className="flex items-center justify-center gap-2 sm:gap-3">
+                  <QrCode className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <span className="text-sm sm:text-base">QR Scanner</span>
                 </div>
               </button>
               <button
                 onClick={() => setInputMode("manual")}
-                className={`flex-1 py-4 px-6 font-semibold transition-colors border-2 rounded-lg cursor-pointer ${
+                className={`flex-1 py-2.5 sm:py-4 px-4 sm:px-6 font-semibold transition-colors border-2 rounded-lg cursor-pointer ${
                   inputMode === "manual"
                     ? "bg-primary text-bg-primary border-transparent"
                     : "bg-bg-secondary text-text-primary border-border hover:bg-bg-secondary/80 hover:border-primary"
                 }`}
               >
-                <div className="flex items-center justify-center gap-3">
-                  <Edit className="w-5 h-5" />
-                  <span>Manual Entry</span>
+                <div className="flex items-center justify-center gap-2 sm:gap-3">
+                  <Edit className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <span className="text-sm sm:text-base">Manual Entry</span>
                 </div>
               </button>
             </div>

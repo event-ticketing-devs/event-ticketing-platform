@@ -132,12 +132,12 @@ const OrganizerContacts = () => {
 
         {/* Tabs */}
         <div className="bg-bg-primary border border-border rounded-lg mb-6 overflow-hidden">
-          <div className="flex border-b border-border">
+          <div className="flex flex-col sm:flex-row border-b border-border">
             <button
               onClick={() => setActiveTab('inquiries')}
-              className={`flex-1 px-6 py-4 text-sm font-medium transition-colors cursor-pointer ${
+              className={`flex-1 px-4 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-medium transition-colors cursor-pointer ${
                 activeTab === 'inquiries'
-                  ? 'text-text-primary border-b-2 border-primary bg-bg-secondary'
+                  ? 'text-text-primary border-b-2 sm:border-b-2 border-primary bg-bg-secondary'
                   : 'text-text-secondary hover:text-text-primary hover:bg-bg-secondary'
               }`}
             >
@@ -203,15 +203,15 @@ const OrganizerContacts = () => {
             </div>
 
         {/* Filters */}
-        <div className="bg-bg-primary border border-border rounded-lg p-6 mb-6">
-          <div className="flex flex-wrap gap-4 items-center">
+        <div className="bg-bg-primary border border-border rounded-lg p-4 sm:p-6 mb-6">
+          <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3 sm:gap-4 items-start sm:items-center">
             <label className="text-sm font-medium text-text-primary">Filter by status:</label>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               {['all', 'pending', 'in-progress', 'resolved', 'closed'].map((status) => (
                 <button
                   key={status}
                   onClick={() => setFilter(status)}
-                  className={`px-3 py-2 border border-border rounded-lg text-sm font-medium transition-colors cursor-pointer ${
+                  className={`px-2.5 sm:px-3 py-1.5 sm:py-2 border border-border rounded-lg text-xs sm:text-sm font-medium transition-colors cursor-pointer ${
                     filter === status
                       ? 'bg-primary text-bg-primary'
                       : 'bg-bg-secondary text-text-primary hover:bg-bg-secondary/80'
