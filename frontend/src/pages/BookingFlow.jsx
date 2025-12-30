@@ -203,7 +203,7 @@ export default function BookingFlow({ event, onBookingSuccess }) {
                 A confirmation email has been sent to your registered email
                 address.
               </p>
-              <p className="text-slate-500 text-xs">
+              <p className="text-text-secondary text-xs">
                 You can view your ticket details in your dashboard.
               </p>
             </div>
@@ -271,7 +271,7 @@ export default function BookingFlow({ event, onBookingSuccess }) {
                 <h3 className="text-lg font-bold text-slate-900">
                   Select Tickets
                 </h3>
-                <span className="text-sm text-slate-500">
+                <span className="text-sm text-text-secondary">
                   {seatInfo.remainingSeats} seats available
                 </span>
               </div>
@@ -300,7 +300,7 @@ export default function BookingFlow({ event, onBookingSuccess }) {
                           <span className="text-lg font-bold text-slate-900">
                             ₹{category.price.toLocaleString()}
                           </span>
-                          <span className="text-sm text-slate-500">
+                          <span className="text-sm text-text-secondary">
                             {category.remainingSeats} left
                           </span>
                         </div>

@@ -121,7 +121,7 @@ const ProfileUpdate = () => {
                     type="text"
                     name="name"
                     placeholder="Enter your full name"
-                    className="block w-full pl-10 pr-4 py-3 border border-border rounded-lg focus:ring-1 focus:ring-primary focus:border-primary bg-bg-secondary transition-colors"
+                    className="block w-full pl-10 pr-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-bg-secondary transition-colors"
                     value={formData.name}
                     onChange={handleChange}
                     required
@@ -142,7 +142,7 @@ const ProfileUpdate = () => {
                     type="email"
                     name="email"
                     placeholder="Enter your email address"
-                    className="block w-full pl-10 pr-4 py-3 border border-border rounded-lg focus:ring-1 focus:ring-primary focus:border-primary bg-bg-secondary transition-colors"
+                    className="block w-full pl-10 pr-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-bg-secondary transition-colors"
                     value={formData.email}
                     onChange={handleChange}
                     required
@@ -163,7 +163,7 @@ const ProfileUpdate = () => {
                     type="tel"
                     name="phone"
                     placeholder="Enter your phone number"
-                    className="block w-full pl-10 pr-4 py-3 border border-border rounded-lg focus:ring-1 focus:ring-primary focus:border-primary bg-bg-secondary transition-colors"
+                    className="block w-full pl-10 pr-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-bg-secondary transition-colors"
                     value={formData.phone}
                     onChange={handleChange}
                     required
@@ -185,7 +185,7 @@ const ProfileUpdate = () => {
                       type="password"
                       name="password"
                       placeholder="Leave blank to keep current password"
-                      className="block w-full pl-10 pr-4 py-3 border border-border rounded-lg focus:ring-1 focus:ring-primary focus:border-primary bg-bg-secondary transition-colors"
+                      className="block w-full pl-10 pr-4 py-3 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-bg-secondary transition-colors"
                       value={formData.password}
                       onChange={handleChange}
                     />

@@ -117,7 +117,7 @@ export default function Chatbot() {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 z-50 rounded-lg bg-primary text-bg-primary p-4 hover:bg-primary/90 transition-colors group shadow-lg cursor-pointer border border-primary/20"
+          className="fixed bottom-6 right-6 z-50 rounded-full bg-primary text-bg-primary p-4 hover:bg-primary/90 transition-colors group shadow-lg cursor-pointer border border-primary/20"
           aria-label="Open chatbot"
         >
           <MessageCircle className="w-6 h-6" />
@@ -261,7 +261,7 @@ export default function Chatbot() {
                 Powered by Gemini AI
               </p>
               {inputMessage.length > 0 && (
-                <p className={`text-xs ${inputMessage.length > 90 ? 'text-orange-500' : 'text-slate-400'}`}>
+                <p className={`text-xs ${inputMessage.length > 90 ? 'text-warning' : 'text-text-secondary'}`}>
                   {inputMessage.length}/100
                 </p>
               )}
