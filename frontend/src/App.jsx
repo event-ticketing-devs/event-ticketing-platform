@@ -2,48 +2,64 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import { ComparisonProvider } from "./context/ComparisonContext";
 import { Toaster } from "react-hot-toast";
+
+// Pages
 import Home from "./pages/Home";
-import Events from "./pages/Events";
-import Login from "./pages/Login";
-import EventDetails from "./pages/EventDetails";
 import Profile from "./pages/Profile";
 import ProfileUpdate from "./pages/ProfileUpdate";
-import PrivateRoute from "./components/PrivateRoute";
-import PublicRoute from "./components/PublicRoute";
-import AdminRoute from "./components/AdminRoute";
-import Register from "./pages/Register";
-import Dashboard from "./pages/Dashboard";
-import OrganizerDashboard from "./pages/OrganizerDashboard";
-import AdminDashboard from "./pages/AdminDashboard";
-import FlaggedEvents from "./pages/FlaggedEvents";
-import EventForm from "./pages/EventForm";
-import Navbar from "./components/Navbar";
-import Footer from "./components/Footer";
-import NotFound from "./pages/NotFound";
-import OrganizerVerify from "./pages/OrganizerVerify";
-import TicketView from "./pages/TicketView";
-import CancelledBookings from "./pages/CancelledBookings";
-import OrganizerDetailsPage from "./pages/OrganizerDetailsPage";
 import ContactUs from "./pages/ContactUs";
-import AdminContacts from "./pages/AdminContacts";
-import OrganizerContacts from "./pages/OrganizerContacts";
-import Chatbot from "./components/Chatbot";
-import Venues from "./pages/Venues";
-import VenueDetails from "./pages/VenueDetails";
-import VenueEnquiries from "./pages/VenueEnquiries";
-import VenueEnquiryDetail from "./pages/VenueEnquiryDetail";
-import VenuePartnerDashboard from "./pages/VenuePartnerDashboard";
-import VenuePartnerEnquiryDetail from "./pages/VenuePartnerEnquiryDetail";
-import VenueRegistration from "./pages/VenueRegistration";
-import SpaceManagement from "./pages/SpaceManagement";
-import SpaceAvailabilityManagement from "./pages/SpaceAvailabilityManagement";
-import VenueEdit from "./pages/VenueEdit";
-import AdminVenues from "./pages/AdminVenues";
-import AdminVenueActivity from "./pages/AdminVenueActivity";
-import VenueOptionsManagement from "./pages/VenueOptionsManagement";
-import ComparisonTray from "./components/ComparisonTray";
-import SpaceComparisonModal from "./components/SpaceComparisonModal";
+import NotFound from "./pages/NotFound";
 import VerifyEmail from "./pages/VerifyEmail";
+
+// Auth
+import Login from "./features/auth/components/Login";
+import Register from "./features/auth/components/Register";
+import PrivateRoute from "./features/auth/components/PrivateRoute";
+import PublicRoute from "./features/auth/components/PublicRoute";
+import AdminRoute from "./features/auth/components/AdminRoute";
+
+// Events
+import Events from "./features/events/pages/Events";
+import EventDetails from "./features/events/pages/EventDetails";
+import EventForm from "./features/events/pages/EventForm";
+
+// Bookings
+import Dashboard from "./features/bookings/pages/Dashboard";
+import TicketView from "./features/bookings/pages/TicketView";
+import CancelledBookings from "./features/bookings/pages/CancelledBookings";
+
+// Venues
+import Venues from "./features/venues/pages/Venues";
+import VenueDetails from "./features/venues/pages/VenueDetails";
+import VenueEnquiries from "./features/venues/pages/VenueEnquiries";
+import VenueEnquiryDetail from "./features/venues/pages/VenueEnquiryDetail";
+import VenuePartnerDashboard from "./features/venues/pages/VenuePartnerDashboard";
+import VenuePartnerEnquiryDetail from "./features/venues/pages/VenuePartnerEnquiryDetail";
+import VenueRegistration from "./features/venues/pages/VenueRegistration";
+import SpaceManagement from "./features/venues/pages/SpaceManagement";
+import SpaceAvailabilityManagement from "./features/venues/pages/SpaceAvailabilityManagement";
+import VenueEdit from "./features/venues/pages/VenueEdit";
+import VenueOptionsManagement from "./features/venues/pages/VenueOptionsManagement";
+import ComparisonTray from "./features/venues/components/ComparisonTray";
+import SpaceComparisonModal from "./features/venues/components/SpaceComparisonModal";
+
+// Admin
+import AdminDashboard from "./features/admin/pages/AdminDashboard";
+import FlaggedEvents from "./features/admin/pages/FlaggedEvents";
+import AdminContacts from "./features/admin/pages/AdminContacts";
+import AdminVenues from "./features/admin/pages/AdminVenues";
+import AdminVenueActivity from "./features/admin/pages/AdminVenueActivity";
+
+// Organizer
+import OrganizerDashboard from "./features/organizer/pages/OrganizerDashboard";
+import OrganizerVerify from "./features/organizer/pages/OrganizerVerify";
+import OrganizerDetailsPage from "./features/organizer/pages/OrganizerDetailsPage";
+import OrganizerContacts from "./features/organizer/pages/OrganizerContacts";
+
+// Layouts & Common
+import Navbar from "./layouts/Navbar";
+import Footer from "./layouts/Footer";
+import Chatbot from "./common/components/Chatbot";
 
 function App() {
   return (

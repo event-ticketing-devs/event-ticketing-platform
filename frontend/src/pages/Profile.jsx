@@ -4,7 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { deleteAccount } from "../services/authService";
-import ConfirmModal from "../components/ConfirmModal";
+import ConfirmModal from "../common/components/ConfirmModal";
 import apiClient from "../api/apiClient";
 import { User, Mail, Phone, Edit, Trash2, Calendar, Ticket, CheckCircle2, Check, MailCheck, AlertCircle } from 'lucide-react';
 
