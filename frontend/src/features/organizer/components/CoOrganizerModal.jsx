@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import apiClient from '../../../api/apiClient';
 import { toast } from 'react-hot-toast';
 import ConfirmModal from '../../../common/components/ConfirmModal';
-import { Users, AlertTriangle } from 'lucide-react';
+import { Users, AlertCircle } from 'lucide-react';
 
 const CoOrganizerModal = ({ isOpen, onClose, eventId, eventTitle }) => {
   const [coOrganizers, setCoOrganizers] = useState([]);
@@ -178,9 +178,9 @@ const CoOrganizerModal = ({ isOpen, onClose, eventId, eventTitle }) => {
               </div>
 
               {/* Info Box */}
-              <div className="mt-6 bg-warning/10 border border-warning/30 rounded-lg p-4">
+              <div className="mt-6 bg-secondary/10 border border-secondary/30 rounded-lg p-4">
                 <div className="flex">
-                  <AlertTriangle className="h-5 w-5 text-warning mt-0.5" />
+                  <AlertCircle className="h-5 w-5 text-secondary mt-0.5" />
                   <div className="ml-3">
                     <h4 className="text-sm font-medium text-text-primary">
                       Co-Organizer Permissions
