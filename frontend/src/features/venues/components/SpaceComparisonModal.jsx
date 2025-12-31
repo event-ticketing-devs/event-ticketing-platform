@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useComparison } from "../../../context/ComparisonContext";
 import { getAmenityLabel, getPolicyItemLabel } from "../../../constants/venueConstants";
-import { X, CheckCircle2, ChevronDown, Info } from "lucide-react";
+import { X, XCircle, CheckCircle2, ChevronDown, Info } from "lucide-react";
 
 const SpaceComparisonModal = () => {
   const navigate = useNavigate();

@@ -185,7 +185,7 @@ const VerifierModal = ({ isOpen, onClose, eventId, eventTitle }) => {
           <div className="mt-6 flex justify-end">
             <button
               onClick={onClose}
-              className="px-6 py-2 bg-slate-200 text-slate-800 border border-slate-200 hover:bg-slate-300 transition-colors"
+              className="px-6 py-2 bg-bg-secondary text-text-primary rounded-lg hover:bg-bg-secondary/80 transition-colors cursor-pointer border border-border"
             >
               Close
             </button>
