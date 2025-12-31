@@ -62,6 +62,8 @@ A full-stack event management and ticketing platform built with React and Node.j
 - Axios for API calls
 - React Hot Toast for notifications
 - Date-fns for date handling
+- Feature-based architecture for scalability
+- Socket.io client for real-time features
 
 **Backend:**
 
@@ -254,14 +256,36 @@ event-ticketing-platform/
 │   └── package.json
 └── frontend/
     ├── src/
-    │   ├── components/      # Reusable components
-    │   ├── context/         # React context
-    │   ├── pages/           # Route components
-    │   ├── services/        # API services
+    │   ├── features/        # Feature-based modules
+    │   │   ├── auth/        # Authentication components
+    │   │   ├── events/      # Event management
+    │   │   ├── bookings/    # Booking & ticketing
+    │   │   ├── venues/      # Venue marketplace
+    │   │   ├── admin/       # Admin features
+    │   │   └── organizer/   # Organizer tools
+    │   ├── common/          # Shared components
+    │   ├── layouts/         # Layout components (Navbar, Footer)
+    │   ├── pages/           # General pages (Home, Profile, etc.)
+    │   ├── context/         # React context providers
+    │   ├── services/        # API service layers
+    │   ├── utils/           # Utility functions
+    │   ├── constants/       # Constants and configurations
     │   ├── api/             # API client setup
     │   └── App.jsx          # Main app component
+    ├── STRUCTURE.md         # Detailed frontend architecture guide
     └── package.json
 ```
+
+### Frontend Architecture
+
+The frontend follows a **feature-based architecture** for better organization and scalability:
+
+- **Features**: Domain-specific modules (auth, events, bookings, venues, admin, organizer)
+- **Common**: Reusable components shared across features
+- **Layouts**: Page-level layout components
+- **Pages**: General/static pages not tied to specific features
+
+Each feature contains its own `pages/` and `components/` with barrel exports for clean imports. See [STRUCTURE.md](frontend/STRUCTURE.md) for detailed documentation.
 
 ## Key Features
 
