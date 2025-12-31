@@ -58,13 +58,15 @@ export const AuthProvider = ({ children }) => {
       const response = await apiClient.get("/users/profile");
       const freshUser = response.data.user;
       if (freshUser) {
-        localStorage.setItem("user", JSON.stringify(freshUser));
-        setCurrentUser(freshUser);
-        return freshUser;
+        // Preserve the token from currentUser since API doesn't return it
+        const updatedUser = { ...freshUser, token: currentUser?.token };
+        localStorage.setItem("user", JSON.stringify(updatedUser));
+        setCurrentUser(updatedUser);
+        return updatedUser;
       }
     } catch (error) {
       console.error("Failed to refresh user:", error);
-      // If profile fetch fails and we get 401, user might be logged out
+      // If profile fetch fails and we get 401, user might be logged out or token expired
       if (error.response?.status === 401) {
         logout();
       }

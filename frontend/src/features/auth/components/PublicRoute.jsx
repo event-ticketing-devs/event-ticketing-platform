@@ -3,5 +3,11 @@ import { useAuth } from "../../../context/AuthContext";
 
 export default function PublicRoute({ children }) {
   const { currentUser } = useAuth();
-  return currentUser ? <Navigate to="/profile" /> : children;
+  
+  // If user is logged in, redirect to dashboard/profile
+  if (currentUser) {
+    return <Navigate to="/dashboard" replace />;
+  }
+  
+  return children;
 }
