@@ -50,6 +50,77 @@ const SpaceManagement = () => {
 
   const spaceTypes = ["hall", "lawn", "auditorium", "open-area"];
 
+  // Validation function to check if an item conflicts with existing items
+  const validateItemAddition = (itemToAdd, targetList) => {
+    const normalizedItem = itemToAdd.toLowerCase().trim();
+    
+    // Check all 8 possible locations for conflicts
+    const allLists = {
+      'amenities standard': form.amenities.standard.map(item => item.toLowerCase()),
+      'amenities custom': form.amenities.custom.map(item => item.toLowerCase()),
+      'allowed items standard': form.policies.allowedItems.standard.map(item => item.toLowerCase()),
+      'allowed items custom': form.policies.allowedItems.custom.map(item => item.toLowerCase()),
+      'banned items standard': form.policies.bannedItems.standard.map(item => item.toLowerCase()),
+      'banned items custom': form.policies.bannedItems.custom.map(item => item.toLowerCase())
+    };
+    
+    // Determine which list we're adding to
+    const isAmenity = targetList.includes('amenity');
+    const isAllowed = targetList.includes('allowed');
+    const isBanned = targetList.includes('banned');
+    const isCustom = targetList.includes('custom');
+    
+    // Rule 1: Check if item already exists in the target custom list
+    if (isCustom && targetList.includes('amenity') && allLists['amenities custom'].includes(normalizedItem)) {
+      toast.error("This item is already in custom amenities");
+      return false;
+    }
+    if (isCustom && isAllowed && allLists['allowed items custom'].includes(normalizedItem)) {
+      toast.error("This item is already in custom allowed items");
+      return false;
+    }
+    if (isCustom && isBanned && allLists['banned items custom'].includes(normalizedItem)) {
+      toast.error("This item is already in custom banned items");
+      return false;
+    }
+    
+    // Rule 2: Check if item exists in standard list (for amenities and policies)
+    if (isAmenity) {
+      if (allLists['amenities standard'].includes(normalizedItem)) {
+        toast.error("This item is already available in standard amenities. Please use the checkbox instead.");
+        return false;
+      }
+    }
+    
+    // Rule 3: For policy items, check if item exists in standard allowed or banned
+    if (isAllowed || isBanned) {
+      if (allLists['allowed items standard'].includes(normalizedItem)) {
+        toast.error("This item is already available in standard allowed items. Please use the checkbox instead.");
+        return false;
+      }
+      if (allLists['banned items standard'].includes(normalizedItem)) {
+        toast.error("This item is already available in standard banned items. Please use the checkbox instead.");
+        return false;
+      }
+    }
+    
+    // Rule 4: Cannot have the same item in both allowed and banned
+    if (isAllowed) {
+      if (allLists['banned items standard'].includes(normalizedItem) || allLists['banned items custom'].includes(normalizedItem)) {
+        toast.error("This item is already in banned items. An item cannot be both allowed and banned.");
+        return false;
+      }
+    }
+    if (isBanned) {
+      if (allLists['allowed items standard'].includes(normalizedItem) || allLists['allowed items custom'].includes(normalizedItem)) {
+        toast.error("This item is already in allowed items. An item cannot be both allowed and banned.");
+        return false;
+      }
+    }
+    
+    return true;
+  };
+
   useEffect(() => {
     fetchData();
   }, [venueId]);
@@ -584,12 +655,13 @@ const SpaceManagement = () => {
                       onKeyPress={(e) => {
                         if (e.key === 'Enter') {
                           e.preventDefault();
-                          if (customAmenity.trim() && !form.amenities.custom.includes(customAmenity.trim())) {
+                          const trimmed = customAmenity.trim();
+                          if (trimmed && validateItemAddition(trimmed, 'amenity-custom')) {
                             setForm({
                               ...form,
                               amenities: {
                                 ...form.amenities,
-                                custom: [...form.amenities.custom, customAmenity.trim()]
+                                custom: [...form.amenities.custom, trimmed]
                               }
                             });
                             setCustomAmenity("");
@@ -600,19 +672,16 @@ const SpaceManagement = () => {
                     <button
                       type="button"
                       onClick={() => {
-                        if (customAmenity.trim()) {
-                          if (!form.amenities.custom.includes(customAmenity.trim())) {
-                            setForm({
-                              ...form,
-                              amenities: {
-                                ...form.amenities,
-                                custom: [...form.amenities.custom, customAmenity.trim()]
-                              }
-                            });
-                            setCustomAmenity("");
-                          } else {
-                            toast.error("This amenity already exists");
-                          }
+                        const trimmed = customAmenity.trim();
+                        if (trimmed && validateItemAddition(trimmed, 'amenity-custom')) {
+                          setForm({
+                            ...form,
+                            amenities: {
+                              ...form.amenities,
+                              custom: [...form.amenities.custom, trimmed]
+                            }
+                          });
+                          setCustomAmenity("");
                         }
                       }}
                       className="px-4 py-2 bg-primary text-bg-primary rounded-lg hover:bg-primary/90 transition-colors cursor-pointer font-medium text-sm"
@@ -707,14 +776,15 @@ const SpaceManagement = () => {
                           onKeyPress={(e) => {
                             if (e.key === 'Enter') {
                               e.preventDefault();
-                              if (customAllowedItem.trim() && !form.policies.allowedItems.custom.includes(customAllowedItem.trim())) {
+                              const trimmed = customAllowedItem.trim();
+                              if (trimmed && validateItemAddition(trimmed, 'allowed-custom')) {
                                 setForm({
                                   ...form,
                                   policies: {
                                     ...form.policies,
                                     allowedItems: {
                                       ...form.policies.allowedItems,
-                                      custom: [...form.policies.allowedItems.custom, customAllowedItem.trim()]
+                                      custom: [...form.policies.allowedItems.custom, trimmed]
                                     }
                                   }
                                 });
@@ -726,22 +796,19 @@ const SpaceManagement = () => {
                         <button
                           type="button"
                           onClick={() => {
-                            if (customAllowedItem.trim()) {
-                              if (!form.policies.allowedItems.custom.includes(customAllowedItem.trim())) {
-                                setForm({
-                                  ...form,
-                                  policies: {
-                                    ...form.policies,
-                                    allowedItems: {
-                                      ...form.policies.allowedItems,
-                                      custom: [...form.policies.allowedItems.custom, customAllowedItem.trim()]
-                                    }
+                            const trimmed = customAllowedItem.trim();
+                            if (trimmed && validateItemAddition(trimmed, 'allowed-custom')) {
+                              setForm({
+                                ...form,
+                                policies: {
+                                  ...form.policies,
+                                  allowedItems: {
+                                    ...form.policies.allowedItems,
+                                    custom: [...form.policies.allowedItems.custom, trimmed]
                                   }
-                                });
-                                setCustomAllowedItem("");
-                              } else {
-                                toast.error("This item already exists");
-                              }
+                                }
+                              });
+                              setCustomAllowedItem("");
                             }
                           }}
                           className="px-3 py-2 bg-success text-bg-primary rounded-lg hover:bg-success/90 transition-colors cursor-pointer font-medium text-sm"
@@ -832,14 +899,15 @@ const SpaceManagement = () => {
                           onKeyPress={(e) => {
                             if (e.key === 'Enter') {
                               e.preventDefault();
-                              if (customBannedItem.trim() && !form.policies.bannedItems.custom.includes(customBannedItem.trim())) {
+                              const trimmed = customBannedItem.trim();
+                              if (trimmed && validateItemAddition(trimmed, 'banned-custom')) {
                                 setForm({
                                   ...form,
                                   policies: {
                                     ...form.policies,
                                     bannedItems: {
                                       ...form.policies.bannedItems,
-                                      custom: [...form.policies.bannedItems.custom, customBannedItem.trim()]
+                                      custom: [...form.policies.bannedItems.custom, trimmed]
                                     }
                                   }
                                 });
@@ -851,22 +919,19 @@ const SpaceManagement = () => {
                         <button
                           type="button"
                           onClick={() => {
-                            if (customBannedItem.trim()) {
-                              if (!form.policies.bannedItems.custom.includes(customBannedItem.trim())) {
-                                setForm({
-                                  ...form,
-                                  policies: {
-                                    ...form.policies,
-                                    bannedItems: {
-                                      ...form.policies.bannedItems,
-                                      custom: [...form.policies.bannedItems.custom, customBannedItem.trim()]
-                                    }
+                            const trimmed = customBannedItem.trim();
+                            if (trimmed && validateItemAddition(trimmed, 'banned-custom')) {
+                              setForm({
+                                ...form,
+                                policies: {
+                                  ...form.policies,
+                                  bannedItems: {
+                                    ...form.policies.bannedItems,
+                                    custom: [...form.policies.bannedItems.custom, trimmed]
                                   }
-                                });
-                                setCustomBannedItem("");
-                              } else {
-                                toast.error("This item already exists");
-                              }
+                                }
+                              });
+                              setCustomBannedItem("");
                             }
                           }}
                           className="px-3 py-2 bg-error text-bg-primary rounded-lg hover:bg-error/90 transition-colors cursor-pointer font-medium text-sm"

@@ -44,25 +44,28 @@ export const getVenueOption = async (req, res) => {
 // Create a new venue option
 export const createVenueOption = async (req, res) => {
   try {
-    const { type, value, label, description } = req.body;
+    const { type, label, description } = req.body;
     
-    if (!type || !value || !label) {
+    if (!type || !label) {
       return res.status(400).json({ 
-        message: "Type, value, and label are required" 
+        message: "Type and label are required" 
       });
     }
     
+    // Auto-generate value from label
+    const value = label.toLowerCase().trim().replace(/\s+/g, '_');
+    
     // Check if option with this value already exists
-    const existing = await VenueOption.findOne({ value: value.toLowerCase().trim() });
+    const existing = await VenueOption.findOne({ value });
     if (existing) {
       return res.status(400).json({ 
-        message: "An option with this value already exists" 
+        message: "An option with this label already exists" 
       });
     }
     
     const option = await VenueOption.create({
       type,
-      value: value.toLowerCase().trim().replace(/\s+/g, '_'),
+      value,
       label: label.trim(),
       description: description?.trim(),
       createdBy: req.user._id,
@@ -103,15 +106,11 @@ export const updateVenueOption = async (req, res) => {
 // Delete a venue option
 export const deleteVenueOption = async (req, res) => {
   try {
-    const option = await VenueOption.findById(req.params.id);
+    const option = await VenueOption.findByIdAndDelete(req.params.id);
     
     if (!option) {
       return res.status(404).json({ message: "Venue option not found" });
     }
-    
-    // Soft delete by setting isActive to false
-    option.isActive = false;
-    await option.save();
     
     res.json({ message: "Venue option deleted successfully" });
   } catch (error) {

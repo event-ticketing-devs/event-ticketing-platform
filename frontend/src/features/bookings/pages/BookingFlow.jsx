@@ -100,11 +100,11 @@ export default function BookingFlow({ event, onBookingSuccess }) {
       const response = await apiClient.post("/bookings", bookingData);
 
       if (response.data.status === "success") {
-        setBookingSuccess(true);
+        setStep("done");
       }
     } catch (error) {
       console.error("Booking failed:", error);
-      alert("Booking failed. Please try again.");
+      toast.error("Booking failed. Please try again.");
     } finally {
       setLoading(false);
     }
