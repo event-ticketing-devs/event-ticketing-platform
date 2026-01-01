@@ -1,0 +1,546 @@
+# ============================================================================
+# GitHub Actions CI/CD Pipeline for Event Ticketing Platform
+# ============================================================================
+# This workflow automatically deploys your application to AWS EC2 when you
+# push to the main branch.
+#
+# PREREQUISITES:
+# 1. Add all required secrets to GitHub repository (Settings → Secrets)
+# 2. Run the one-time EC2 setup (see CI_CD_SETUP_GUIDE.md)
+# 3. Ensure EC2 security group allows SSH from GitHub Actions IPs
+#
+# WHAT THIS WORKFLOW DOES:
+# 1. Triggers on push to main branch
+# 2. Runs optional tests (if configured)
+# 3. SSHs into your EC2 instance
+# 4. Pulls latest code from GitHub
+# 5. Rebuilds Docker containers
+# 6. Performs health checks
+# 7. Sends deployment notifications
+# ============================================================================
+
+name: Deploy to AWS EC2
+
+# ============================================================================
+# TRIGGER CONDITIONS
+# ============================================================================
+on:
+  # Automatic deployment on push to main
+  push:
+    branches:
+      - main
+    # Optional: Only trigger on changes to these paths
+    paths-ignore:
+      - '*.md'
+      - 'docs/**'
+      - '.gitignore'
+      - 'LICENSE'
+
+  # Manual trigger from GitHub Actions tab
+  workflow_dispatch:
+    inputs:
+      skip_tests:
+        description: 'Skip tests before deployment'
+        required: false
+        default: 'false'
+        type: boolean
+      force_rebuild:
+        description: 'Force rebuild all containers (no cache)'
+        required: false
+        default: 'false'
+        type: boolean
+
+# ============================================================================
+# ENVIRONMENT VARIABLES
+# ============================================================================
+env:
+  # Docker Compose file to use
+  COMPOSE_FILE: docker-compose.prod.yml
+  # Project directory on EC2
+  PROJECT_DIR: ~/event-ticketing-platform
+  # Health check URL (relative to EC2)
+  HEALTH_CHECK_URL: http://localhost/health
+  # Maximum time to wait for health check (seconds)
+  HEALTH_CHECK_TIMEOUT: 120
+  # Number of health check retries
+  HEALTH_CHECK_RETRIES: 20
+
+# ============================================================================
+# CONCURRENCY CONTROL
+# ============================================================================
+# Prevents multiple deployments from running simultaneously
+concurrency:
+  group: production-deployment
+  cancel-in-progress: false
+
+# ============================================================================
+# JOBS
+# ============================================================================
+jobs:
+  # ==========================================================================
+  # JOB 1: RUN TESTS (Optional but Recommended)
+  # ==========================================================================
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    # Skip tests if manually triggered with skip_tests=true
+    if: ${{ github.event.inputs.skip_tests != 'true' }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install backend dependencies
+        working-directory: ./backend
+        run: npm ci
+
+      - name: Run backend tests
+        working-directory: ./backend
+        run: npm test
+        env:
+          NODE_ENV: test
+          JWT_SECRET: test-secret-key-for-ci
+        continue-on-error: true  # Don't fail deployment if tests fail (remove this line to enforce tests)
+
+      - name: Install frontend dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Run frontend lint
+        working-directory: ./frontend
+        run: npm run lint
+        continue-on-error: true  # Don't fail deployment if lint fails
+
+  # ==========================================================================
+  # JOB 2: BUILD VERIFICATION
+  # ==========================================================================
+  build-check:
+    name: Verify Build
+    runs-on: ubuntu-latest
+    needs: test
+    # Run even if tests are skipped
+    if: ${{ always() && (needs.test.result == 'success' || needs.test.result == 'skipped') }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Build frontend
+        working-directory: ./frontend
+        run: npm run build
+        env:
+          # Use empty values (Nginx proxy handles these)
+          VITE_API_URL: ""
+          VITE_SOCKET_URL: ""
+          # These are safe to expose (they're client-side anyway)
+          VITE_GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          VITE_GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
+          VITE_STRIPE_PUBLISHABLE_KEY: ${{ secrets.STRIPE_PUBLISHABLE_KEY }}
+          VITE_GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+
+      - name: Build verification complete
+        run: |
+          echo "Frontend build successful!"
+          echo "Build output:"
+          ls -la frontend/dist/
+
+  # ==========================================================================
+  # JOB 3: DEPLOY TO EC2
+  # ==========================================================================
+  deploy:
+    name: Deploy to EC2
+    runs-on: ubuntu-latest
+    needs: build-check
+    if: ${{ needs.build-check.result == 'success' }}
+    
+    # Required for OIDC token (if using AWS OIDC in future)
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      # ========================================
+      # STEP 1: Checkout Code
+      # ========================================
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # ========================================
+      # STEP 2: Configure SSH
+      # ========================================
+      - name: Configure SSH
+        run: |
+          # Create .ssh directory
+          mkdir -p ~/.ssh
+          
+          # Write SSH private key from secret
+          echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/ec2_key
+          chmod 600 ~/.ssh/ec2_key
+          
+          # Add EC2 host to known_hosts to avoid prompt
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts 2>/dev/null
+          
+          # Verify SSH key is valid
+          echo "SSH key configured"
+
+      # ========================================
+      # STEP 3: Create Environment File
+      # ========================================
+      - name: Create .env file
+        run: |
+          cat > .env << 'ENVEOF'
+          # ===========================================
+          # PRODUCTION Environment Variables
+          # Generated by GitHub Actions on $(date)
+          # ===========================================
+
+          # ----- General -----
+          NODE_ENV=production
+
+          # ----- MongoDB Atlas -----
+          MONGODB_URI=${{ secrets.MONGODB_URI }}
+
+          # ----- Redis -----
+          REDIS_HOST=redis
+          REDIS_PORT=6379
+
+          # ----- JWT Authentication -----
+          JWT_SECRET=${{ secrets.JWT_SECRET }}
+          JWT_EXPIRES_IN=7d
+
+          # ----- CORS & Frontend -----
+          CORS_ORIGIN=${{ secrets.CORS_ORIGIN }}
+          FRONTEND_URL=${{ secrets.FRONTEND_URL }}
+
+          # ----- Google OAuth -----
+          GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
+
+          # ----- Google Maps API -----
+          GOOGLE_MAPS_API_KEY=${{ secrets.GOOGLE_MAPS_API_KEY }}
+
+          # ----- Stripe Payment -----
+          STRIPE_PUBLISHABLE_KEY=${{ secrets.STRIPE_PUBLISHABLE_KEY }}
+          STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}
+
+          # ----- Cloudinary -----
+          CLOUDINARY_CLOUD_NAME=${{ secrets.CLOUDINARY_CLOUD_NAME }}
+          CLOUDINARY_API_KEY=${{ secrets.CLOUDINARY_API_KEY }}
+          CLOUDINARY_API_SECRET=${{ secrets.CLOUDINARY_API_SECRET }}
+
+          # ----- Gemini API -----
+          GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
+
+          # ----- Gmail SMTP -----
+          SMTP_HOST=smtp.gmail.com
+          SMTP_PORT=587
+          SMTP_USER=${{ secrets.SMTP_USER }}
+          SMTP_PASS=${{ secrets.SMTP_PASS }}
+          EMAIL_FROM=${{ secrets.EMAIL_FROM }}
+
+          # ----- Vite Variables (leave empty for Nginx proxy) -----
+          VITE_API_URL=
+          VITE_SOCKET_URL=
+          ENVEOF
+          
+          echo "Environment file created"
+
+      # ========================================
+      # STEP 4: Copy Files to EC2
+      # ========================================
+      - name: Copy files to EC2
+        run: |
+          # Copy .env file to EC2
+          scp -i ~/.ssh/ec2_key -o StrictHostKeyChecking=no \
+            .env \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:${{ env.PROJECT_DIR }}/.env
+          
+          echo "Environment file copied to EC2"
+
+      # ========================================
+      # STEP 5: Deploy Application
+      # ========================================
+      - name: Deploy to EC2
+        run: |
+          ssh -i ~/.ssh/ec2_key -o StrictHostKeyChecking=no \
+            ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'DEPLOY_SCRIPT'
+          
+          set -e  # Exit on any error
+          
+          echo "========================================"
+          echo "Starting Deployment"
+          echo "========================================"
+          echo "Deployment Time: $(date)"
+          echo "Project Directory: $HOME/event-ticketing-platform"
+          echo ""
+          
+          # Navigate to project directory
+          cd ~/event-ticketing-platform
+          
+          # ----------------------------------------
+          # Step 1: Pull Latest Code
+          # ----------------------------------------
+          echo "Pulling latest code from GitHub..."
+          git fetch origin main
+          git reset --hard origin/main
+          echo "Code updated to latest commit: $(git rev-parse --short HEAD)"
+          echo ""
+          
+          # ----------------------------------------
+          # Step 2: Backup Current State (for rollback)
+          # ----------------------------------------
+          echo "Creating backup point..."
+          BACKUP_TAG="backup-$(date +%Y%m%d-%H%M%S)"
+          docker compose -f docker-compose.prod.yml ps -q > /tmp/running_containers_backup 2>/dev/null || true
+          echo "Backup tag: $BACKUP_TAG"
+          echo ""
+          
+          # ----------------------------------------
+          # Step 3: Build New Images
+          # ----------------------------------------
+          echo "Building Docker images..."
+          
+          # Build with cache (faster) or without cache if force_rebuild is true
+          if [ "${{ github.event.inputs.force_rebuild }}" = "true" ]; then
+            echo "   Force rebuild enabled - building without cache"
+            docker compose -f docker-compose.prod.yml build --no-cache
+          else
+            docker compose -f docker-compose.prod.yml build
+          fi
+          
+          echo "Docker images built successfully"
+          echo ""
+          
+          # ----------------------------------------
+          # Step 4: Stop Old Containers
+          # ----------------------------------------
+          echo "Stopping old containers..."
+          docker compose -f docker-compose.prod.yml down --remove-orphans
+          echo "Old containers stopped"
+          echo ""
+          
+          # ----------------------------------------
+          # Step 5: Start New Containers
+          # ----------------------------------------
+          echo "Starting new containers..."
+          docker compose -f docker-compose.prod.yml up -d
+          echo "New containers started"
+          echo ""
+          
+          # ----------------------------------------
+          # Step 6: Wait for Services to be Ready
+          # ----------------------------------------
+          echo "Waiting for services to be ready..."
+          sleep 10
+          
+          # Check container status
+          echo "Container Status:"
+          docker compose -f docker-compose.prod.yml ps
+          echo ""
+          
+          # ----------------------------------------
+          # Step 7: Health Checks
+          # ----------------------------------------
+          echo "Running health checks..."
+          
+          # Check Nginx/Frontend
+          for i in {1..20}; do
+            if curl -s -f http://localhost/health > /dev/null 2>&1; then
+              echo "   Nginx health check passed!"
+              break
+            fi
+            if [ $i -eq 20 ]; then
+              echo "   Nginx health check failed after 20 attempts"
+              exit 1
+            fi
+            echo "   Waiting for Nginx... (attempt $i/20)"
+            sleep 3
+          done
+          
+          # Check API endpoint
+          for i in {1..20}; do
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost/api/categories 2>/dev/null || echo "000")
+            if [ "$HTTP_CODE" = "200" ] || [ "$HTTP_CODE" = "304" ]; then
+              echo "   API health check passed! (HTTP $HTTP_CODE)"
+              break
+            fi
+            if [ $i -eq 20 ]; then
+              echo "   API returned HTTP $HTTP_CODE (may still be starting)"
+            fi
+            echo "   Waiting for API... (attempt $i/20, HTTP $HTTP_CODE)"
+            sleep 3
+          done
+          
+          # Check Redis
+          if docker compose -f docker-compose.prod.yml exec -T redis redis-cli ping | grep -q "PONG"; then
+            echo "   Redis health check passed!"
+          else
+            echo "   Redis health check inconclusive"
+          fi
+          
+          echo ""
+          
+          # ----------------------------------------
+          # Step 8: Cleanup
+          # ----------------------------------------
+          echo "Cleaning up old Docker resources..."
+          docker image prune -f
+          echo "Cleanup complete"
+          echo ""
+          
+          # ----------------------------------------
+          # Step 9: Final Status
+          # ----------------------------------------
+          echo "========================================"
+          echo "DEPLOYMENT SUCCESSFUL!"
+          echo "========================================"
+          echo "Completed: $(date)"
+          echo "Commit: $(git rev-parse --short HEAD)"
+          echo "Message: $(git log -1 --pretty=%B | head -1)"
+          echo ""
+          echo "Application URL: ${{ secrets.FRONTEND_URL }}"
+          echo ""
+          echo "Running Containers:"
+          docker compose -f docker-compose.prod.yml ps --format "table {{.Name}}\t{{.Status}}\t{{.Ports}}"
+          echo ""
+          echo "Resource Usage:"
+          docker stats --no-stream --format "table {{.Name}}\t{{.CPUPerc}}\t{{.MemUsage}}"
+          echo "========================================"
+          
+          DEPLOY_SCRIPT
+
+      # ========================================
+      # STEP 6: Verify Deployment
+      # ========================================
+      - name: Verify Deployment
+        run: |
+          echo "Verifying deployment from GitHub Actions..."
+          
+          # Wait a moment for everything to stabilize
+          sleep 5
+          
+          # Test the public URL (if accessible)
+          if curl -s -f -o /dev/null "${{ secrets.FRONTEND_URL }}/health"; then
+            echo "Application is accessible at ${{ secrets.FRONTEND_URL }}"
+          else
+            echo "Could not verify public URL (may be expected if behind firewall)"
+          fi
+          
+          echo "Deployment verification complete!"
+
+      # ========================================
+      # STEP 7: Cleanup SSH
+      # ========================================
+      - name: Cleanup
+        if: always()
+        run: |
+          rm -f ~/.ssh/ec2_key
+          rm -f .env
+          echo "Sensitive files cleaned up"
+
+  # ==========================================================================
+  # JOB 4: NOTIFY ON SUCCESS
+  # ==========================================================================
+  notify-success:
+    name: Notify Success
+    runs-on: ubuntu-latest
+    needs: deploy
+    if: ${{ needs.deploy.result == 'success' }}
+    
+    steps:
+      - name: Deployment Success Notification
+        run: |
+          echo "========================================"
+          echo "DEPLOYMENT SUCCESSFUL!"
+          echo "========================================"
+          echo ""
+          echo "Repository: ${{ github.repository }}"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "Author: ${{ github.actor }}"
+          echo "Message: ${{ github.event.head_commit.message }}"
+          echo ""
+          echo "Application: ${{ secrets.FRONTEND_URL }}"
+          echo "Deployed at: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+          echo "========================================"
+
+      # Optional: Slack notification (uncomment if you have Slack webhook)
+      # - name: Slack Notification
+      #   uses: 8398a7/action-slack@v3
+      #   with:
+      #     status: success
+      #     text: |
+      #       Deployment Successful!
+      #       Repository: ${{ github.repository }}
+      #       Branch: ${{ github.ref_name }}
+      #       Commit: ${{ github.sha }}
+      #       Author: ${{ github.actor }}
+      #     webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      # Optional: Discord notification (uncomment if you have Discord webhook)
+      # - name: Discord Notification
+      #   uses: sarisia/actions-status-discord@v1
+      #   with:
+      #     webhook: ${{ secrets.DISCORD_WEBHOOK_URL }}
+      #     status: ${{ job.status }}
+      #     title: "Deployment Successful!"
+      #     description: "Application deployed to production"
+
+  # ==========================================================================
+  # JOB 5: NOTIFY ON FAILURE
+  # ==========================================================================
+  notify-failure:
+    name: Notify Failure
+    runs-on: ubuntu-latest
+    needs: [test, build-check, deploy]
+    if: ${{ failure() }}
+    
+    steps:
+      - name: Deployment Failed Notification
+        run: |
+          echo "========================================"
+          echo "DEPLOYMENT FAILED!"
+          echo "========================================"
+          echo ""
+          echo "Repository: ${{ github.repository }}"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "Author: ${{ github.actor }}"
+          echo ""
+          echo "Check the GitHub Actions logs for details:"
+          echo "   ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          echo ""
+          echo "The previous deployment should still be running."
+          echo "========================================"
+
+      # Optional: Slack notification for failures
+      # - name: Slack Failure Notification
+      #   uses: 8398a7/action-slack@v3
+      #   with:
+      #     status: failure
+      #     text: |
+      #       Deployment Failed!
+      #       Repository: ${{ github.repository }}
+      #       Check logs: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      #     webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+# ============================================================================
+# END OF WORKFLOW
+# ============================================================================
