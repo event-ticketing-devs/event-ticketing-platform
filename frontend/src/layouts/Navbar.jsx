@@ -8,6 +8,8 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const [adminMenuOpen, setAdminMenuOpen] = useState(false);
+  const [eventsMenuOpen, setEventsMenuOpen] = useState(false);
+  const [venuesMenuOpen, setVenuesMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -47,35 +49,134 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-1">
+          <div className="hidden lg:flex items-center gap-1">
             <Link to="/" className={linkClassName("/")} onClick={handleCloseMenu}>
               Home
             </Link>
-            <Link to="/events" className={linkClassName("/events")} onClick={handleCloseMenu}>
-              Events
-            </Link>
-            <Link to="/venues" className={linkClassName("/venues")} onClick={handleCloseMenu}>
-              Venues
-            </Link>
+            
+            {/* Events Dropdown */}
+            <div className="relative">
+              <button
+                onClick={() => setEventsMenuOpen(!eventsMenuOpen)}
+                className={`flex items-center gap-1 px-3 py-2 text-sm font-medium transition-colors duration-200 cursor-pointer ${
+                  isActiveLink("/events") || isActiveLink("/dashboard") || isActiveLink("/organizer")
+                    ? "text-primary"
+                    : "text-text-primary hover:text-primary/80"
+                }`}
+              >
+                Events
+                <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${eventsMenuOpen ? "rotate-180" : ""}`} />
+              </button>
+              
+              {eventsMenuOpen && (
+                <>
+                  <div
+                    className="fixed inset-0 z-10"
+                    onClick={() => setEventsMenuOpen(false)}
+                  />
+                  <div className="absolute left-0 mt-2 w-56 bg-bg-primary rounded-lg shadow-lg border border-border py-2 z-20">
+                    <Link
+                      to="/events"
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-text-primary hover:bg-bg-secondary transition-colors cursor-pointer"
+                      onClick={() => {
+                        setEventsMenuOpen(false);
+                        handleCloseMenu();
+                      }}
+                    >
+                      Browse Events
+                    </Link>
+                    {currentUser && (
+                      <>
+                        <Link
+                          to="/dashboard"
+                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-text-primary hover:bg-bg-secondary transition-colors cursor-pointer"
+                          onClick={() => {
+                            setEventsMenuOpen(false);
+                            handleCloseMenu();
+                          }}
+                        >
+                          My Bookings
+                        </Link>
+                        <Link
+                          to="/organizer"
+                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-text-primary hover:bg-bg-secondary transition-colors cursor-pointer"
+                          onClick={() => {
+                            setEventsMenuOpen(false);
+                            handleCloseMenu();
+                          }}
+                        >
+                          Organizer
+                        </Link>
+                      </>
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
+            
+            {/* Venues Dropdown */}
+            <div className="relative">
+              <button
+                onClick={() => setVenuesMenuOpen(!venuesMenuOpen)}
+                className={`flex items-center gap-1 px-3 py-2 text-sm font-medium transition-colors duration-200 cursor-pointer ${
+                  isActiveLink("/venues") || isActiveLink("/venue-enquiries") || isActiveLink("/venue-partner")
+                    ? "text-primary"
+                    : "text-text-primary hover:text-primary/80"
+                }`}
+              >
+                Venues
+                <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${venuesMenuOpen ? "rotate-180" : ""}`} />
+              </button>
+              
+              {venuesMenuOpen && (
+                <>
+                  <div
+                    className="fixed inset-0 z-10"
+                    onClick={() => setVenuesMenuOpen(false)}
+                  />
+                  <div className="absolute left-0 mt-2 w-56 bg-bg-primary rounded-lg shadow-lg border border-border py-2 z-20">
+                    <Link
+                      to="/venues"
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm text-text-primary hover:bg-bg-secondary transition-colors cursor-pointer"
+                      onClick={() => {
+                        setVenuesMenuOpen(false);
+                        handleCloseMenu();
+                      }}
+                    >
+                      Browse Venues
+                    </Link>
+                    {currentUser && (
+                      <>
+                        <Link
+                          to="/venue-enquiries"
+                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-text-primary hover:bg-bg-secondary transition-colors cursor-pointer"
+                          onClick={() => {
+                            setVenuesMenuOpen(false);
+                            handleCloseMenu();
+                          }}
+                        >
+                          My Enquiries
+                        </Link>
+                        <Link
+                          to="/venue-partner"
+                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-text-primary hover:bg-bg-secondary transition-colors cursor-pointer"
+                          onClick={() => {
+                            setVenuesMenuOpen(false);
+                            handleCloseMenu();
+                          }}
+                        >
+                          Venue Partner
+                        </Link>
+                      </>
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
+            
             <Link to="/contact" className={linkClassName("/contact")} onClick={handleCloseMenu}>
               Contact
             </Link>
-            {currentUser && (
-              <>
-                <Link to="/dashboard" className={linkClassName("/dashboard")} onClick={handleCloseMenu}>
-                  My Bookings
-                </Link>
-                <Link to="/venue-enquiries" className={linkClassName("/venue-enquiries")} onClick={handleCloseMenu}>
-                  My Enquiries
-                </Link>
-                <Link to="/organizer" className={linkClassName("/organizer")} onClick={handleCloseMenu}>
-                  Organizer
-                </Link>
-                <Link to="/venue-partner" className={linkClassName("/venue-partner")} onClick={handleCloseMenu}>
-                  Venue Partner
-                </Link>
-              </>
-            )}
             {currentUser?.role?.toLowerCase() === "admin" && (
               <div className="relative">
                 <button
@@ -166,7 +267,7 @@ export default function Navbar() {
           </div>
 
           {/* Right Side - Auth/Profile */}
-          <div className="hidden md:flex items-center gap-3">
+          <div className="hidden lg:flex items-center gap-3">
             {currentUser ? (
               <div className="relative">
                 <button
@@ -241,7 +342,7 @@ export default function Navbar() {
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="md:hidden">
+          <div className="lg:hidden">
             <button
               className="p-2 rounded-lg hover:bg-bg-secondary transition-colors duration-200 cursor-pointer"
               onClick={handleMenuToggle}
@@ -255,7 +356,7 @@ export default function Navbar() {
 
       {/* Mobile Menu */}
       {menuOpen && (
-        <div className="md:hidden border-t border-border bg-bg-primary">
+        <div className="lg:hidden border-t border-border bg-bg-primary">
           <div className="px-4 py-4 space-y-1">
             <Link
               to="/"
@@ -266,24 +367,83 @@ export default function Navbar() {
             >
               Home
             </Link>
-            <Link
-              to="/events"
-              className={`block px-3 py-2 rounded-lg text-sm font-medium cursor-pointer ${
-                isActiveLink("/events") ? "bg-primary/10 text-primary" : "text-text-primary hover:bg-bg-secondary hover:text-primary"
-              }`}
-              onClick={handleCloseMenu}
-            >
-              Events
-            </Link>
-            <Link
-              to="/venues"
-              className={`block px-3 py-2 rounded-lg text-sm font-medium cursor-pointer ${
-                isActiveLink("/venues") ? "bg-primary/10 text-primary" : "text-text-primary hover:bg-bg-secondary hover:text-primary"
-              }`}
-              onClick={handleCloseMenu}
-            >
-              Venues
-            </Link>
+            
+            {/* Events Section */}
+            <div className="space-y-1">
+              <div className="px-3 py-2 text-xs font-semibold text-text-secondary uppercase tracking-wider">
+                Events
+              </div>
+              <Link
+                to="/events"
+                className={`block px-3 py-2 rounded-lg text-sm font-medium cursor-pointer ${
+                  isActiveLink("/events") ? "bg-primary/10 text-primary" : "text-text-primary hover:bg-bg-secondary hover:text-primary"
+                }`}
+                onClick={handleCloseMenu}
+              >
+                Browse Events
+              </Link>
+              {currentUser && (
+                <>
+                  <Link
+                    to="/dashboard"
+                    className={`block px-3 py-2 rounded-lg text-sm font-medium cursor-pointer ${
+                      isActiveLink("/dashboard") ? "bg-primary/10 text-primary" : "text-text-primary hover:bg-bg-secondary hover:text-primary"
+                    }`}
+                    onClick={handleCloseMenu}
+                  >
+                    My Bookings
+                  </Link>
+                  <Link
+                    to="/organizer"
+                    className={`block px-3 py-2 rounded-lg text-sm font-medium cursor-pointer ${
+                      isActiveLink("/organizer") ? "bg-primary/10 text-primary" : "text-text-primary hover:bg-bg-secondary hover:text-primary"
+                    }`}
+                    onClick={handleCloseMenu}
+                  >
+                    Organizer
+                  </Link>
+                </>
+              )}
+            </div>
+            
+            {/* Venues Section */}
+            <div className="space-y-1">
+              <div className="px-3 py-2 text-xs font-semibold text-text-secondary uppercase tracking-wider">
+                Venues
+              </div>
+              <Link
+                to="/venues"
+                className={`block px-3 py-2 rounded-lg text-sm font-medium cursor-pointer ${
+                  isActiveLink("/venues") ? "bg-primary/10 text-primary" : "text-text-primary hover:bg-bg-secondary hover:text-primary"
+                }`}
+                onClick={handleCloseMenu}
+              >
+                Browse Venues
+              </Link>
+              {currentUser && (
+                <>
+                  <Link
+                    to="/venue-enquiries"
+                    className={`block px-3 py-2 rounded-lg text-sm font-medium cursor-pointer ${
+                      isActiveLink("/venue-enquiries") ? "bg-primary/10 text-primary" : "text-text-primary hover:bg-bg-secondary hover:text-primary"
+                    }`}
+                    onClick={handleCloseMenu}
+                  >
+                    My Enquiries
+                  </Link>
+                  <Link
+                    to="/venue-partner"
+                    className={`block px-3 py-2 rounded-lg text-sm font-medium cursor-pointer ${
+                      isActiveLink("/venue-partner") ? "bg-primary/10 text-primary" : "text-text-primary hover:bg-bg-secondary hover:text-primary"
+                    }`}
+                    onClick={handleCloseMenu}
+                  >
+                    Venue Partner
+                  </Link>
+                </>
+              )}
+            </div>
+            
             <Link
               to="/contact"
               className={`block px-3 py-2 rounded-lg text-sm font-medium cursor-pointer ${
@@ -293,47 +453,6 @@ export default function Navbar() {
             >
               Contact
             </Link>
-
-            {currentUser && (
-              <>
-                <Link
-                  to="/dashboard"
-                  className={`block px-3 py-2 rounded-lg text-sm font-medium cursor-pointer ${
-                    isActiveLink("/dashboard") ? "bg-primary/10 text-primary" : "text-text-primary hover:bg-bg-secondary hover:text-primary"
-                  }`}
-                  onClick={handleCloseMenu}
-                >
-                  My Bookings
-                </Link>
-                <Link
-                  to="/venue-enquiries"
-                  className={`block px-3 py-2 rounded-lg text-sm font-medium cursor-pointer ${
-                    isActiveLink("/venue-enquiries") ? "bg-primary/10 text-primary" : "text-text-primary hover:bg-bg-secondary hover:text-primary"
-                  }`}
-                  onClick={handleCloseMenu}
-                >
-                  My Enquiries
-                </Link>
-                <Link
-                  to="/organizer"
-                  className={`block px-3 py-2 rounded-lg text-sm font-medium cursor-pointer ${
-                    isActiveLink("/organizer") ? "bg-primary/10 text-primary" : "text-text-primary hover:bg-bg-secondary hover:text-primary"
-                  }`}
-                  onClick={handleCloseMenu}
-                >
-                  Organizer
-                </Link>
-                <Link
-                  to="/venue-partner"
-                  className={`block px-3 py-2 rounded-lg text-sm font-medium cursor-pointer ${
-                    isActiveLink("/venue-partner") ? "bg-primary/10 text-primary" : "text-text-primary hover:bg-bg-secondary hover:text-primary"
-                  }`}
-                  onClick={handleCloseMenu}
-                >
-                  Venue Partner
-                </Link>
-              </>
-            )}
 
             {currentUser?.role?.toLowerCase() === "admin" && (
               <>
