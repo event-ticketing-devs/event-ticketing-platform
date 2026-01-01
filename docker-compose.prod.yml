@@ -1,30 +1,13 @@
-services:
-  # MongoDB Database (Uncomment if not using Atlas)
-  # mongodb:
-  #   image: mongo:7-jammy
-  #   container_name: event-ticketing-mongodb
-  #   restart: unless-stopped
-  #   ports:
-  #     - "27017:27017"
-  #   volumes:
-  #     - mongodb_data:/data/db
-  #     - mongodb_config:/data/configdb
-  #   networks:
-  #     - event-ticketing-network
-  #   healthcheck:
-  #     test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
-  #     interval: 10s
-  #     timeout: 5s
-  #     retries: 5
-  #     start_period: 30s
+# Production Docker Compose Configuration
+# Usage: docker compose -f docker-compose.prod.yml up -d
 
+services:
   # Redis Cache
   redis:
     image: redis:7-alpine
     container_name: event-ticketing-redis
     restart: unless-stopped
-    ports:
-      - "6379:6379"
+    # DO NOT expose port externally - only accessible via Docker network
     volumes:
       - redis_data:/data
     networks:
@@ -34,32 +17,28 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
-  # Mailhog - Email testing
-  mailhog:
-    image: mailhog/mailhog:latest
-    container_name: event-ticketing-mailhog
-    restart: unless-stopped
-    ports:
-      - "1025:1025"  # SMTP server
-      - "8025:8025"  # Web UI
-    networks:
-      - event-ticketing-network
+    # Memory limit for t2.micro (1GB total RAM)
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+    command: redis-server --maxmemory 100mb --maxmemory-policy allkeys-lru
 
   # Backend API
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.prod
     container_name: event-ticketing-backend
     restart: unless-stopped
-    ports:
-      - "8000:8000"
+    # DO NOT expose port externally - Nginx will proxy to it via Docker network
+    expose:
+      - "8000"
     environment:
-      NODE_ENV: ${NODE_ENV:-development}
+      NODE_ENV: production
       PORT: 8000
-      # MongoDB connection - use Atlas URI from .env or local mongodb
-      MONGODB_URI: ${MONGODB_URI:-mongodb://mongodb:27017}
+      # MongoDB connection - use Atlas URI from .env
+      MONGODB_URI: ${MONGODB_URI}
       # Redis connection using Docker service name
       REDIS_HOST: redis
       REDIS_PORT: 6379
@@ -67,7 +46,7 @@ services:
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}
       # CORS - allow frontend origin
-      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:3000}
+      CORS_ORIGIN: ${CORS_ORIGIN}
       # Google OAuth
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
       # Stripe
@@ -83,18 +62,17 @@ services:
       SMTP_PASS: ${SMTP_PASS}
       EMAIL_FROM: ${EMAIL_FROM}
       # Frontend URL for email links
-      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
-    volumes:
-      - ./backend/src:/app/src:delegated
-      - backend_node_modules:/app/node_modules
+      FRONTEND_URL: ${FRONTEND_URL}
     depends_on:
       redis:
         condition: service_healthy
-      mailhog:
-        condition: service_started
     networks:
       - event-ticketing-network
-    command: npm run dev
+    # Memory limit for t2.micro
+    deploy:
+      resources:
+        limits:
+          memory: 1G
 
   # Frontend (Nginx serving React build)
   frontend:
@@ -102,8 +80,9 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        VITE_API_URL: ${VITE_API_URL:-}
-        VITE_SOCKET_URL: ${VITE_SOCKET_URL:-}
+        # Leave empty to use Nginx proxy (recommended)
+        VITE_API_URL: ""
+        VITE_SOCKET_URL: ""
         VITE_GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
         VITE_GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY}
         VITE_STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY}
@@ -111,22 +90,21 @@ services:
     container_name: event-ticketing-frontend
     restart: unless-stopped
     ports:
-      - "3000:80"
+      - "80:80"
     depends_on:
       - backend
     networks:
       - event-ticketing-network
+    # Memory limit for t2.micro
+    deploy:
+      resources:
+        limits:
+          memory: 128M
 
 networks:
   event-ticketing-network:
     driver: bridge
 
 volumes:
-  # mongodb_data:  # Not needed when using MongoDB Atlas
-  #   driver: local
-  # mongodb_config:  # Not needed when using MongoDB Atlas
-  #   driver: local
   redis_data:
-    driver: local
-  backend_node_modules:
     driver: local

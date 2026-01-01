@@ -57,7 +57,8 @@ export default function TeamChat({ eventId, eventTitle }) {
     
     if (!eventId || !token) return;
 
-    const socketUrl = import.meta.env.VITE_SOCKET_URL || 'http://localhost:8000';
+    // Empty string means use same origin (works with Nginx proxy in production)
+    const socketUrl = import.meta.env.VITE_SOCKET_URL || '';
     
     const newSocket = io(socketUrl, {
       auth: { token },
