@@ -1875,6 +1875,31 @@ export const getAllVenuesAdmin = async (req, res) => {
   }
 };
 
+// @desc    Get venue stats for admin dashboard
+// @route   GET /api/admin/venues/stats
+// @access  Private (Admin only)
+export const getVenueStats = async (req, res) => {
+  try {
+    const totalVenues = await Venue.countDocuments();
+    const verifiedVenues = await Venue.countDocuments({ verificationStatus: "verified" });
+    const unverifiedVenues = await Venue.countDocuments({ verificationStatus: "unverified" });
+    const suspendedVenues = await Venue.countDocuments({ verificationStatus: "suspended" });
+    const totalSpaces = await Space.countDocuments();
+    const flaggedVenues = await Venue.countDocuments({ reportCount: { $gt: 0 } });
+
+    res.json({
+      totalVenues,
+      verifiedVenues,
+      unverifiedVenues,
+      suspendedVenues,
+      totalSpaces,
+      flaggedVenues,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // @desc    Get chat messages for a venue request
 // @route   GET /api/venue-requests/:requestId/messages
 // @access  Private (organizer or venue owner/team)

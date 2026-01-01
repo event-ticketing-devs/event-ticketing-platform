@@ -268,10 +268,43 @@ const updateContactStatus = async (req, res) => {
   }
 };
 
+// Get all contacts for admin (both general and event)
+const getAllContactsForAdmin = async (req, res) => {
+  try {
+    const { status, page = 1, limit = 20 } = req.query;
+    
+    const filter = {};
+    if (status) filter.status = status;
+
+    const contacts = await Contact.find(filter)
+      .populate('handledBy', 'name email')
+      .populate('eventId', 'title date')
+      .populate('organizerId', 'name email')
+      .sort({ createdAt: -1 })
+      .limit(limit * 1)
+      .skip((page - 1) * limit);
+
+    const total = await Contact.countDocuments(filter);
+
+    res.json({
+      contacts,
+      pagination: {
+        current: parseInt(page),
+        pages: Math.ceil(total / limit),
+        total
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching all contacts:', error);
+    res.status(500).json({ message: 'Failed to fetch contacts' });
+  }
+};
+
 export {
   createGeneralContact,
   createEventContact,
   getGeneralContacts,
   getEventContacts,
-  updateContactStatus
+  updateContactStatus,
+  getAllContactsForAdmin
 };

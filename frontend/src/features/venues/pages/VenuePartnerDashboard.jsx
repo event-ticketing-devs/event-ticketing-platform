@@ -4,6 +4,7 @@ import apiClient from "../../../api/apiClient";
 import { format } from "date-fns";
 import toast from "react-hot-toast";
 import { Building2, Clock, Plus, CheckCircle2, XCircle, Edit, LayoutGrid, FileText, AlertTriangle, Lock } from "lucide-react";
+import { VenueVerificationNotice } from "../../../common/components";
 
 const VenuePartnerDashboard = () => {
   const [enquiries, setEnquiries] = useState([]);
@@ -93,6 +94,9 @@ const VenuePartnerDashboard = () => {
   return (
     <div className="min-h-screen bg-bg-secondary py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Venue Verification Notice */}
+        {selectedVenue && <VenueVerificationNotice venue={selectedVenue} />}
+        
         {/* Header */}
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">

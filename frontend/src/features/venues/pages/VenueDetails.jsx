@@ -6,7 +6,8 @@ import { useAuth } from "../../../context/AuthContext";
 import { useComparison } from "../../../context/ComparisonContext";
 import toast from "react-hot-toast";
 import { getAmenityLabel, getPolicyItemLabel } from "../../../constants/venueConstants";
-import { MapPin, CheckCircle2, ArrowLeft, ChevronDown, X, XCircle } from "lucide-react";
+import { MapPin, CheckCircle2, ArrowLeft, ChevronDown, X, XCircle, AlertCircle } from "lucide-react";
+import ReportVenueModal from "../components/ReportVenueModal";
 
 const VenueDetails = () => {
   const { id } = useParams();
@@ -20,6 +21,7 @@ const VenueDetails = () => {
   const [showEnquiryForm, setShowEnquiryForm] = useState(false);
   const [showSpaceModal, setShowSpaceModal] = useState(false);
   const [modalSpace, setModalSpace] = useState(null);
+  const [showReportModal, setShowReportModal] = useState(false);
 
   useEffect(() => {
     fetchVenueDetails();
@@ -202,6 +204,19 @@ const VenueDetails = () => {
                   <span className="text-sm font-medium text-text-primary">Email:</span>
                   <p className="text-text-primary">{venue.primaryContact.email}</p>
                 </div>
+
+              {/* Report Venue Button */}
+              {currentUser && (
+                <div className="mt-6 pt-6 border-t border-border">
+                  <button
+                    onClick={() => setShowReportModal(true)}
+                    className="w-full flex items-center justify-center gap-2 text-error hover:text-error/80 py-3 px-4 border border-error/20 hover:border-error/30 hover:bg-error/10 transition-colors text-sm font-medium rounded-lg cursor-pointer"
+                  >
+                    <AlertCircle className="w-4 h-4" />
+                    Report Venue
+                  </button>
+                </div>
+              )}
               </div>
             </div>
           </div>
@@ -345,6 +360,14 @@ const VenueDetails = () => {
           }}
         />
       )}
+
+      {/* Report Venue Modal */}
+      <ReportVenueModal
+        open={showReportModal}
+        venueId={venue._id}
+        venueName={venue.name}
+        onClose={() => setShowReportModal(false)}
+      />
     </div>
   );
 };

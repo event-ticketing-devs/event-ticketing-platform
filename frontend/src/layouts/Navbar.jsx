@@ -7,6 +7,7 @@ export default function Navbar() {
   const { currentUser, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  const [adminMenuOpen, setAdminMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -76,9 +77,91 @@ export default function Navbar() {
               </>
             )}
             {currentUser?.role?.toLowerCase() === "admin" && (
-              <Link to="/admin" className={linkClassName("/admin")} onClick={handleCloseMenu}>
-                Admin
-              </Link>
+              <div className="relative">
+                <button
+                  onClick={() => setAdminMenuOpen(!adminMenuOpen)}
+                  className={`flex items-center gap-1 px-3 py-2 text-sm font-medium transition-colors duration-200 cursor-pointer ${
+                    isActiveLink("/admin")
+                      ? "text-primary"
+                      : "text-text-primary hover:text-primary/80"
+                  }`}
+                >
+                  Admin
+                  <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${adminMenuOpen ? "rotate-180" : ""}`} />
+                </button>
+                
+                {adminMenuOpen && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-10"
+                      onClick={() => setAdminMenuOpen(false)}
+                    />
+                    <div className="absolute right-0 mt-2 w-56 bg-bg-primary rounded-lg shadow-lg border border-border py-2 z-20">
+                      <Link
+                        to="/admin"
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-text-primary hover:bg-bg-secondary transition-colors cursor-pointer"
+                        onClick={() => {
+                          setAdminMenuOpen(false);
+                          handleCloseMenu();
+                        }}
+                      >
+                        Dashboard
+                      </Link>
+                      <Link
+                        to="/admin/venues"
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-text-primary hover:bg-bg-secondary transition-colors cursor-pointer"
+                        onClick={() => {
+                          setAdminMenuOpen(false);
+                          handleCloseMenu();
+                        }}
+                      >
+                        Manage Venues
+                      </Link>
+                      <Link
+                        to="/admin/venue-options"
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-text-primary hover:bg-bg-secondary transition-colors cursor-pointer"
+                        onClick={() => {
+                          setAdminMenuOpen(false);
+                          handleCloseMenu();
+                        }}
+                      >
+                        Venue Options
+                      </Link>
+                      <Link
+                        to="/admin/contacts"
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-text-primary hover:bg-bg-secondary transition-colors cursor-pointer"
+                        onClick={() => {
+                          setAdminMenuOpen(false);
+                          handleCloseMenu();
+                        }}
+                      >
+                        Contact Messages
+                      </Link>
+                      <hr className="my-2 border-border" />
+                      <Link
+                        to="/admin/flagged-events"
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-text-primary hover:bg-bg-secondary transition-colors cursor-pointer"
+                        onClick={() => {
+                          setAdminMenuOpen(false);
+                          handleCloseMenu();
+                        }}
+                      >
+                        Flagged Events
+                      </Link>
+                      <Link
+                        to="/admin/flagged-venues"
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-text-primary hover:bg-bg-secondary transition-colors cursor-pointer"
+                        onClick={() => {
+                          setAdminMenuOpen(false);
+                          handleCloseMenu();
+                        }}
+                      >
+                        Flagged Venues
+                      </Link>
+                    </div>
+                  </>
+                )}
+              </div>
             )}
           </div>
 
@@ -253,15 +336,54 @@ export default function Navbar() {
             )}
 
             {currentUser?.role?.toLowerCase() === "admin" && (
-              <Link
-                to="/admin"
-                className={`block px-3 py-2 rounded-lg text-sm font-medium cursor-pointer ${
-                  isActiveLink("/admin") ? "bg-primary/10 text-primary" : "text-text-primary hover:bg-bg-secondary hover:text-primary"
-                }`}
-                onClick={handleCloseMenu}
-              >
-                Admin
-              </Link>
+              <>
+                <Link
+                  to="/admin"
+                  className={`block px-3 py-2 rounded-lg text-sm font-medium cursor-pointer ${
+                    isActiveLink("/admin") ? "bg-primary/10 text-primary" : "text-text-primary hover:bg-bg-secondary hover:text-primary"
+                  }`}
+                  onClick={handleCloseMenu}
+                >
+                  Admin Dashboard
+                </Link>
+                <div className="pl-4 space-y-1">
+                  <Link
+                    to="/admin/venues"
+                    className="block px-3 py-2 rounded-lg text-sm font-medium text-text-secondary hover:bg-bg-secondary hover:text-primary cursor-pointer"
+                    onClick={handleCloseMenu}
+                  >
+                    Manage Venues
+                  </Link>
+                  <Link
+                    to="/admin/venue-options"
+                    className="block px-3 py-2 rounded-lg text-sm font-medium text-text-secondary hover:bg-bg-secondary hover:text-primary cursor-pointer"
+                    onClick={handleCloseMenu}
+                  >
+                    Venue Options
+                  </Link>
+                  <Link
+                    to="/admin/contacts"
+                    className="block px-3 py-2 rounded-lg text-sm font-medium text-text-secondary hover:bg-bg-secondary hover:text-primary cursor-pointer"
+                    onClick={handleCloseMenu}
+                  >
+                    Contact Messages
+                  </Link>
+                  <Link
+                    to="/admin/flagged-events"
+                    className="block px-3 py-2 rounded-lg text-sm font-medium text-text-secondary hover:bg-bg-secondary hover:text-primary cursor-pointer"
+                    onClick={handleCloseMenu}
+                  >
+                    Flagged Events
+                  </Link>
+                  <Link
+                    to="/admin/flagged-venues"
+                    className="block px-3 py-2 rounded-lg text-sm font-medium text-text-secondary hover:bg-bg-secondary hover:text-primary cursor-pointer"
+                    onClick={handleCloseMenu}
+                  >
+                    Flagged Venues
+                  </Link>
+                </div>
+              </>
             )}
 
             {/* Mobile Auth */}

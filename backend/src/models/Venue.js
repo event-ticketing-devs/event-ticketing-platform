@@ -98,6 +98,11 @@ const venueSchema = new mongoose.Schema(
       trim: true,
       maxlength: 2000,
     },
+    reportCount: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
   },
   {
     timestamps: true,

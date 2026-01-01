@@ -2,6 +2,8 @@ import Event from "../models/Event.js";
 import User from "../models/User.js";
 import Booking from "../models/Booking.js";
 import Category from "../models/Category.js";
+import Report from "../models/Report.js";
+import Contact from "../models/Contact.js";
 import { deleteImage } from "../utils/cloudinary.js";
 import transporter from "../utils/mailer.js";
 
@@ -530,6 +532,15 @@ export const getAdminStats = async (req, res) => {
       .populate("categoryId", "name")
       .sort({ createdAt: -1 })
       .limit(5);
+
+    // Get pending reports count
+    const pendingReports = await Report.countDocuments({ status: "pending" });
+    
+    // Get pending general contacts count (only general type for admin)
+    const pendingContacts = await Contact.countDocuments({ 
+      status: "pending", 
+      type: "general" 
+    });
     
     res.json({
       totalEvents,
@@ -538,7 +549,9 @@ export const getAdminStats = async (req, res) => {
       totalBookings,
       activeBookings,
       totalRevenue,
-      recentEvents
+      recentEvents,
+      pendingReports,
+      pendingContacts,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });

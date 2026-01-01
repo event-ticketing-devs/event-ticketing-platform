@@ -80,7 +80,7 @@ const AdminContacts = () => {
         <div className="mb-8">
           <div>
             <h1 className="text-3xl font-bold text-text-primary">Contact Management</h1>
-            <p className="mt-1 text-text-secondary">Manage general contact inquiries and support requests</p>
+            <p className="mt-1 text-text-secondary">Manage all contact inquiries including general inquiries and event-specific messages</p>
           </div>
         </div>
 
@@ -88,7 +88,7 @@ const AdminContacts = () => {
         <div className="bg-bg-primary border border-border rounded-lg p-6 mb-6">
           <div className="flex flex-col sm:flex-row sm:flex-wrap gap-4 items-start sm:items-center">
             <label className="text-sm font-medium text-text-primary">Filter by status:</label>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2">general platform inquiries and support request
               {['all', 'pending', 'in-progress', 'resolved', 'closed'].map((status) => (
                 <button
                   key={status}

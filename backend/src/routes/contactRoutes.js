@@ -4,7 +4,8 @@ import {
   createEventContact,
   getGeneralContacts,
   getEventContacts,
-  updateContactStatus
+  updateContactStatus,
+  getAllContactsForAdmin
 } from '../controllers/contactController.js';
 import { protect } from '../middleware/authMiddleware.js';
 import { adminOnly, roleMiddleware } from '../middleware/roleMiddleware.js';
@@ -17,6 +18,7 @@ router.post('/general', contactRateLimiter, createGeneralContact);
 router.post('/event/:eventId', contactRateLimiter, createEventContact);
 
 // Admin routes
+router.get('/admin/all', protect, adminOnly, getAllContactsForAdmin);
 router.get('/general', protect, adminOnly, getGeneralContacts);
 router.patch('/:contactId/status', protect, updateContactStatus);
 
