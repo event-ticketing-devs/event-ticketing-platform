@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
 import apiClient from "../../../api/apiClient";
+import ConfirmModal from "../../../common/components/ConfirmModal";
 import { Plus, Edit, Trash2, X, Check, AlertCircle } from "lucide-react";
 
 const VenueOptionsManagement = () => {
@@ -9,9 +10,9 @@ const VenueOptionsManagement = () => {
   const [selectedType, setSelectedType] = useState("amenity");
   const [showModal, setShowModal] = useState(false);
   const [editingOption, setEditingOption] = useState(null);
+  const [deleteConfirm, setDeleteConfirm] = useState({ open: false, option: null });
   const [formData, setFormData] = useState({
     type: "amenity",
-    value: "",
     label: "",
     description: "",
   });
@@ -43,7 +44,6 @@ const VenueOptionsManagement = () => {
     setEditingOption(null);
     setFormData({
       type: selectedType,
-      value: "",
       label: "",
       description: "",
     });
@@ -54,7 +54,6 @@ const VenueOptionsManagement = () => {
     setEditingOption(option);
     setFormData({
       type: option.type,
-      value: option.value,
       label: option.label,
       description: option.description || "",
     });
@@ -97,18 +96,22 @@ const VenueOptionsManagement = () => {
     }
   };
 
-  const handleDelete = async (option) => {
-    if (!window.confirm(`Are you sure you want to delete "${option.label}"?`)) {
-      return;
-    }
+  const handleDelete = (option) => {
+    setDeleteConfirm({ open: true, option });
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteConfirm.option) return;
     
     try {
-      await apiClient.delete(`/venue-options/${option._id}`);
+      await apiClient.delete(`/venue-options/${deleteConfirm.option._id}`);
       toast.success("Option deleted successfully");
       fetchOptions();
     } catch (error) {
       console.error("Error deleting option:", error);
       toast.error("Failed to delete option");
+    } finally {
+      setDeleteConfirm({ open: false, option: null });
     }
   };
 
@@ -296,25 +299,6 @@ const VenueOptionsManagement = () => {
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
-                  {!editingOption && (
-                    <div>
-                      <label className="block text-sm font-medium text-text-primary mb-2">
-                        Value (ID) *
-                      </label>
-                      <input
-                        type="text"
-                        value={formData.value}
-                        onChange={(e) => setFormData({ ...formData, value: e.target.value })}
-                        placeholder="e.g., sound_system"
-                        className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-bg-secondary"
-                        required
-                      />
-                      <p className="text-xs text-text-secondary mt-1">
-                        Lowercase with underscores. Cannot be changed later.
-                      </p>
-                    </div>
-                  )}
-
                   <div>
                     <label className="block text-sm font-medium text-text-primary mb-2">
                       Display Label *
@@ -323,7 +307,11 @@ const VenueOptionsManagement = () => {
                       type="text"
                       value={formData.label}
                       onChange={(e) => setFormData({ ...formData, label: e.target.value })}
-                      placeholder="e.g., Sound System"
+                      placeholder={
+                        selectedType === 'amenity' ? 'e.g., Sound System' :
+                        selectedType === 'eventType' ? 'e.g., Exhibition' :
+                        'e.g., Sharp Objects'
+                      }
                       className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-bg-secondary"
                       required
                     />
@@ -367,6 +355,18 @@ const VenueOptionsManagement = () => {
           </div>
         )}
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        open={deleteConfirm.open}
+        onClose={() => setDeleteConfirm({ open: false, option: null })}
+        onConfirm={confirmDelete}
+        title="Delete Venue Option"
+        message={`Are you sure you want to delete "${deleteConfirm.option?.label}"? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        variant="danger"
+      />
     </div>
   );
 };

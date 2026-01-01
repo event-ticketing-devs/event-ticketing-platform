@@ -26,6 +26,7 @@ import {
   unsuspendVenue,
   getVenueActivity,
   getAllVenuesAdmin,
+  getVenueStats,
   getChatMessages,
   sendChatMessage,
 } from "../controllers/venueController.js";
@@ -70,6 +71,7 @@ router.post("/spaces/:id/block", protect, blockSpaceAvailability);
 router.delete("/spaces/:id/unblock/:blockId", protect, unblockSpaceAvailability);
 
 // Admin routes
+router.get("/admin/venues/stats", protect, adminOnly, getVenueStats);
 router.get("/admin/venues", protect, adminOnly, getAllVenuesAdmin);
 router.get("/admin/venues/:id/activity", protect, adminOnly, getVenueActivity);
 router.patch("/admin/venues/:id/verify", protect, adminOnly, verifyVenue);

@@ -46,6 +46,7 @@ import SpaceComparisonModal from "./features/venues/components/SpaceComparisonMo
 // Admin
 import AdminDashboard from "./features/admin/pages/AdminDashboard";
 import FlaggedEvents from "./features/admin/pages/FlaggedEvents";
+import FlaggedVenues from "./features/admin/pages/FlaggedVenues";
 import AdminContacts from "./features/admin/pages/AdminContacts";
 import AdminVenues from "./features/admin/pages/AdminVenues";
 import AdminVenueActivity from "./features/admin/pages/AdminVenueActivity";
@@ -228,6 +229,14 @@ function App() {
                 element={
                   <AdminRoute>
                     <FlaggedEvents />
+                  </AdminRoute>
+                }
+              />
+              <Route
+                path="/admin/flagged-venues"
+                element={
+                  <AdminRoute>
+                    <FlaggedVenues />
                   </AdminRoute>
                 }
               />

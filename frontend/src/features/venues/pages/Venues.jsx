@@ -107,8 +107,7 @@ const VenuesPage = () => {
     return filters.parking || 
            filters.amenities.length > 0 || 
            filters.allowedItems.length > 0 || 
-           filters.bannedItems.length > 0
-    setTimeout(() => fetchSpaces(), 0);
+           filters.bannedItems.length > 0;
   };
 
   const toggleAmenity = (value) => {

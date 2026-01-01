@@ -5,7 +5,7 @@ import OrganizerActions from "../../organizer/components/OrganizerActions";
 import apiClient from "../../../api/apiClient";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
-import { Building2, Mail, AlertCircle, Plus, Settings } from "lucide-react";
+import { Building2, Mail, AlertCircle, Plus, Settings, Flag, MessageSquare } from "lucide-react";
 
 export default function AdminDashboard() {
   const [events, setEvents] = useState([]);
@@ -22,6 +22,16 @@ export default function AdminDashboard() {
     totalBookings: 0,
     activeBookings: 0,
     totalRevenue: 0,
+    pendingReports: 0,
+    pendingContacts: 0,
+  });
+  const [venueStats, setVenueStats] = useState({
+    totalVenues: 0,
+    verifiedVenues: 0,
+    unverifiedVenues: 0,
+    suspendedVenues: 0,
+    totalSpaces: 0,
+    flaggedVenues: 0,
   });
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -38,16 +48,18 @@ export default function AdminDashboard() {
   const fetchAdminData = async () => {
     try {
       setLoading(true);
-      const [eventsRes, statsRes, categoriesRes] = await Promise.all([
+      const [eventsRes, statsRes, categoriesRes, venueStatsRes] = await Promise.all([
         apiClient.get("/events"),
         apiClient.get("/events/admin/stats"),
         apiClient.get("/categories"),
+        apiClient.get("/admin/venues/stats"),
       ]);
       
       // Handle both old and new API response formats
       setEvents(eventsRes.data.events || eventsRes.data);
       setStats(statsRes.data);
       setCategories(categoriesRes.data);
+      setVenueStats(venueStatsRes.data);
     } catch (err) {
       toast.error("Failed to fetch admin data");
     } finally {
@@ -144,41 +156,71 @@ export default function AdminDashboard() {
           <h1 className="text-3xl font-bold text-text-primary mb-2">Admin Dashboard</h1>
           <p className="text-text-secondary">Manage events, categories, and platform settings</p>
         </div>
-        
-        <div className="flex flex-wrap gap-3 mb-8">
-          <button
-            onClick={() => navigate("/admin/venues")}
-            className="inline-flex items-center gap-2 bg-primary text-bg-primary px-4 py-2 rounded-lg font-semibold hover:bg-primary/90 transition-colors cursor-pointer"
-          >
-            <Building2 className="w-4 h-4" />
-            Manage Venues
-          </button>
-          <button
-            onClick={() => navigate("/admin/venue-options")}
-            className="inline-flex items-center gap-2 bg-primary text-bg-primary px-4 py-2 rounded-lg font-semibold hover:bg-primary/90 transition-colors cursor-pointer"
-          >
-            <Settings className="w-4 h-4" />
-            Venue Options
-          </button>
-          <button
-            onClick={() => navigate("/admin/contacts")}
-            className="inline-flex items-center gap-2 bg-primary text-bg-primary px-4 py-2 rounded-lg font-semibold hover:bg-primary/90 transition-colors cursor-pointer"
-          >
-            <Mail className="w-4 h-4" />
-            Manage Contacts
-          </button>
-          <button
-            onClick={() => navigate("/admin/flagged-events")}
-            className="inline-flex items-center gap-2 bg-primary text-bg-primary px-4 py-2 rounded-lg font-semibold hover:bg-primary/90 transition-colors cursor-pointer"
-          >
-            <AlertCircle className="w-4 h-4" />
-            Flagged Events
-          </button>
-        </div>
+
+        {/* Admin Action Notifications - Consolidated */}
+        {(venueStats.unverifiedVenues > 0 || stats.pendingReports > 0 || venueStats.flaggedVenues > 0 || stats.pendingContacts > 0) && (
+          <div className="bg-gradient-to-r from-primary/5 via-warning/5 to-error/5 border border-primary/20 rounded-lg p-6 mb-8">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="h-5 w-5 text-primary mt-0.5" />
+              <div className="flex-1">
+                <h3 className="text-base font-semibold text-text-primary mb-3">Admin Actions Required</h3>
+                <div className="space-y-2 text-sm">
+                  {venueStats.unverifiedVenues > 0 && (
+                    <p className="text-text-secondary">
+                      <Building2 className="inline h-4 w-4 mr-1 text-warning" />
+                      {venueStats.unverifiedVenues === 1 ? "1 venue" : `${venueStats.unverifiedVenues} venues`} waiting for verification.{" "}
+                      <button
+                        onClick={() => navigate("/admin/venues")}
+                        className="text-warning hover:text-warning/80 underline font-medium cursor-pointer"
+                      >
+                        Review now
+                      </button>
+                    </p>
+                  )}
+                  {stats.pendingReports > 0 && (
+                    <p className="text-text-secondary">
+                      <Flag className="inline h-4 w-4 mr-1 text-error" />
+                      {stats.pendingReports === 1 ? "1 event report" : `${stats.pendingReports} event reports`} need review.{" "}
+                      <button
+                        onClick={() => navigate("/admin/flagged-events")}
+                        className="text-error hover:text-error/80 underline font-medium cursor-pointer"
+                      >
+                        Review now
+                      </button>
+                    </p>
+                  )}
+                  {venueStats.flaggedVenues > 0 && (
+                    <p className="text-text-secondary">
+                      <AlertCircle className="inline h-4 w-4 mr-1 text-error" />
+                      {venueStats.flaggedVenues === 1 ? "1 venue" : `${venueStats.flaggedVenues} venues`} with reports.{" "}
+                      <button
+                        onClick={() => navigate("/admin/flagged-venues")}
+                        className="text-error hover:text-error/80 underline font-medium cursor-pointer"
+                      >
+                        Review now
+                      </button>
+                    </p>
+                  )}
+                  {stats.pendingContacts > 0 && (
+                    <p className="text-text-secondary">
+                      <MessageSquare className="inline h-4 w-4 mr-1 text-primary" />
+                      {stats.pendingContacts === 1 ? "1 contact message" : `${stats.pendingContacts} contact messages`} awaiting response.{" "}
+                      <button
+                        onClick={() => navigate("/admin/contacts")}
+                        className="text-primary hover:text-primary/80 underline font-medium cursor-pointer"
+                      >
+                        Respond now
+                      </button>
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       
         {/* Statistics Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          <div className="bg-bg-primary border border-border rounded-lg p-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">         <div className="bg-bg-primary border border-border rounded-lg p-6">
             <h2 className="text-sm font-medium text-text-secondary mb-2">Total Events</h2>
             <p className="text-3xl font-bold text-text-primary mb-1">{stats.totalEvents}</p>
             <p className="text-sm text-text-secondary">

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import apiClient from '../../../api/apiClient';
+import toast from 'react-hot-toast';
 import { ArrowLeft, User, Mail, Calendar, MapPin, CheckCircle2, Users, Phone, Flag, Ban, Check, Trash2, AlertTriangle, X, Eye } from 'lucide-react';
 
 const OrganizerDetailsPage = () => {
@@ -41,7 +42,7 @@ const OrganizerDetailsPage = () => {
     if (organizerData.organizer.email) {
       window.open(`mailto:${organizerData.organizer.email}?subject=${subject}&body=${body}`, '_blank');
     } else {
-      alert('No email address available for this organizer');
+      toast.error('No email address available for this organizer');
     }
   };
 
@@ -51,18 +52,18 @@ const OrganizerDetailsPage = () => {
     if (organizerData.organizer.phone) {
       window.open(`tel:${organizerData.organizer.phone}`, '_blank');
     } else {
-      alert('No phone number available for this organizer');
+      toast.error('No phone number available for this organizer');
     }
   };
 
   const handleBanUser = async () => {
     if (!banReason.trim()) {
-      alert('Please provide a reason for banning this user');
+      toast.error('Please provide a reason for banning this user');
       return;
     }
 
     if (organizerData.organizer.role === 'admin') {
-      alert('Cannot ban an admin user');
+      toast.error('Cannot ban an admin user');
       return;
     }
 
@@ -71,13 +72,13 @@ const OrganizerDetailsPage = () => {
       await apiClient.patch(`/users/${id}/ban`, {
         reason: banReason
       });
-      alert('User banned successfully');
+      toast.success('User banned successfully');
       setShowBanForm(false);
       setBanReason('');
       fetchOrganizerDetails(); // Refresh data
     } catch (error) {
       console.error('Error banning user:', error);
-      alert(error.response?.data?.message || 'Failed to ban user');
+      toast.error(error.response?.data?.message || 'Failed to ban user');
     } finally {
       setActionLoading(false);
     }
@@ -87,11 +88,11 @@ const OrganizerDetailsPage = () => {
     setActionLoading(true);
     try {
       await apiClient.patch(`/users/${id}/unban`);
-      alert('User unbanned successfully');
+      toast.success('User unbanned successfully');
       fetchOrganizerDetails(); // Refresh data
     } catch (error) {
       console.error('Error unbanning user:', error);
-      alert(error.response?.data?.message || 'Failed to unban user');
+      toast.error(error.response?.data?.message || 'Failed to unban user');
     } finally {
       setActionLoading(false);
     }
@@ -99,18 +100,18 @@ const OrganizerDetailsPage = () => {
 
   const handleDeleteUser = async () => {
     if (organizerData.organizer.role === 'admin') {
-      alert('Cannot delete an admin user');
+      toast.error('Cannot delete an admin user');
       return;
     }
 
     setActionLoading(true);
     try {
       await apiClient.delete(`/users/${id}`);
-      alert('User deleted successfully');
+      toast.success('User deleted successfully');
       navigate('/admin/dashboard'); // Navigate back to admin dashboard
     } catch (error) {
       console.error('Error deleting user:', error);
-      alert(error.response?.data?.message || 'Failed to delete user');
+      toast.error(error.response?.data?.message || 'Failed to delete user');
     } finally {
       setActionLoading(false);
     }
