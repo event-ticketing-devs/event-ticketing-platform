@@ -42,16 +42,18 @@ const GoogleLoginButton = () => {
 
   return (
     <div className="w-full space-y-4">
-      <div className="google-login-container">
-        <GoogleLogin
-          onSuccess={handleSuccess}
-          onError={handleError}
-          useOneTap={false}
-          theme="outline"
-          size="large"
-          text="signin_with"
-          shape="rectangular"
-        />
+      <div className="w-full flex justify-center">
+        <div className="google-login-container">
+          <GoogleLogin
+            onSuccess={handleSuccess}
+            onError={handleError}
+            useOneTap={false}
+            theme="outline"
+            size="large"
+            text="signin_with"
+            shape="rectangular"
+          />
+        </div>
       </div>
 
       {/* Loading State */}
