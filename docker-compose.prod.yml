@@ -87,10 +87,14 @@ services:
         VITE_GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY}
         VITE_STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY}
         VITE_GEMINI_API_KEY: ${GEMINI_API_KEY}
+        NIGINX_CONFIG: nginx-ssl.conf
     container_name: event-ticketing-frontend
     restart: unless-stopped
     ports:
       - "80:80"
+      - "443:443"
+    volumes:
+      - /etc/letsencrypt:/etc/letsencrypt:ro
     depends_on:
       - backend
     networks:

@@ -40,7 +40,9 @@ FROM nginx:alpine
 RUN rm -rf /usr/share/nginx/html/*
 
 # Copy custom nginx configuration
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Pass NGINX_CONFIG as a build argument to specify a different config file if needed
+ARG NGINX_CONFIG=nginx.conf
+COPY ${NGINX_CONFIG} /etc/nginx/conf.d/default.conf
 
 # Copy built assets from builder stage
 COPY --from=builder /app/dist /usr/share/nginx/html
