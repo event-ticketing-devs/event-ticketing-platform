@@ -1291,7 +1291,7 @@ export const markVenueRequestAsBooked = async (req, res) => {
     }
 
     // Use provided dates or fall back to original enquiry dates
-    const { startDate, endDate } = req.body;
+    const { startDate, endDate } = req.body || {};
     const bookingStartDate = startDate ? new Date(startDate) : new Date(venueRequest.eventDateStart);
     const bookingEndDate = endDate ? new Date(endDate) : new Date(venueRequest.eventDateEnd);
 
