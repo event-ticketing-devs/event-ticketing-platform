@@ -57,10 +57,17 @@ const Home = () => {
     <div className="min-h-screen bg-bg-primary">
       {/* Hero Section */}
       <section className="relative overflow-hidden">
-        {/* Background Image */}
-        <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{
-          backgroundImage: `url('hero_bg.png')`
-        }}></div>
+        {/* Background Image - optimized */}
+        <div className="absolute inset-0">
+          <img
+            src="hero_bg.png"
+            alt="Hero background"
+            className="w-full h-full object-cover"
+            loading="eager"
+            fetchpriority="high"
+
+          />
+        </div>
         
         {/* Dark Overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/60 to-black/70"></div>

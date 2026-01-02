@@ -1189,7 +1189,7 @@ export const createVenueQuote = async (req, res) => {
 // @access  Private (Venue owner or team member)
 export const declineVenueRequest = async (req, res) => {
   try {
-    const { reason } = req.body;
+    const { reason } = req.body || {};
 
     const venueRequest = await VenueRequest.findById(req.params.id)
       .populate("venue")
