@@ -17,7 +17,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    # Memory limit for t2.micro (1GB total RAM)
+    # Memory limit for t3.small (2GB total RAM)
     deploy:
       resources:
         limits:
@@ -68,7 +68,7 @@ services:
         condition: service_healthy
     networks:
       - event-ticketing-network
-    # Memory limit for t2.micro
+    # Memory limit for t3.small
     deploy:
       resources:
         limits:
@@ -99,7 +99,7 @@ services:
       - backend
     networks:
       - event-ticketing-network
-    # Memory limit for t2.micro
+    # Memory limit for t3.small
     deploy:
       resources:
         limits:
