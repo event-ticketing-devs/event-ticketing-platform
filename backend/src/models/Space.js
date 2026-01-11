@@ -71,6 +71,18 @@ const spaceSchema = new mongoose.Schema(
       enum: ["hour", "half-day", "full-day"],
       required: [true, "Booking unit is required"],
     },
+    priceRange: {
+      min: {
+        type: Number,
+        required: [true, "Minimum price is required"],
+        min: [0, "Minimum price cannot be negative"],
+      },
+      max: {
+        type: Number,
+        required: [true, "Maximum price is required"],
+        min: [0, "Maximum price cannot be negative"],
+      },
+    },
     amenities: {
       standard: {
         type: [String],
@@ -158,6 +170,15 @@ const spaceSchema = new mongoose.Schema(
 
 // Compound index for querying active spaces by venue
 spaceSchema.index({ venue: 1, isActive: 1 });
+
+// Validate price range: max must be >= min
+spaceSchema.pre("validate", function (next) {
+  if (this.priceRange && this.priceRange.max < this.priceRange.min) {
+    next(new Error("Maximum price must be greater than or equal to minimum price"));
+  } else {
+    next();
+  }
+});
 
 // Validate that end date is after start date in availability
 availabilitySchema.pre("validate", function (next) {

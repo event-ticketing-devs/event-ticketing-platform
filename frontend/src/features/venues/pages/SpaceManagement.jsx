@@ -40,6 +40,7 @@ const SpaceManagement = () => {
     areaSqFt: "",
     supportedEventTypes: [],
     bookingUnit: "full-day",
+    priceRange: { min: "", max: "" },
     amenities: { standard: [], custom: [] },
     policies: {
       allowedItems: { standard: [], custom: [] },
@@ -159,6 +160,7 @@ const SpaceManagement = () => {
       areaSqFt: "",
       supportedEventTypes: [],
       bookingUnit: "full-day",
+      priceRange: { min: "", max: "" },
       amenities: { standard: [], custom: [] },
       policies: {
         allowedItems: { standard: [], custom: [] },
@@ -198,6 +200,7 @@ const SpaceManagement = () => {
       areaSqFt: space.areaSqFt || "",
       supportedEventTypes: space.supportedEventTypes || [],
       bookingUnit: space.bookingUnit || "full-day",
+      priceRange: space.priceRange || { min: "", max: "" },
       amenities: space.amenities || { standard: [], custom: [] },
       policies: space.policies || {
         allowedItems: { standard: [], custom: [] },
@@ -222,13 +225,37 @@ const SpaceManagement = () => {
       return;
     }
 
+    // Validate price range
+    if (!form.priceRange.min || !form.priceRange.max) {
+      toast.error("Please specify both minimum and maximum price");
+      return;
+    }
+
+    const minPrice = parseFloat(form.priceRange.min);
+    const maxPrice = parseFloat(form.priceRange.max);
+
+    if (isNaN(minPrice) || isNaN(maxPrice)) {
+      toast.error("Please enter valid price values");
+      return;
+    }
+
+    if (minPrice < 0 || maxPrice < 0) {
+      toast.error("Price cannot be negative");
+      return;
+    }
+
+    if (maxPrice < minPrice) {
+      toast.error("Maximum price must be greater than or equal to minimum price");
+      return;
+    }
+
     setSubmitting(true);
     try {
       const formData = new FormData();
       
       // Append form fields
       Object.keys(form).forEach(key => {
-        if (key === 'amenities' || key === 'policies' || key === 'supportedEventTypes') {
+        if (key === 'amenities' || key === 'policies' || key === 'supportedEventTypes' || key === 'priceRange') {
           formData.append(key, JSON.stringify(form[key]));
         } else {
           formData.append(key, form[key]);
@@ -994,6 +1021,82 @@ const SpaceManagement = () => {
                 </div>
               </div>
 
+              {/* Pricing & Booking */}
+              <div>
+                <label className="block text-sm font-medium text-text-primary mb-3">
+                  Pricing & Booking Details
+                </label>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {/* Minimum Price */}
+                  <div>
+                    <label className="block text-sm font-medium text-text-primary mb-2">
+                      Minimum Price <span className="text-error">*</span>
+                    </label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary">₹</span>
+                      <input
+                        type="number"
+                        value={form.priceRange.min}
+                        onChange={(e) => setForm({ 
+                          ...form, 
+                          priceRange: { ...form.priceRange, min: e.target.value } 
+                        })}
+                        className="w-full pl-8 pr-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                        placeholder="0"
+                        min="0"
+                        step="1"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {/* Maximum Price */}
+                  <div>
+                    <label className="block text-sm font-medium text-text-primary mb-2">
+                      Maximum Price <span className="text-error">*</span>
+                    </label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary">₹</span>
+                      <input
+                        type="number"
+                        value={form.priceRange.max}
+                        onChange={(e) => setForm({ 
+                          ...form, 
+                          priceRange: { ...form.priceRange, max: e.target.value } 
+                        })}
+                        className="w-full pl-8 pr-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                        placeholder="0"
+                        min="0"
+                        step="1"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {/* Booking Unit */}
+                  <div>
+                    <label className="block text-sm font-medium text-text-primary mb-2">
+                      Booking Unit <span className="text-error">*</span>
+                    </label>
+                    <select
+                      value={form.bookingUnit}
+                      onChange={(e) => setForm({ ...form, bookingUnit: e.target.value })}
+                      className="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                      required
+                    >
+                      <option value="hour">Per Hour</option>
+                      <option value="half-day">Per Half Day</option>
+                      <option value="full-day">Per Full Day</option>
+                    </select>
+                  </div>
+                </div>
+
+                <p className="text-xs text-text-secondary mt-3">
+                  Price range per booking unit. Clients will see "₹{form.priceRange.min || '0'} - ₹{form.priceRange.max || '0'} per {form.bookingUnit === 'hour' ? 'hour' : form.bookingUnit === 'half-day' ? 'half day' : 'full day'}"
+                </p>
+              </div>
+
               {/* Form Actions */}
               <div className="flex gap-4 pt-4">
                 <button
@@ -1073,6 +1176,14 @@ const SpaceManagement = () => {
                       <div className="flex items-center gap-2 text-sm text-text-secondary">
                         <Maximize className="w-4 h-4" />
                         <span>{space.areaSqFt} sq ft</span>
+                      </div>
+                    )}
+                    {space.priceRange && (
+                      <div className="flex items-center gap-2 text-sm font-semibold text-primary">
+                        <span>₹{space.priceRange.min.toLocaleString('en-IN')} - ₹{space.priceRange.max.toLocaleString('en-IN')}</span>
+                        <span className="text-xs font-normal text-text-secondary">
+                          per {space.bookingUnit === 'hour' ? 'hour' : space.bookingUnit === 'half-day' ? 'half day' : 'full day'}
+                        </span>
                       </div>
                     )}
                   </div>
