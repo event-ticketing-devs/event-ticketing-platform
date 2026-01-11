@@ -15,6 +15,7 @@ A full-stack event management and ticketing platform built with React and Node.j
 - Contact organizers directly for event-specific inquiries
 - General contact form for platform support
 - Report inappropriate events to administrators
+- AI-powered chatbot assistant (powered by Google Gemini) for instant help and event recommendations
 
 ### For Organizers
 
@@ -62,6 +63,9 @@ A full-stack event management and ticketing platform built with React and Node.j
 - Axios for API calls
 - React Hot Toast for notifications
 - Date-fns for date handling
+- Feature-based architecture for scalability
+- Socket.io client for real-time features
+- Google Gemini API integration for AI chatbot assistant
 
 **Backend:**
 
@@ -86,6 +90,70 @@ A full-stack event management and ticketing platform built with React and Node.j
 - Google OAuth credentials
 
 ### Installation
+
+#### Option 1: Docker Setup (Recommended)
+
+The easiest way to run the application is using Docker and Docker Compose.
+
+1. **Clone the repository**
+
+```bash
+git clone <repository-url>
+cd event-ticketing-platform
+```
+
+2. **Set up environment variables**
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env` and configure:
+
+- MongoDB Atlas connection string (or use local MongoDB)
+- API keys (Stripe, Google OAuth, Cloudinary, Gemini)
+- JWT secret
+- Other configuration (see `.env.example` for details)
+
+3. **Start the application**
+
+```bash
+# Build and start all services
+docker compose up --build
+
+# Or run in detached mode (background)
+docker compose up -d
+```
+
+The application will be available at:
+
+- **Frontend:** http://localhost:3000
+- **Backend API:** http://localhost:8000
+- **Mailhog (Email testing UI):** http://localhost:8025
+
+4. **Development commands**
+
+```bash
+# View logs (all services)
+docker compose logs -f
+
+# View logs (specific service)
+docker compose logs -f backend
+
+# Restart a service after config changes
+docker compose restart backend
+
+# Rebuild a specific service
+docker compose up -d --build frontend
+
+# Stop all services
+docker compose down
+
+# Stop and remove all data (deletes volumes)
+docker compose down -v
+```
+
+#### Option 2: Manual Installation
 
 1. **Clone the repository**
 
@@ -137,6 +205,7 @@ Create `.env` in the **frontend** directory:
 VITE_GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
 VITE_STRIPE_PUBLISHABLE_KEY=your-stripe-publishable-key
 VITE_GOOGLE_MAPS_API_KEY=your-google-maps-api-key
+VITE_GEMINI_API_KEY=your-gemini-api-key
 ```
 
 4. **Start the application**
@@ -254,14 +323,36 @@ event-ticketing-platform/
 │   └── package.json
 └── frontend/
     ├── src/
-    │   ├── components/      # Reusable components
-    │   ├── context/         # React context
-    │   ├── pages/           # Route components
-    │   ├── services/        # API services
+    │   ├── features/        # Feature-based modules
+    │   │   ├── auth/        # Authentication components
+    │   │   ├── events/      # Event management
+    │   │   ├── bookings/    # Booking & ticketing
+    │   │   ├── venues/      # Venue marketplace
+    │   │   ├── admin/       # Admin features
+    │   │   └── organizer/   # Organizer tools
+    │   ├── common/          # Shared components
+    │   ├── layouts/         # Layout components (Navbar, Footer)
+    │   ├── pages/           # General pages (Home, Profile, etc.)
+    │   ├── context/         # React context providers
+    │   ├── services/        # API service layers
+    │   ├── utils/           # Utility functions
+    │   ├── constants/       # Constants and configurations
     │   ├── api/             # API client setup
     │   └── App.jsx          # Main app component
+    ├── STRUCTURE.md         # Detailed frontend architecture guide
     └── package.json
 ```
+
+### Frontend Architecture
+
+The frontend follows a **feature-based architecture** for better organization and scalability:
+
+- **Features**: Domain-specific modules (auth, events, bookings, venues, admin, organizer)
+- **Common**: Reusable components shared across features
+- **Layouts**: Page-level layout components
+- **Pages**: General/static pages not tied to specific features
+
+Each feature contains its own `pages/` and `components/` with barrel exports for clean imports. See [STRUCTURE.md](frontend/STRUCTURE.md) for detailed documentation.
 
 ## Key Features
 

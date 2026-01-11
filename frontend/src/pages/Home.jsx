@@ -57,10 +57,17 @@ const Home = () => {
     <div className="min-h-screen bg-bg-primary">
       {/* Hero Section */}
       <section className="relative overflow-hidden">
-        {/* Background Image */}
-        <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{
-          backgroundImage: `url('hero_bg.png')`
-        }}></div>
+        {/* Background Image - optimized */}
+        <div className="absolute inset-0">
+          <img
+            src="hero_bg.png"
+            alt="Hero background"
+            className="w-full h-full object-cover"
+            loading="eager"
+            fetchpriority="high"
+
+          />
+        </div>
         
         {/* Dark Overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/60 to-black/70"></div>
@@ -115,9 +122,12 @@ const Home = () => {
       <section className="py-16 pb-8 bg-bg-primary">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-12 text-center">
-            <span className="inline-block px-4 py-1 bg-primary/10 text-primary rounded-full text-sm font-semibold mb-3">
-              HAPPENING NOW
-            </span>
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 border border-primary/20 rounded-full mb-4">
+              <Sparkles className="w-4 h-4 text-primary" />
+              <span className="text-sm font-semibold text-primary uppercase tracking-wide">
+                Happening Now
+              </span>
+            </div>
             <h2 className="text-3xl sm:text-4xl font-bold text-text-primary mb-3">
               Trending Events
             </h2>

@@ -9,10 +9,12 @@ import eventRoutes from "./routes/eventRoutes.js";
 import bookingRoutes from "./routes/bookingRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
 import reportRoutes from "./routes/reportRoutes.js";
+import venueReportRoutes from "./routes/venueReportRoutes.js";
 import contactRoutes from "./routes/contactRoutes.js";
 import teamChatRoutes from "./routes/teamChatRoutes.js";
 import venueRoutes from "./routes/venueRoutes.js";
 import venueOptionRoutes from "./routes/venueOptionRoutes.js";
+import reviewRoutes from "./routes/reviewRoutes.js";
 
 const app = express();
 
@@ -35,10 +37,12 @@ app.use("/api/events", eventRoutes);
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/reports", reportRoutes);
+app.use("/api/venue-reports", venueReportRoutes);
 app.use("/api/contacts", contactRoutes);
 app.use("/api/team-chat", teamChatRoutes);
 app.use("/api", venueRoutes);
 app.use("/api/venue-options", venueOptionRoutes);
+app.use("/api/reviews", reviewRoutes);
 
 app.get("/", (req, res) => res.send("hello, world"));
 

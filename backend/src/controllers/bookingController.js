@@ -288,9 +288,7 @@ export const createBooking = async (req, res) => {
                 }</span>
               </p>
               <div style="margin: 16px 0;">
-                <img src="${
-                  booking.qrCode
-                }" alt="Ticket QR Code" style="max-width: 200px; border: 2px solid #e0e0e0; border-radius: 8px;" />
+                <img src="cid:qrcode" alt="Ticket QR Code" style="max-width: 200px; border: 2px solid #e0e0e0; border-radius: 8px;" />
               </div>
               <p style="font-size: 0.9em; color: #666; margin: 8px 0 0 0;">Scan this QR code at the event entrance</p>
             </div>
@@ -342,6 +340,13 @@ export const createBooking = async (req, res) => {
           </div>
         </div>
       `,
+        attachments: [
+          {
+            filename: 'qrcode.png',
+            content: Buffer.from(booking.qrCode.replace(/^data:image\/\w+;base64,/, ''), 'base64'),
+            cid: 'qrcode'
+          }
+        ]
       });
     } catch (emailError) {
       console.log("Failed to send ticket email:", emailError.message);

@@ -5,7 +5,7 @@ import VenueQuote from "../models/VenueQuote.js";
 import VenueInquiryChat from "../models/VenueInquiryChat.js";
 import User from "../models/User.js";
 import transporter from "../utils/mailer.js";
-import { deleteVenueImage, deleteSpaceImage } from "../utils/cloudinary.js";
+import { deleteVenueImage, deleteSpaceImage, deleteVenueDocument } from "../utils/cloudinary.js";
 
 // @desc    Create a new venue
 // @route   POST /api/venues
@@ -59,6 +59,26 @@ export const createVenue = async (req, res) => {
     // Get photo URL from uploaded file
     const photo = req.file ? req.file.path : null;
 
+    // Handle ownership document from uploaded files
+    let ownershipDocument = null;
+    let documentType = "";
+    let documentUploadedAt = null;
+    let documentVerificationStatus = "";
+
+    if (req.files && req.files.ownershipDocument && req.files.ownershipDocument[0]) {
+      const docFile = req.files.ownershipDocument[0];
+      const fileExtension = docFile.originalname.split(".").pop().toLowerCase();
+      
+      ownershipDocument = {
+        url: docFile.path,
+        publicId: docFile.filename,
+        fileName: docFile.originalname,
+      };
+      documentType = fileExtension;
+      documentUploadedAt = new Date();
+      documentVerificationStatus = "pending";
+    }
+
     // Create venue with current user as owner
     const venue = await Venue.create({
       name,
@@ -71,10 +91,52 @@ export const createVenue = async (req, res) => {
       owner: req.user._id,
       photo,
       verificationStatus: "unverified",
+      ownershipDocument,
+      documentType,
+      documentUploadedAt,
+      documentVerificationStatus,
     });
 
     const populatedVenue = await Venue.findById(venue._id)
       .populate("owner", "name email");
+
+    // Notify admins if document was uploaded
+    if (ownershipDocument) {
+      try {
+        const admins = await User.find({ role: "admin" }).select("email name");
+        if (admins.length > 0) {
+          const adminEmails = admins.map(admin => admin.email);
+          await transporter.sendMail({
+            from: `"${process.env.SENDER_NAME}" <${process.env.SENDER_EMAIL}>`,
+            to: adminEmails,
+            subject: "New Venue Registration - Document Verification Required",
+            html: `
+              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                <h2 style="color: #2563eb;">New Venue Registration</h2>
+                
+                <p>A new venue has been registered and requires document verification:</p>
+                
+                <div style="background-color: #f3f4f6; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                  <p style="margin: 5px 0;"><strong>Venue Name:</strong> ${name}</p>
+                  <p style="margin: 5px 0;"><strong>City:</strong> ${city}</p>
+                  <p style="margin: 5px 0;"><strong>Owner:</strong> ${req.user.name}</p>
+                  <p style="margin: 5px 0;"><strong>Document Type:</strong> ${documentType.toUpperCase()}</p>
+                </div>
+                
+                <p style="margin-top: 20px;">
+                  <a href="${process.env.FRONTEND_URL}/admin/venues" 
+                     style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
+                    Review Venue
+                  </a>
+                </p>
+              </div>
+            `,
+          });
+        }
+      } catch (emailError) {
+        console.error("Failed to send admin notification email:", emailError);
+      }
+    }
 
     res.status(201).json(populatedVenue);
   } catch (error) {
@@ -447,6 +509,7 @@ export const createSpace = async (req, res) => {
       areaSqFt,
       supportedEventTypes,
       bookingUnit,
+      priceRange,
       amenities,
       policies,
     } = req.body;
@@ -461,11 +524,42 @@ export const createSpace = async (req, res) => {
     if (typeof policies === 'string') {
       policies = JSON.parse(policies);
     }
+    if (typeof priceRange === 'string') {
+      priceRange = JSON.parse(priceRange);
+    }
 
     // Validate required fields
     if (!venue || !name || !type || !maxPax || !supportedEventTypes || !bookingUnit) {
       return res.status(400).json({ 
         message: "Venue, name, type, max capacity, supported event types, and booking unit are required" 
+      });
+    }
+
+    // Validate price range
+    if (!priceRange || !priceRange.min || !priceRange.max) {
+      return res.status(400).json({ 
+        message: "Price range (min and max) is required" 
+      });
+    }
+
+    const minPrice = parseFloat(priceRange.min);
+    const maxPrice = parseFloat(priceRange.max);
+
+    if (isNaN(minPrice) || isNaN(maxPrice)) {
+      return res.status(400).json({ 
+        message: "Price range must be valid numbers" 
+      });
+    }
+
+    if (minPrice < 0 || maxPrice < 0) {
+      return res.status(400).json({ 
+        message: "Price cannot be negative" 
+      });
+    }
+
+    if (maxPrice < minPrice) {
+      return res.status(400).json({ 
+        message: "Maximum price must be greater than or equal to minimum price" 
       });
     }
 
@@ -532,6 +626,10 @@ export const createSpace = async (req, res) => {
       areaSqFt,
       supportedEventTypes,
       bookingUnit,
+      priceRange: {
+        min: minPrice,
+        max: maxPrice,
+      },
       amenities: amenitiesData,
       policies: policiesData,
       photos: req.files ? req.files.map(file => file.path) : [],
@@ -601,6 +699,43 @@ export const updateSpace = async (req, res) => {
         space[field] = req.body[field];
       }
     });
+
+    // Handle price range update
+    if (req.body.priceRange !== undefined) {
+      const { min, max } = req.body.priceRange;
+      
+      if (min === undefined || max === undefined) {
+        return res.status(400).json({ 
+          message: "Both min and max price are required" 
+        });
+      }
+
+      const minPrice = parseFloat(min);
+      const maxPrice = parseFloat(max);
+
+      if (isNaN(minPrice) || isNaN(maxPrice)) {
+        return res.status(400).json({ 
+          message: "Price range must be valid numbers" 
+        });
+      }
+
+      if (minPrice < 0 || maxPrice < 0) {
+        return res.status(400).json({ 
+          message: "Price cannot be negative" 
+        });
+      }
+
+      if (maxPrice < minPrice) {
+        return res.status(400).json({ 
+          message: "Maximum price must be greater than or equal to minimum price" 
+        });
+      }
+
+      space.priceRange = {
+        min: minPrice,
+        max: maxPrice,
+      };
+    }
 
     // Handle amenities separately with structure conversion
     if (req.body.amenities !== undefined) {
@@ -752,7 +887,7 @@ export const getMySpaces = async (req, res) => {
 // @access  Public
 export const getPublicSpaces = async (req, res) => {
   try {
-    const { search, city, eventType, minPax, maxPax, spaceType, indoorOutdoor, startDate, endDate, parking, amenities, allowedItems, bannedItems, venueId, sortBy, sortOrder, page, limit } = req.query;
+    const { search, city, eventType, minPax, maxPax, spaceType, indoorOutdoor, startDate, endDate, parking, amenities, allowedItems, bannedItems, minBudget, maxBudget, venueId, sortBy, sortOrder, page, limit } = req.query;
 
     // Build space filter
     const spaceFilter = { isActive: true };
@@ -770,17 +905,37 @@ export const getPublicSpaces = async (req, res) => {
         spaceFilter.supportedEventTypes = { $in: [eventType] };
       }
     }
-    if (minPax) {
+    
+    // Filter by capacity (handle both min and max pax properly)
+    if (minPax && maxPax) {
+      spaceFilter.maxPax = { 
+        $gte: parseInt(minPax),
+        $lte: parseInt(maxPax)
+      };
+    } else if (minPax) {
       spaceFilter.maxPax = { $gte: parseInt(minPax) };
-    }
-    if (maxPax) {
+    } else if (maxPax) {
       spaceFilter.maxPax = { $lte: parseInt(maxPax) };
     }
+    
     if (spaceType) {
       spaceFilter.type = spaceType;
     }
     if (indoorOutdoor) {
       spaceFilter.indoorOutdoor = indoorOutdoor;
+    }
+
+    // Filter by price range (budget overlap logic)
+    // Show spaces where their price range overlaps with user's budget
+    if (minBudget || maxBudget) {
+      const min = minBudget ? parseFloat(minBudget) : 0;
+      const max = maxBudget ? parseFloat(maxBudget) : Number.MAX_SAFE_INTEGER;
+      
+      // Overlap condition: space.max >= user.min AND space.min <= user.max
+      spaceFilter.$and = [
+        { 'priceRange.max': { $gte: min } },
+        { 'priceRange.min': { $lte: max } }
+      ];
     }
 
     // Filter by standard amenities (only search standard amenities)
@@ -1189,7 +1344,7 @@ export const createVenueQuote = async (req, res) => {
 // @access  Private (Venue owner or team member)
 export const declineVenueRequest = async (req, res) => {
   try {
-    const { reason } = req.body;
+    const { reason } = req.body || {};
 
     const venueRequest = await VenueRequest.findById(req.params.id)
       .populate("venue")
@@ -1291,7 +1446,7 @@ export const markVenueRequestAsBooked = async (req, res) => {
     }
 
     // Use provided dates or fall back to original enquiry dates
-    const { startDate, endDate } = req.body;
+    const { startDate, endDate } = req.body || {};
     const bookingStartDate = startDate ? new Date(startDate) : new Date(venueRequest.eventDateStart);
     const bookingEndDate = endDate ? new Date(endDate) : new Date(venueRequest.eventDateEnd);
 
@@ -1875,6 +2030,31 @@ export const getAllVenuesAdmin = async (req, res) => {
   }
 };
 
+// @desc    Get venue stats for admin dashboard
+// @route   GET /api/admin/venues/stats
+// @access  Private (Admin only)
+export const getVenueStats = async (req, res) => {
+  try {
+    const totalVenues = await Venue.countDocuments();
+    const verifiedVenues = await Venue.countDocuments({ verificationStatus: "verified" });
+    const unverifiedVenues = await Venue.countDocuments({ verificationStatus: "unverified" });
+    const suspendedVenues = await Venue.countDocuments({ verificationStatus: "suspended" });
+    const totalSpaces = await Space.countDocuments();
+    const flaggedVenues = await Venue.countDocuments({ reportCount: { $gt: 0 } });
+
+    res.json({
+      totalVenues,
+      verifiedVenues,
+      unverifiedVenues,
+      suspendedVenues,
+      totalSpaces,
+      flaggedVenues,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // @desc    Get chat messages for a venue request
 // @route   GET /api/venue-requests/:requestId/messages
 // @access  Private (organizer or venue owner/team)
@@ -2025,6 +2205,228 @@ export const sendChatMessage = async (req, res) => {
     }
 
     res.status(201).json(responseMessage);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Update venue ownership document
+// @route   PATCH /api/venues/:id/document
+// @access  Private (Venue owner only)
+export const updateVenueDocument = async (req, res) => {
+  try {
+    const venue = await Venue.findById(req.params.id);
+
+    if (!venue) {
+      return res.status(404).json({ message: "Venue not found" });
+    }
+
+    // Only owner can update document
+    if (venue.owner.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ 
+        message: "Only venue owner can update ownership document" 
+      });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({ message: "No document file uploaded" });
+    }
+
+    // Delete old document if exists
+    if (venue.ownershipDocument?.url) {
+      const resourceType = venue.documentType === "pdf" || 
+                          venue.documentType === "doc" || 
+                          venue.documentType === "docx" ? "raw" : "image";
+      await deleteVenueDocument(venue.ownershipDocument.url, resourceType);
+    }
+
+    // Get file extension
+    const fileExtension = req.file.originalname.split(".").pop().toLowerCase();
+
+    // Update venue with new document
+    venue.ownershipDocument = {
+      url: req.file.path,
+      publicId: req.file.filename,
+      fileName: req.file.originalname,
+    };
+    venue.documentType = fileExtension;
+    venue.documentUploadedAt = new Date();
+    venue.documentVerificationStatus = "pending";
+    venue.verificationNotes = ""; // Clear previous notes
+    venue.documentVerifiedAt = null;
+    venue.documentVerifiedBy = null;
+
+    await venue.save();
+
+    // Notify admins
+    try {
+      const admins = await User.find({ role: "admin" }).select("email name");
+      if (admins.length > 0) {
+        const adminEmails = admins.map(admin => admin.email);
+        await transporter.sendMail({
+          from: `"${process.env.SENDER_NAME}" <${process.env.SENDER_EMAIL}>`,
+          to: adminEmails,
+          subject: "Venue Ownership Document Updated",
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+              <h2 style="color: #2563eb;">Document Update Notification</h2>
+              
+              <p>A venue owner has uploaded a new ownership document:</p>
+              
+              <div style="background-color: #f3f4f6; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                <p style="margin: 5px 0;"><strong>Venue Name:</strong> ${venue.name}</p>
+                <p style="margin: 5px 0;"><strong>City:</strong> ${venue.city}</p>
+                <p style="margin: 5px 0;"><strong>Owner:</strong> ${req.user.name}</p>
+                <p style="margin: 5px 0;"><strong>Document Type:</strong> ${fileExtension.toUpperCase()}</p>
+              </div>
+              
+              <p style="margin-top: 20px;">
+                <a href="${process.env.FRONTEND_URL}/admin/venues" 
+                   style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
+                  Review Document
+                </a>
+              </p>
+            </div>
+          `,
+        });
+      }
+    } catch (emailError) {
+      console.error("Failed to send admin notification email:", emailError);
+    }
+
+    res.json({ 
+      message: "Document uploaded successfully. Awaiting admin verification.",
+      venue: await Venue.findById(venue._id).populate("owner", "name email")
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Get venue document (Admin only)
+// @route   GET /api/venues/:id/document
+// @access  Private (Admin only)
+export const getVenueDocument = async (req, res) => {
+  try {
+    const venue = await Venue.findById(req.params.id)
+      .populate("owner", "name email")
+      .populate("documentVerifiedBy", "name");
+
+    if (!venue) {
+      return res.status(404).json({ message: "Venue not found" });
+    }
+
+    if (!venue.ownershipDocument?.url) {
+      return res.status(404).json({ message: "No ownership document found for this venue" });
+    }
+
+    res.json({
+      document: venue.ownershipDocument,
+      documentType: venue.documentType,
+      documentUploadedAt: venue.documentUploadedAt,
+      documentVerificationStatus: venue.documentVerificationStatus,
+      verificationNotes: venue.verificationNotes,
+      documentVerifiedAt: venue.documentVerifiedAt,
+      documentVerifiedBy: venue.documentVerifiedBy,
+      venue: {
+        _id: venue._id,
+        name: venue.name,
+        city: venue.city,
+        owner: venue.owner,
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Verify venue document (Admin only)
+// @route   PATCH /api/venues/:id/verify-document
+// @access  Private (Admin only)
+export const verifyVenueDocument = async (req, res) => {
+  try {
+    const { status, notes } = req.body;
+
+    if (!status || !["verified", "rejected"].includes(status)) {
+      return res.status(400).json({ 
+        message: "Status is required and must be 'verified' or 'rejected'" 
+      });
+    }
+
+    const venue = await Venue.findById(req.params.id).populate("owner", "name email");
+
+    if (!venue) {
+      return res.status(404).json({ message: "Venue not found" });
+    }
+
+    if (!venue.ownershipDocument?.url) {
+      return res.status(404).json({ 
+        message: "No ownership document found for this venue" 
+      });
+    }
+
+    // Update document verification status
+    venue.documentVerificationStatus = status;
+    venue.verificationNotes = notes || "";
+    venue.documentVerifiedAt = new Date();
+    venue.documentVerifiedBy = req.user._id;
+
+    await venue.save();
+
+    // Send email notification to venue owner
+    if (venue.owner?.email) {
+      const statusText = status === "verified" ? "Verified" : "Rejected";
+      const statusColor = status === "verified" ? "#28a745" : "#dc3545";
+
+      try {
+        await transporter.sendMail({
+          from: `"${process.env.SENDER_NAME}" <${process.env.SENDER_EMAIL}>`,
+          to: venue.owner.email,
+          subject: `Venue Ownership Document ${statusText} - ${venue.name}`,
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+              <h2 style="color: ${statusColor};">Document ${statusText}</h2>
+              
+              <p>Hi ${venue.owner.name},</p>
+              
+              <p>Your ownership document for <strong>${venue.name}</strong> has been ${status === "verified" ? "verified" : "rejected"}.</p>
+              
+              ${notes ? `
+                <div style="background-color: #f3f4f6; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                  <p style="margin: 0;"><strong>Admin Notes:</strong></p>
+                  <p style="margin: 10px 0 0 0;">${notes}</p>
+                </div>
+              ` : ""}
+              
+              ${status === "rejected" ? `
+                <p>Please upload a new document addressing the concerns mentioned above.</p>
+                <p style="margin-top: 20px;">
+                  <a href="${process.env.FRONTEND_URL}/venue-partner/venues/${venue._id}/edit" 
+                     style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
+                    Upload New Document
+                  </a>
+                </p>
+              ` : `
+                <p>Your venue is now eligible for verification and will appear in search results once fully verified.</p>
+              `}
+              
+              <p style="margin-top: 30px;">Best regards,<br>Event Ticketing Team</p>
+            </div>
+          `,
+        });
+      } catch (emailError) {
+        console.error("Failed to send verification email:", emailError);
+      }
+    }
+
+    const populatedVenue = await Venue.findById(venue._id)
+      .populate("owner", "name email")
+      .populate("documentVerifiedBy", "name");
+
+    res.json({ 
+      message: `Document ${status} successfully`,
+      venue: populatedVenue
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

@@ -4,7 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { deleteAccount } from "../services/authService";
-import ConfirmModal from "../components/ConfirmModal";
+import ConfirmModal from "../common/components/ConfirmModal";
 import apiClient from "../api/apiClient";
 import { User, Mail, Phone, Edit, Trash2, Calendar, Ticket, CheckCircle2, Check, MailCheck, AlertCircle } from 'lucide-react';
 
@@ -60,7 +60,14 @@ const Profile = () => {
         });
       } catch (error) {
         console.error("Failed to fetch user stats:", error);
-        // Set default values on error
+        // If 401, user session expired - logout
+        if (error.response?.status === 401) {
+          toast.error("Session expired. Please login again.");
+          logout();
+          navigate("/login");
+          return;
+        }
+        // Set default values on other errors
         setUserStats({
           totalBookings: 0,
           upcomingEvents: 0,
@@ -73,7 +80,7 @@ const Profile = () => {
     };
 
     fetchUserStats();
-  }, []);
+  }, [logout, navigate]);
 
   const handleDelete = async () => {
     try {

@@ -1,0 +1,114 @@
+# Production Docker Compose Configuration
+# Usage: docker compose -f docker-compose.prod.yml up -d
+
+services:
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: event-ticketing-redis
+    restart: unless-stopped
+    # DO NOT expose port externally - only accessible via Docker network
+    volumes:
+      - redis_data:/data
+    networks:
+      - event-ticketing-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    # Memory limit for t3.small (2GB total RAM)
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+    command: redis-server --maxmemory 100mb --maxmemory-policy allkeys-lru
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    container_name: event-ticketing-backend
+    restart: unless-stopped
+    # DO NOT expose port externally - Nginx will proxy to it via Docker network
+    expose:
+      - "8000"
+    environment:
+      NODE_ENV: production
+      PORT: 8000
+      # MongoDB connection - use Atlas URI from .env
+      MONGODB_URI: ${MONGODB_URI}
+      # Redis connection using Docker service name
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      # JWT & Auth
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}
+      # CORS - allow frontend origin
+      CORS_ORIGIN: ${CORS_ORIGIN}
+      # Google OAuth
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      # Stripe
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      # Cloudinary
+      CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME}
+      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY}
+      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET}
+      # Email (Nodemailer)
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASS: ${SMTP_PASS}
+      EMAIL_FROM: ${EMAIL_FROM}
+      # Frontend URL for email links
+      FRONTEND_URL: ${FRONTEND_URL}
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - event-ticketing-network
+    # Memory limit for t3.small
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+
+  # Frontend (Nginx serving React build)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        # Leave empty to use Nginx proxy (recommended)
+        VITE_API_URL: ""
+        VITE_SOCKET_URL: ""
+        VITE_GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+        VITE_GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY}
+        VITE_STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY}
+        VITE_GEMINI_API_KEY: ${GEMINI_API_KEY}
+        NGINX_CONFIG: nginx-ssl.conf
+    container_name: event-ticketing-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    depends_on:
+      - backend
+    networks:
+      - event-ticketing-network
+    # Memory limit for t3.small
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+
+networks:
+  event-ticketing-network:
+    driver: bridge
+
+volumes:
+  redis_data:
+    driver: local

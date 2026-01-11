@@ -1,0 +1,33 @@
+# Backend Dockerfile - Production
+FROM node:18-alpine
+
+# Set working directory
+WORKDIR /app
+
+# Install dependencies for native modules (bcrypt, etc.)
+RUN apk update && apk add --no-cache python3 make g++ && rm -rf /var/cache/apk/*
+
+# Copy package files
+COPY package*.json ./
+
+# Install production dependencies only
+RUN npm ci --only=production
+
+# Copy source code
+COPY . .
+
+# Expose port
+EXPOSE 8000
+
+# Create non-root user for security
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nodejs -u 1001 -G nodejs
+
+# Change ownership of app directory
+RUN chown -R nodejs:nodejs /app
+
+# Switch to non-root user
+USER nodejs
+
+# Start production server
+CMD ["node", "-r", "dotenv/config", "--experimental-json-modules", "src/server.js"]

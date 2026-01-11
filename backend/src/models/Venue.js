@@ -98,6 +98,70 @@ const venueSchema = new mongoose.Schema(
       trim: true,
       maxlength: 2000,
     },
+    // Ownership verification document fields
+    ownershipDocument: {
+      url: {
+        type: String,
+        trim: true,
+      },
+      publicId: {
+        type: String,
+        trim: true,
+      },
+      fileName: {
+        type: String,
+        trim: true,
+      },
+    },
+    documentType: {
+      type: String,
+      enum: ["pdf", "doc", "docx", "jpg", "jpeg", "png", ""],
+      default: "",
+    },
+    documentUploadedAt: {
+      type: Date,
+    },
+    documentVerificationStatus: {
+      type: String,
+      enum: ["pending", "verified", "rejected", ""],
+      default: "",
+      index: true,
+    },
+    verificationNotes: {
+      type: String,
+      trim: true,
+      maxlength: 1000,
+    },
+    documentVerifiedAt: {
+      type: Date,
+    },
+    documentVerifiedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    reportCount: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    // Review and rating fields
+    averageRating: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 5,
+    },
+    totalReviews: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    responseRate: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 100,
+    },
   },
   {
     timestamps: true,
