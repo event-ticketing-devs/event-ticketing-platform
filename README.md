@@ -16,6 +16,8 @@ A full-stack event management and ticketing platform built with React and Node.j
 - General contact form for platform support
 - Report inappropriate events to administrators
 - AI-powered chatbot assistant (powered by Google Gemini) for instant help and event recommendations
+- Leave reviews and ratings for venues after attending events
+- View venue ratings and reviews before booking events
 
 ### For Organizers
 
@@ -43,16 +45,22 @@ A full-stack event management and ticketing platform built with React and Node.j
 - Review and manage flagged events
 - Detailed organizer profile management and verification
 - Venue management and approval system
+- Verify venue ownership documents (PDF, DOC, DOCX, images)
 - Monitor venue requests and quotes
+- Manage reported venue reviews
 
 ### For Venue Managers
 
 - Create and manage venue listings with multiple spaces
+- Upload ownership verification documents for venue legitimacy
 - Set capacity, amenities and policies for each space
+- Define price ranges (min-max) for spaces based on booking units (hourly/half-day/full-day)
 - Receive and respond to venue booking requests
 - Generate custom quotes for organizers
 - Real-time inquiry chat with potential clients
 - Manage booking calendar and availability
+- Respond to venue reviews and maintain response rate metrics
+- Track venue ratings and review statistics (average rating, total reviews, response rate)
 
 ## Tech Stack
 
@@ -292,6 +300,22 @@ npm run dev
 - `POST /api/venues/quotes` - Generate custom quote for space
 - `GET /api/venues/quotes/:requestId` - Get quotes for a request
 
+### Venue Reviews
+
+- `POST /api/reviews/venue/:venueId` - Submit review for venue (requires completed booking)
+- `GET /api/reviews/venue/:venueId` - Get all reviews for a venue (public)
+- `GET /api/reviews/venue/:venueId/eligibility` - Check if user can review venue
+- `GET /api/reviews/my-reviews` - Get user's own reviews
+- `DELETE /api/reviews/:id` - Delete own review
+- `POST /api/reviews/:id/report` - Report inappropriate review
+- `POST /api/reviews/:id/response` - Add owner response to review (venue managers)
+- `PATCH /api/reviews/:id/response` - Update owner response
+- `DELETE /api/reviews/:id/response` - Remove owner response
+- `GET /api/reviews/owner-reviews` - Get reviews for venue manager's venues
+- `GET /api/reviews/admin/reported` - Get reported reviews (admin)
+- `DELETE /api/reviews/admin/:id` - Delete review (admin)
+- `PATCH /api/reviews/admin/:id/dismiss-report` - Dismiss review report (admin)
+
 ### Venue Options
 
 - `GET /api/venue-options` - Get venue filtering options (cities, amenities)
@@ -362,10 +386,17 @@ Each feature contains its own `pages/` and `components/` with barrel exports for
 - **Space Comparison** with side-by-side feature comparison
 - **Detailed Venue Profiles** with images, amenities, and parking information
 - **Space-Specific Details** including capacity, pricing, and equipment
+- **Price Range System** for each space with min-max pricing based on booking units (hourly, half-day, full-day)
 - **Booking Request System** for organizers to request venue spaces
 - **Quote Management** allowing venues to provide custom pricing
 - **Real-Time Inquiry Chat** between organizers and venue managers
 - **Interactive Maps** with Google Maps integration for venue locations
+- **Venue Reviews and Ratings** with 1-5 star rating system
+- **Review Eligibility** requirements: must have attended event at venue within past 60 days
+- **Owner Response System** allowing venue managers to respond to reviews
+- **Review Moderation** with profanity filtering and reporting capabilities
+- **Rating Statistics** tracking average rating, total reviews, and owner response rate
+- **Ownership Verification** system requiring document upload for venue legitimacy
 
 ### Team Collaboration
 
@@ -426,20 +457,78 @@ Each feature contains its own `pages/` and `components/` with barrel exports for
 - **Report Status Tracking**: pending, reviewed, resolved, dismissed
 - **User Report History** for transparency
 
+### Venue Review & Rating System
+
+- **Star Rating System**: Users can rate venues from 1 to 5 stars based on their experience
+- **Review Eligibility**: Only users who have attended an event at a venue can leave a review
+- **Time-Limited Reviews**: Reviews must be submitted within 60 days of event attendance
+- **Review Constraints**:
+  - One review per user per venue
+  - Review text limited to 500 characters
+  - Rate limit: maximum 5 reviews per day per user
+  - Profanity filtering on review content
+- **Owner Response System**:
+  - Venue managers can respond to reviews (max 300 characters)
+  - Response rate tracked and displayed on venue profiles
+  - Owners can update or delete their responses
+- **Review Moderation**:
+  - Users can report inappropriate reviews
+  - Admin dashboard for managing reported reviews
+  - Option to dismiss reports or delete reviews
+- **Rating Statistics**:
+  - Average rating calculated and displayed (rounded to 1 decimal place)
+  - Total review count shown on venue listings
+  - Response rate percentage indicates venue engagement
+- **Review Sorting**: Reviews can be sorted by recent, highest rating, or lowest rating
+
+### Venue Pricing System
+
+- **Flexible Price Ranges**: Each venue space has a minimum and maximum price
+- **Booking Unit Options**:
+  - Hourly: Price per hour of usage
+  - Half-day: Price for 4-6 hours of usage
+  - Full-day: Price for full day rental
+- **Custom Quotes**: Venue managers can provide personalized pricing through quote system
+- **Budget Filtering**: Organizers can filter venues by price range when browsing
+- **Transparent Pricing**: Min-max ranges help organizers understand cost expectations
+
+### Venue Ownership Verification
+
+- **Document Upload System**:
+  - Supported formats: PDF, DOC, DOCX, JPG, JPEG, PNG
+  - Documents stored securely on Cloudinary
+  - Automatic metadata tracking (filename, upload date, file type)
+- **Verification Workflow**:
+  - Status options: pending, verified, rejected
+  - Admin review and approval process
+  - Verification notes for admin comments
+  - Tracked by admin user and verification date
+- **Verification Status**:
+  - Unverified: New venues without document verification
+  - Verified: Documents approved by admin
+  - Suspended: Venues temporarily blocked from listing
+- **Admin Notifications**:
+  - Email alerts to admins when documents are uploaded
+  - Document details included in notification
+  - Direct link to admin dashboard for review
+- **Visibility Control**: Only verified venues may appear in premium search results
+
 ## Database Models
 
-- **User**: Handles attendee, organizer, and admin accounts
+- **User**: Handles attendee, organizer, venue manager, and admin accounts
 - **Event**: Stores event details and metadata
 - **Booking**: Manages ticket bookings and verification
 - **Category**: Event categorization system
 - **Contact**: Manages contact messages and support tickets
 - **Report**: Handles event reporting and flagging system
-- **Venue**: Stores venue information, location, and contact details
-- **Space**: Defines individual spaces within venues with capacity and pricing
+- **Venue**: Stores venue information, location, contact details, ownership verification documents, and rating statistics
+- **Space**: Defines individual spaces within venues with capacity, price ranges (min/max), booking units, amenities, and policies
 - **VenueRequest**: Tracks organizer requests for venue bookings
 - **VenueQuote**: Manages custom pricing quotes from venues
 - **VenueInquiryChat**: Real-time chat between organizers and venue managers
 - **TeamChat**: Real-time collaboration chat for event teams
+- **Review**: Stores venue reviews with ratings (1-5 stars), review text, owner responses, and moderation flags
+- **VenueReport**: Manages venue-related reports and compliance issues
 
 ## Technical Stack
 
