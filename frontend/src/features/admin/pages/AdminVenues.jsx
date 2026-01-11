@@ -4,7 +4,7 @@ import apiClient from "../../../api/apiClient";
 import toast from "react-hot-toast";
 import { getAmenityLabel } from "../../../constants/venueConstants";
 import ConfirmModal from "../../../common/components/ConfirmModal";
-import { Building2, X, CheckCircle2, Clock, XCircle } from "lucide-react";
+import { Building2, X, CheckCircle2, Clock, XCircle, FileText, Download, Eye } from "lucide-react";
 
 export default function AdminVenues() {
   const navigate = useNavigate();
@@ -21,6 +21,13 @@ export default function AdminVenues() {
   const [verifyConfirm, setVerifyConfirm] = useState({ open: false, venueId: null });
   const [suspendConfirm, setSuspendConfirm] = useState({ open: false, venueId: null, reason: "" });
   const [unsuspendConfirm, setUnsuspendConfirm] = useState({ open: false, venueId: null });
+  const [documentModal, setDocumentModal] = useState({ open: false, venueId: null, document: null });
+  const [verifyDocConfirm, setVerifyDocConfirm] = useState({ 
+    open: false, 
+    venueId: null, 
+    status: "", 
+    notes: "" 
+  });
 
   useEffect(() => {
     fetchVenues();
@@ -112,6 +119,40 @@ export default function AdminVenues() {
     }
   };
 
+  const handleViewDocument = async (venueId) => {
+    try {
+      const res = await apiClient.get(`/venues/${venueId}/document`);
+      setDocumentModal({ open: true, venueId, document: res.data });
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to load document");
+    }
+  };
+
+  const handleVerifyDocument = (venueId, status) => {
+    setVerifyDocConfirm({ 
+      open: true, 
+      venueId, 
+      status, 
+      notes: "" 
+    });
+  };
+
+  const confirmVerifyDocument = async () => {
+    try {
+      await apiClient.patch(`/venues/${verifyDocConfirm.venueId}/verify-document`, {
+        status: verifyDocConfirm.status,
+        notes: verifyDocConfirm.notes
+      });
+      
+      toast.success(`Document ${verifyDocConfirm.status} successfully`);
+      setVerifyDocConfirm({ open: false, venueId: null, status: "", notes: "" });
+      setDocumentModal({ open: false, venueId: null, document: null });
+      fetchVenues();
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to verify document");
+    }
+  };
+
   const getStatusBadge = (status) => {
     const config = {
       verified: { bg: "bg-success/10", text: "text-success", icon: <CheckCircle2 className="w-3 h-3" />, label: "Verified" },
@@ -119,6 +160,21 @@ export default function AdminVenues() {
       suspended: { bg: "bg-error/10", text: "text-error", icon: <XCircle className="w-3 h-3" />, label: "Suspended" },
     };
     const { bg, text, icon, label } = config[status] || config.unverified;
+    return (
+      <span className={`px-3 py-1 rounded-md text-xs font-medium ${bg} ${text} inline-flex items-center gap-1`}>
+        {icon}
+        <span>{label}</span>
+      </span>
+    );
+  };
+
+  const getDocumentStatusBadge = (status) => {
+    const config = {
+      verified: { bg: "bg-success/10", text: "text-success", icon: <CheckCircle2 className="w-3 h-3" />, label: "Verified" },
+      pending: { bg: "bg-warning/10", text: "text-warning", icon: <Clock className="w-3 h-3" />, label: "Pending Review" },
+      rejected: { bg: "bg-error/10", text: "text-error", icon: <XCircle className="w-3 h-3" />, label: "Rejected" },
+    };
+    const { bg, text, icon, label } = config[status] || { bg: "bg-gray-100", text: "text-gray-600", icon: null, label: "No Document" };
     return (
       <span className={`px-3 py-1 rounded-md text-xs font-medium ${bg} ${text} inline-flex items-center gap-1`}>
         {icon}
@@ -277,15 +333,19 @@ export default function AdminVenues() {
                         </p>
                       </div>
                       <div>
-                        <p className="text-xs text-text-secondary">Spaces</p>
-                        <p className="text-sm font-medium text-text-primary">
-                          {venue.statistics?.totalSpaces || 0}
-                        </p>
+                        <p className="text-xs text-text-secondary">Document Status</p>
+                        {venue.ownershipDocument?.url ? (
+                          <div className="flex items-center gap-2 mt-1">
+                            {getDocumentStatusBadge(venue.documentVerificationStatus)}
+                          </div>
+                        ) : (
+                          <p className="text-sm font-medium text-error">No Document</p>
+                        )}
                       </div>
                       <div>
-                        <p className="text-xs text-text-secondary">Bookings</p>
+                        <p className="text-xs text-text-secondary">Spaces / Bookings</p>
                         <p className="text-sm font-medium text-text-primary">
-                          {venue.statistics?.externallyBooked || 0} / {venue.statistics?.totalRequests || 0}
+                          {venue.statistics?.totalSpaces || 0} / {venue.statistics?.externallyBooked || 0}
                         </p>
                       </div>
                     </div>
@@ -298,6 +358,15 @@ export default function AdminVenues() {
                       >
                         View Details
                       </button>
+
+                      {venue.ownershipDocument?.url && (
+                        <button
+                          onClick={() => handleViewDocument(venue._id)}
+                          className="px-4 py-2 bg-secondary/10 text-secondary rounded-lg hover:bg-secondary-500/20 transition-colors cursor-pointer text-sm font-medium inline-flex items-center gap-2"
+                        >
+                          View Document
+                        </button>
+                      )}
 
                       <button
                         onClick={() => navigate(`/admin/venues/${venue._id}/activity`)}
@@ -661,6 +730,144 @@ export default function AdminVenues() {
         confirmText="Reinstate"
         cancelText="Cancel"
         variant="info"
+      />
+
+      {/* Document Viewer Modal */}
+      {documentModal.open && documentModal.document && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+          <div className="bg-bg-primary rounded-lg shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-auto">
+            <div className="sticky top-0 bg-bg-primary border-b border-border px-6 py-4 flex justify-between items-center z-10">
+              <h2 className="text-2xl font-bold text-text-primary">Ownership Document</h2>
+              <button
+                onClick={() => setDocumentModal({ open: false, venueId: null, document: null })}
+                className="p-2 hover:bg-bg-secondary rounded-lg transition-colors"
+              >
+                <X className="w-6 h-6 text-text-secondary" />
+              </button>
+            </div>
+
+            <div className="p-6 space-y-6">
+              {/* Document Info */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm text-text-secondary">Venue</p>
+                  <p className="font-medium text-text-primary">{documentModal.document.venue.name}</p>
+                  <p className="text-sm text-text-secondary">{documentModal.document.venue.city}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-text-secondary">Owner</p>
+                  <p className="font-medium text-text-primary">{documentModal.document.venue.owner.name}</p>
+                  <p className="text-sm text-text-secondary">{documentModal.document.venue.owner.email}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-text-secondary">Document Type</p>
+                  <p className="font-medium text-text-primary uppercase">{documentModal.document.documentType}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-text-secondary">Uploaded</p>
+                  <p className="font-medium text-text-primary">
+                    {new Date(documentModal.document.documentUploadedAt).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit"
+                    })}
+                  </p>
+                </div>
+              </div>
+
+              {/* Current Status */}
+              <div className="bg-bg-secondary p-4 rounded-lg">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-sm text-text-secondary">Verification Status</p>
+                  {getDocumentStatusBadge(documentModal.document.documentVerificationStatus)}
+                </div>
+                
+                {documentModal.document.verificationNotes && (
+                  <div className="mt-3 pt-3 border-t border-border">
+                    <p className="text-sm text-text-secondary mb-1">Admin Notes</p>
+                    <p className="text-sm text-text-primary">{documentModal.document.verificationNotes}</p>
+                  </div>
+                )}
+
+                {documentModal.document.documentVerifiedAt && (
+                  <div className="mt-3 pt-3 border-t border-border">
+                    <p className="text-sm text-text-secondary">Verified on</p>
+                    <p className="text-sm text-text-primary">
+                      {new Date(documentModal.document.documentVerifiedAt).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit"
+                      })}
+                      {documentModal.document.documentVerifiedBy && ` by ${documentModal.document.documentVerifiedBy.name}`}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Document Preview/Download */}
+              <div className="border-2 border-border rounded-lg p-6 text-center">
+                <FileText className="w-16 h-16 mx-auto mb-4 text-primary" />
+                <p className="font-medium text-text-primary mb-2">{documentModal.document.document.fileName}</p>
+                <p className="text-sm text-text-secondary mb-4">
+                  Click below to view or download the document
+                </p>
+                <a
+                  href={documentModal.document.document.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-bg-primary rounded-lg hover:bg-primary/90 transition-colors"
+                >
+                  <Eye className="w-5 h-5" />
+                  Open Document
+                </a>
+              </div>
+
+              {/* Verification Actions */}
+              {documentModal.document.documentVerificationStatus === "pending" && (
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => handleVerifyDocument(documentModal.venueId, "verified")}
+                    className="flex-1 px-6 py-3 bg-success text-bg-primary rounded-lg hover:bg-success/90 transition-colors font-medium inline-flex items-center justify-center gap-2"
+                  >
+                    <CheckCircle2 className="w-5 h-5" />
+                    Approve Document
+                  </button>
+                  <button
+                    onClick={() => handleVerifyDocument(documentModal.venueId, "rejected")}
+                    className="flex-1 px-6 py-3 bg-error text-bg-primary rounded-lg hover:bg-error/90 transition-colors font-medium inline-flex items-center justify-center gap-2"
+                  >
+                    <XCircle className="w-5 h-5" />
+                    Reject Document
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Verify Document Confirmation Modal */}
+      <ConfirmModal
+        open={verifyDocConfirm.open}
+        title={verifyDocConfirm.status === "verified" ? "Approve Document" : "Reject Document"}
+        description={
+          verifyDocConfirm.status === "verified"
+            ? "Are you sure you want to approve this ownership document? The venue owner will be notified."
+            : "Please provide a reason for rejecting this document. The venue owner will receive this feedback."
+        }
+        onClose={() => setVerifyDocConfirm({ open: false, venueId: null, status: "", notes: "" })}
+        onConfirm={confirmVerifyDocument}
+        confirmText={verifyDocConfirm.status === "verified" ? "Approve" : "Reject"}
+        cancelText="Cancel"
+        variant={verifyDocConfirm.status === "verified" ? "success" : "danger"}
+        showInput={verifyDocConfirm.status === "rejected"}
+        inputValue={verifyDocConfirm.notes}
+        inputPlaceholder="Provide feedback to venue owner..."
+        setInputValue={(value) => setVerifyDocConfirm(prev => ({ ...prev, notes: value }))}
       />
     </div>
   );

@@ -4,7 +4,7 @@ import { Loader } from "@googlemaps/js-api-loader";
 import apiClient from "../../../api/apiClient";
 import toast from "react-hot-toast";
 import VerificationNotice from "../../../common/components/VerificationNotice";
-import { Upload, X } from 'lucide-react';
+import { Upload, X, FileText } from 'lucide-react';
 
 const VenueRegistration = () => {
   const navigate = useNavigate();
@@ -16,6 +16,8 @@ const VenueRegistration = () => {
   const [submitting, setSubmitting] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [imagePreview, setImagePreview] = useState("");
+  const [documentFile, setDocumentFile] = useState(null);
+  const [documentPreview, setDocumentPreview] = useState(null);
 
   const [form, setForm] = useState({
     name: "",
@@ -230,6 +232,47 @@ const VenueRegistration = () => {
     setImagePreview("");
   };
 
+  const handleDocumentChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Validate file type
+      const allowedTypes = [
+        "application/pdf",
+        "application/msword",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "image/jpeg",
+        "image/jpg",
+        "image/png"
+      ];
+
+      if (!allowedTypes.includes(file.type)) {
+        toast.error("Only PDF, Word documents, and images (JPG, PNG) are allowed");
+        return;
+      }
+
+      // Validate file size (5MB limit)
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("Document size should be less than 5MB");
+        return;
+      }
+
+      setDocumentFile(file);
+
+      // Create preview for document
+      const fileExtension = file.name.split(".").pop().toLowerCase();
+      setDocumentPreview({
+        name: file.name,
+        size: (file.size / 1024 / 1024).toFixed(2), // Size in MB
+        type: fileExtension.toUpperCase(),
+      });
+    }
+  };
+
+  const removeDocument = () => {
+    setDocumentFile(null);
+    setDocumentPreview(null);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -273,6 +316,12 @@ const VenueRegistration = () => {
       if (selectedFile) {
         formData.append("photo", selectedFile);
       }
+
+      // Add ownership document if selected (required)
+      if (!documentFile) {
+        return toast.error("Please upload an ownership verification document");
+      }
+      formData.append("ownershipDocument", documentFile);
 
       const res = await apiClient.post("/venues", formData, {
         headers: {
@@ -509,6 +558,75 @@ const VenueRegistration = () => {
                   </button>
                 </div>
               )}
+            </div>
+          </div>
+
+          {/* Ownership Document */}
+          <div className="bg-bg-primary border border-border rounded-lg p-6">
+            <h2 className="text-xl font-semibold mb-2">Ownership Verification Document *</h2>
+            <p className="text-sm text-text-secondary mb-4">
+              Upload proof of ownership (property deed, lease agreement, business license, etc.) to verify your venue. This helps us maintain platform integrity.
+            </p>
+            
+            <div className="space-y-4">
+              {!documentPreview ? (
+                <div>
+                  <label
+                    htmlFor="document-upload"
+                    className="flex flex-col items-center justify-center w-full h-48 border-2 border-primary/30 border-dashed rounded-lg cursor-pointer bg-primary/5 hover:bg-primary/10 transition-colors"
+                  >
+                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                      <FileText className="w-10 h-10 mb-3 text-primary" />
+                      <p className="mb-2 text-sm text-text-primary">
+                        <span className="font-semibold">Click to upload document</span> or drag and drop
+                      </p>
+                      <p className="text-xs text-text-secondary">PDF, DOC, DOCX, JPG, or PNG (MAX. 5MB)</p>
+                      <p className="text-xs text-warning mt-2 font-medium">Required for verification</p>
+                    </div>
+                    <input
+                      id="document-upload"
+                      type="file"
+                      accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                      onChange={handleDocumentChange}
+                      className="hidden"
+                    />
+                  </label>
+                </div>
+              ) : (
+                <div className="relative p-4 border-2 border-success/30 rounded-lg bg-success/5">
+                  <div className="flex items-start gap-4">
+                    <div className="p-3 bg-success/10 rounded-lg">
+                      <FileText className="w-8 h-8 text-success" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-text-primary truncate">{documentPreview.name}</p>
+                      <p className="text-sm text-text-secondary mt-1">
+                        {documentPreview.type} • {documentPreview.size} MB
+                      </p>
+                      <div className="flex items-center gap-2 mt-2">
+                        <div className="h-1 flex-1 bg-success/20 rounded-full">
+                          <div className="h-full w-full bg-success rounded-full"></div>
+                        </div>
+                        <span className="text-xs text-success font-medium">Ready</span>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={removeDocument}
+                      className="p-2 text-error hover:bg-error/10 rounded-lg transition-colors"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                  </div>
+                </div>
+              )}
+              
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <p className="text-sm text-blue-800">
+                  <strong>Note:</strong> Your document will be securely reviewed by our admin team. 
+                  Your venue will be listed after document verification is complete.
+                </p>
+              </div>
             </div>
           </div>
 

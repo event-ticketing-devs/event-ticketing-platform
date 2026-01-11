@@ -11,7 +11,8 @@ export default function ConfirmModal({
   showInput = false,
   inputValue = "",
   setInputValue = () => {},
-  variant = "danger", // "danger", "warning", "info"
+  inputPlaceholder = "Please provide a reason...",
+  variant = "danger", // "danger", "warning", "info", "success"
 }) {
   if (!open) return null;
 
@@ -33,6 +34,14 @@ export default function ConfirmModal({
           confirmBg: "bg-warning",
           confirmHover: "hover:bg-warning/90",
           icon: <AlertCircle className="w-6 h-6" />,
+        };
+      case "success":
+        return {
+          iconBg: "bg-success/10 border border-success/20",
+          iconColor: "text-success",
+          confirmBg: "bg-success",
+          confirmHover: "hover:bg-success/90",
+          icon: <Info className="w-6 h-6" />,
         };
       default: // info
         return {
@@ -92,7 +101,7 @@ export default function ConfirmModal({
               <textarea
                 className="w-full pl-10 pr-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary bg-bg-secondary transition-colors resize-none"
                 rows={3}
-                placeholder="Please provide a reason..."
+                placeholder={inputPlaceholder}
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 autoFocus
