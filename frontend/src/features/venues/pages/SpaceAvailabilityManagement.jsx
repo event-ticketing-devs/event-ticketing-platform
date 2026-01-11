@@ -164,7 +164,7 @@ export default function SpaceAvailabilityManagement() {
           <h2 className="text-lg font-semibold text-text-primary mb-4">
             Space Details
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div>
               <p className="text-sm text-text-secondary mb-1">Type</p>
               <p className="text-text-primary font-medium capitalize">
@@ -181,6 +181,17 @@ export default function SpaceAvailabilityManagement() {
                 {space.bookingUnit}
               </p>
             </div>
+            {space.priceRange && (
+              <div>
+                <p className="text-sm text-text-secondary mb-1">Price Range</p>
+                <p className="text-primary font-semibold">
+                  ₹{space.priceRange.min.toLocaleString('en-IN')} - ₹{space.priceRange.max.toLocaleString('en-IN')}
+                </p>
+                <p className="text-xs text-text-secondary">
+                  per {space.bookingUnit === 'hour' ? 'hour' : space.bookingUnit === 'half-day' ? 'half day' : 'full day'}
+                </p>
+              </div>
+            )}
           </div>
         </div>
 

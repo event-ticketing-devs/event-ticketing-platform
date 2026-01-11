@@ -143,6 +143,21 @@ const SpaceComparisonModal = () => {
                         </div>
                       </div>
 
+                      {/* Price Range */}
+                      {space.priceRange && (
+                        <div className="bg-primary/5 border border-primary/20 rounded-lg p-3">
+                          <h4 className="font-semibold text-text-primary text-sm mb-2">Price Range</h4>
+                          <div className="text-center">
+                            <p className="font-bold text-primary text-lg">
+                              ₹{space.priceRange.min.toLocaleString('en-IN')} - ₹{space.priceRange.max.toLocaleString('en-IN')}
+                            </p>
+                            <span className="text-text-secondary text-xs">
+                              per {space.bookingUnit === 'hour' ? 'hour' : space.bookingUnit === 'half-day' ? 'half day' : 'full day'}
+                            </span>
+                          </div>
+                        </div>
+                      )}
+
                       {/* Event Types */}
                       {space.supportedEventTypes && space.supportedEventTypes.length > 0 && (
                         <div className="bg-bg-primary rounded-lg p-3">
