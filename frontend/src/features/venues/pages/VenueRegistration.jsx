@@ -623,7 +623,7 @@ const VenueRegistration = () => {
               
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                 <p className="text-sm text-blue-800">
-                  <strong>ℹ️ Note:</strong> Your document will be securely reviewed by our admin team. 
+                  <strong>Note:</strong> Your document will be securely reviewed by our admin team. 
                   Your venue will be listed after document verification is complete.
                 </p>
               </div>
