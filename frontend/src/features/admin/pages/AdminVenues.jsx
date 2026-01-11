@@ -609,6 +609,19 @@ export default function AdminVenues() {
                               )}
                             </div>
 
+                            {/* Price Range */}
+                            {space.priceRange && (
+                              <div className="mt-3 pt-3 border-t border-border">
+                                <span className="text-text-secondary text-xs">Price Range</span>
+                                <p className="font-semibold text-primary">
+                                  ₹{space.priceRange.min.toLocaleString('en-IN')} - ₹{space.priceRange.max.toLocaleString('en-IN')}
+                                </p>
+                                <p className="text-xs text-text-secondary">
+                                  per {space.bookingUnit === 'hour' ? 'hour' : space.bookingUnit === 'half-day' ? 'half day' : 'full day'}
+                                </p>
+                              </div>
+                            )}
+
                             {/* Space Description */}
                             {space.description && (
                               <div className="mt-3 pt-3 border-t border-border">

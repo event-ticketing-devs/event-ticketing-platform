@@ -464,6 +464,21 @@ const SpaceDetailsModal = ({ space, onClose, onEnquire }) => {
             </div>
           </div>
 
+          {/* Price Range */}
+          {space.priceRange && (
+            <div className="mb-6 bg-primary/5 border border-primary/20 rounded-lg p-4">
+              <p className="text-sm text-text-secondary mb-2">Price Range</p>
+              <div className="flex items-baseline gap-2">
+                <p className="text-2xl font-bold text-primary">
+                  ₹{space.priceRange.min.toLocaleString('en-IN')} - ₹{space.priceRange.max.toLocaleString('en-IN')}
+                </p>
+                <span className="text-sm text-text-secondary">
+                  per {space.bookingUnit === 'hour' ? 'hour' : space.bookingUnit === 'half-day' ? 'half day' : 'full day'}
+                </span>
+              </div>
+            </div>
+          )}
+
           {/* Event Types */}
           {space.supportedEventTypes && space.supportedEventTypes.length > 0 && (
             <div className="mb-6">
