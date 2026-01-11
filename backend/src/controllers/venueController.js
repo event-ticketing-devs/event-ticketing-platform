@@ -5,7 +5,7 @@ import VenueQuote from "../models/VenueQuote.js";
 import VenueInquiryChat from "../models/VenueInquiryChat.js";
 import User from "../models/User.js";
 import transporter from "../utils/mailer.js";
-import { deleteVenueImage, deleteSpaceImage } from "../utils/cloudinary.js";
+import { deleteVenueImage, deleteSpaceImage, deleteVenueDocument } from "../utils/cloudinary.js";
 
 // @desc    Create a new venue
 // @route   POST /api/venues
@@ -59,6 +59,26 @@ export const createVenue = async (req, res) => {
     // Get photo URL from uploaded file
     const photo = req.file ? req.file.path : null;
 
+    // Handle ownership document from uploaded files
+    let ownershipDocument = null;
+    let documentType = "";
+    let documentUploadedAt = null;
+    let documentVerificationStatus = "";
+
+    if (req.files && req.files.ownershipDocument && req.files.ownershipDocument[0]) {
+      const docFile = req.files.ownershipDocument[0];
+      const fileExtension = docFile.originalname.split(".").pop().toLowerCase();
+      
+      ownershipDocument = {
+        url: docFile.path,
+        publicId: docFile.filename,
+        fileName: docFile.originalname,
+      };
+      documentType = fileExtension;
+      documentUploadedAt = new Date();
+      documentVerificationStatus = "pending";
+    }
+
     // Create venue with current user as owner
     const venue = await Venue.create({
       name,
@@ -71,10 +91,52 @@ export const createVenue = async (req, res) => {
       owner: req.user._id,
       photo,
       verificationStatus: "unverified",
+      ownershipDocument,
+      documentType,
+      documentUploadedAt,
+      documentVerificationStatus,
     });
 
     const populatedVenue = await Venue.findById(venue._id)
       .populate("owner", "name email");
+
+    // Notify admins if document was uploaded
+    if (ownershipDocument) {
+      try {
+        const admins = await User.find({ role: "admin" }).select("email name");
+        if (admins.length > 0) {
+          const adminEmails = admins.map(admin => admin.email);
+          await transporter.sendMail({
+            from: `"${process.env.SENDER_NAME}" <${process.env.SENDER_EMAIL}>`,
+            to: adminEmails,
+            subject: "New Venue Registration - Document Verification Required",
+            html: `
+              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                <h2 style="color: #2563eb;">New Venue Registration</h2>
+                
+                <p>A new venue has been registered and requires document verification:</p>
+                
+                <div style="background-color: #f3f4f6; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                  <p style="margin: 5px 0;"><strong>Venue Name:</strong> ${name}</p>
+                  <p style="margin: 5px 0;"><strong>City:</strong> ${city}</p>
+                  <p style="margin: 5px 0;"><strong>Owner:</strong> ${req.user.name}</p>
+                  <p style="margin: 5px 0;"><strong>Document Type:</strong> ${documentType.toUpperCase()}</p>
+                </div>
+                
+                <p style="margin-top: 20px;">
+                  <a href="${process.env.FRONTEND_URL}/admin/venues" 
+                     style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
+                    Review Venue
+                  </a>
+                </p>
+              </div>
+            `,
+          });
+        }
+      } catch (emailError) {
+        console.error("Failed to send admin notification email:", emailError);
+      }
+    }
 
     res.status(201).json(populatedVenue);
   } catch (error) {
@@ -2050,6 +2112,228 @@ export const sendChatMessage = async (req, res) => {
     }
 
     res.status(201).json(responseMessage);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Update venue ownership document
+// @route   PATCH /api/venues/:id/document
+// @access  Private (Venue owner only)
+export const updateVenueDocument = async (req, res) => {
+  try {
+    const venue = await Venue.findById(req.params.id);
+
+    if (!venue) {
+      return res.status(404).json({ message: "Venue not found" });
+    }
+
+    // Only owner can update document
+    if (venue.owner.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ 
+        message: "Only venue owner can update ownership document" 
+      });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({ message: "No document file uploaded" });
+    }
+
+    // Delete old document if exists
+    if (venue.ownershipDocument?.url) {
+      const resourceType = venue.documentType === "pdf" || 
+                          venue.documentType === "doc" || 
+                          venue.documentType === "docx" ? "raw" : "image";
+      await deleteVenueDocument(venue.ownershipDocument.url, resourceType);
+    }
+
+    // Get file extension
+    const fileExtension = req.file.originalname.split(".").pop().toLowerCase();
+
+    // Update venue with new document
+    venue.ownershipDocument = {
+      url: req.file.path,
+      publicId: req.file.filename,
+      fileName: req.file.originalname,
+    };
+    venue.documentType = fileExtension;
+    venue.documentUploadedAt = new Date();
+    venue.documentVerificationStatus = "pending";
+    venue.verificationNotes = ""; // Clear previous notes
+    venue.documentVerifiedAt = null;
+    venue.documentVerifiedBy = null;
+
+    await venue.save();
+
+    // Notify admins
+    try {
+      const admins = await User.find({ role: "admin" }).select("email name");
+      if (admins.length > 0) {
+        const adminEmails = admins.map(admin => admin.email);
+        await transporter.sendMail({
+          from: `"${process.env.SENDER_NAME}" <${process.env.SENDER_EMAIL}>`,
+          to: adminEmails,
+          subject: "Venue Ownership Document Updated",
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+              <h2 style="color: #2563eb;">Document Update Notification</h2>
+              
+              <p>A venue owner has uploaded a new ownership document:</p>
+              
+              <div style="background-color: #f3f4f6; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                <p style="margin: 5px 0;"><strong>Venue Name:</strong> ${venue.name}</p>
+                <p style="margin: 5px 0;"><strong>City:</strong> ${venue.city}</p>
+                <p style="margin: 5px 0;"><strong>Owner:</strong> ${req.user.name}</p>
+                <p style="margin: 5px 0;"><strong>Document Type:</strong> ${fileExtension.toUpperCase()}</p>
+              </div>
+              
+              <p style="margin-top: 20px;">
+                <a href="${process.env.FRONTEND_URL}/admin/venues" 
+                   style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
+                  Review Document
+                </a>
+              </p>
+            </div>
+          `,
+        });
+      }
+    } catch (emailError) {
+      console.error("Failed to send admin notification email:", emailError);
+    }
+
+    res.json({ 
+      message: "Document uploaded successfully. Awaiting admin verification.",
+      venue: await Venue.findById(venue._id).populate("owner", "name email")
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Get venue document (Admin only)
+// @route   GET /api/venues/:id/document
+// @access  Private (Admin only)
+export const getVenueDocument = async (req, res) => {
+  try {
+    const venue = await Venue.findById(req.params.id)
+      .populate("owner", "name email")
+      .populate("documentVerifiedBy", "name");
+
+    if (!venue) {
+      return res.status(404).json({ message: "Venue not found" });
+    }
+
+    if (!venue.ownershipDocument?.url) {
+      return res.status(404).json({ message: "No ownership document found for this venue" });
+    }
+
+    res.json({
+      document: venue.ownershipDocument,
+      documentType: venue.documentType,
+      documentUploadedAt: venue.documentUploadedAt,
+      documentVerificationStatus: venue.documentVerificationStatus,
+      verificationNotes: venue.verificationNotes,
+      documentVerifiedAt: venue.documentVerifiedAt,
+      documentVerifiedBy: venue.documentVerifiedBy,
+      venue: {
+        _id: venue._id,
+        name: venue.name,
+        city: venue.city,
+        owner: venue.owner,
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Verify venue document (Admin only)
+// @route   PATCH /api/venues/:id/verify-document
+// @access  Private (Admin only)
+export const verifyVenueDocument = async (req, res) => {
+  try {
+    const { status, notes } = req.body;
+
+    if (!status || !["verified", "rejected"].includes(status)) {
+      return res.status(400).json({ 
+        message: "Status is required and must be 'verified' or 'rejected'" 
+      });
+    }
+
+    const venue = await Venue.findById(req.params.id).populate("owner", "name email");
+
+    if (!venue) {
+      return res.status(404).json({ message: "Venue not found" });
+    }
+
+    if (!venue.ownershipDocument?.url) {
+      return res.status(404).json({ 
+        message: "No ownership document found for this venue" 
+      });
+    }
+
+    // Update document verification status
+    venue.documentVerificationStatus = status;
+    venue.verificationNotes = notes || "";
+    venue.documentVerifiedAt = new Date();
+    venue.documentVerifiedBy = req.user._id;
+
+    await venue.save();
+
+    // Send email notification to venue owner
+    if (venue.owner?.email) {
+      const statusText = status === "verified" ? "Verified" : "Rejected";
+      const statusColor = status === "verified" ? "#28a745" : "#dc3545";
+
+      try {
+        await transporter.sendMail({
+          from: `"${process.env.SENDER_NAME}" <${process.env.SENDER_EMAIL}>`,
+          to: venue.owner.email,
+          subject: `Venue Ownership Document ${statusText} - ${venue.name}`,
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+              <h2 style="color: ${statusColor};">Document ${statusText}</h2>
+              
+              <p>Hi ${venue.owner.name},</p>
+              
+              <p>Your ownership document for <strong>${venue.name}</strong> has been ${status === "verified" ? "verified" : "rejected"}.</p>
+              
+              ${notes ? `
+                <div style="background-color: #f3f4f6; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                  <p style="margin: 0;"><strong>Admin Notes:</strong></p>
+                  <p style="margin: 10px 0 0 0;">${notes}</p>
+                </div>
+              ` : ""}
+              
+              ${status === "rejected" ? `
+                <p>Please upload a new document addressing the concerns mentioned above.</p>
+                <p style="margin-top: 20px;">
+                  <a href="${process.env.FRONTEND_URL}/venue-partner/venues/${venue._id}/edit" 
+                     style="background-color: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; display: inline-block;">
+                    Upload New Document
+                  </a>
+                </p>
+              ` : `
+                <p>Your venue is now eligible for verification and will appear in search results once fully verified.</p>
+              `}
+              
+              <p style="margin-top: 30px;">Best regards,<br>Event Ticketing Team</p>
+            </div>
+          `,
+        });
+      } catch (emailError) {
+        console.error("Failed to send verification email:", emailError);
+      }
+    }
+
+    const populatedVenue = await Venue.findById(venue._id)
+      .populate("owner", "name email")
+      .populate("documentVerifiedBy", "name");
+
+    res.json({ 
+      message: `Document ${status} successfully`,
+      venue: populatedVenue
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
