@@ -144,6 +144,24 @@ const venueSchema = new mongoose.Schema(
       default: 0,
       min: 0,
     },
+    // Review and rating fields
+    averageRating: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 5,
+    },
+    totalReviews: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    responseRate: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 100,
+    },
   },
   {
     timestamps: true,

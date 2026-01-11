@@ -14,6 +14,7 @@ import contactRoutes from "./routes/contactRoutes.js";
 import teamChatRoutes from "./routes/teamChatRoutes.js";
 import venueRoutes from "./routes/venueRoutes.js";
 import venueOptionRoutes from "./routes/venueOptionRoutes.js";
+import reviewRoutes from "./routes/reviewRoutes.js";
 
 const app = express();
 
@@ -41,6 +42,7 @@ app.use("/api/contacts", contactRoutes);
 app.use("/api/team-chat", teamChatRoutes);
 app.use("/api", venueRoutes);
 app.use("/api/venue-options", venueOptionRoutes);
+app.use("/api/reviews", reviewRoutes);
 
 app.get("/", (req, res) => res.send("hello, world"));
 
