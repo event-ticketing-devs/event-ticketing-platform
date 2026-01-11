@@ -15,7 +15,7 @@ import {
   dismissReport,
 } from "../controllers/reviewController.js";
 import { protect } from "../middleware/authMiddleware.js";
-import { admin } from "../middleware/roleMiddleware.js";
+import { adminOnly } from "../middleware/roleMiddleware.js";
 
 const router = express.Router();
 
@@ -36,8 +36,8 @@ router.delete("/:id/response", protect, deleteOwnerResponse);
 router.get("/owner-reviews", protect, getOwnerReviews);
 
 // Admin routes
-router.get("/admin/reported", protect, admin, getReportedReviews);
-router.delete("/admin/:id", protect, admin, adminDeleteReview);
-router.patch("/admin/:id/dismiss-report", protect, admin, dismissReport);
+router.get("/admin/reported", protect, adminOnly, getReportedReviews);
+router.delete("/admin/:id", protect, adminOnly, adminDeleteReview);
+router.patch("/admin/:id/dismiss-report", protect, adminOnly, dismissReport);
 
 export default router;

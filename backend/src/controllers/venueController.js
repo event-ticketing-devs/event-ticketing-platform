@@ -905,12 +905,19 @@ export const getPublicSpaces = async (req, res) => {
         spaceFilter.supportedEventTypes = { $in: [eventType] };
       }
     }
-    if (minPax) {
+    
+    // Filter by capacity (handle both min and max pax properly)
+    if (minPax && maxPax) {
+      spaceFilter.maxPax = { 
+        $gte: parseInt(minPax),
+        $lte: parseInt(maxPax)
+      };
+    } else if (minPax) {
       spaceFilter.maxPax = { $gte: parseInt(minPax) };
-    }
-    if (maxPax) {
+    } else if (maxPax) {
       spaceFilter.maxPax = { $lte: parseInt(maxPax) };
     }
+    
     if (spaceType) {
       spaceFilter.type = spaceType;
     }
