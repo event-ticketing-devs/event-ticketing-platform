@@ -25,6 +25,8 @@ const VenuesPage = () => {
     startDate: "",
     endDate: "",
     parking: "",
+    minBudget: "",
+    maxBudget: "",
     amenities: [],
     allowedItems: [],
     bannedItems: [],
@@ -95,6 +97,8 @@ const VenuesPage = () => {
       startDate: "",
       endDate: "",
       parking: "",
+      minBudget: "",
+      maxBudget: "",
       amenities: [],
       allowedItems: [],
       bannedItems: [],
@@ -105,6 +109,8 @@ const VenuesPage = () => {
 
   const hasActiveFilters = () => {
     return filters.parking || 
+           filters.minBudget ||
+           filters.maxBudget ||
            filters.amenities.length > 0 || 
            filters.allowedItems.length > 0 || 
            filters.bannedItems.length > 0;
@@ -286,7 +292,7 @@ const VenuesPage = () => {
                   {showAdvancedFilters ? 'Less' : 'More'}
                   {hasActiveFilters() && !showAdvancedFilters && (
                     <span className="bg-primary text-bg-primary text-xs font-bold px-1.5 rounded-full">
-                      {filters.amenities.length + filters.allowedItems.length + filters.bannedItems.length + (filters.parking ? 1 : 0)}
+                      {filters.amenities.length + filters.allowedItems.length + filters.bannedItems.length + (filters.parking ? 1 : 0) + (filters.minBudget || filters.maxBudget ? 1 : 0)}
                     </span>
                   )}
                 </button>
@@ -327,6 +333,11 @@ const VenuesPage = () => {
                     {filters.parking && (
                       <span className="inline-flex items-center gap-1 bg-secondary/10 text-secondary px-2 py-1 rounded-md text-xs font-medium">
                         Parking
+                      </span>
+                    )}
+                    {(filters.minBudget || filters.maxBudget) && (
+                      <span className="inline-flex items-center gap-1 bg-primary/10 text-primary px-2 py-1 rounded-md text-xs font-medium">
+                        Budget: ₹{filters.minBudget || '0'} - ₹{filters.maxBudget || '∞'}
                       </span>
                     )}
                     {filters.amenities.length > 0 && (
@@ -390,6 +401,40 @@ const VenuesPage = () => {
                     />
                     <span className="text-text-primary font-medium group-hover:text-primary transition-colors">Must Have Parking</span>
                   </label>
+                </div>
+
+                {/* Budget Filter */}
+                <div className="pb-4 border-b border-border">
+                  <h3 className="text-sm font-semibold text-text-primary mb-3">Budget Range (₹)</h3>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-medium text-text-secondary mb-1">Min Budget</label>
+                      <input
+                        type="number"
+                        name="minBudget"
+                        value={filters.minBudget}
+                        onChange={handleFilterChange}
+                        placeholder="0"
+                        min="0"
+                        className="w-full px-3 py-2 text-sm border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary bg-bg-primary"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-text-secondary mb-1">Max Budget</label>
+                      <input
+                        type="number"
+                        name="maxBudget"
+                        value={filters.maxBudget}
+                        onChange={handleFilterChange}
+                        placeholder="Any"
+                        min="0"
+                        className="w-full px-3 py-2 text-sm border border-border rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary bg-bg-primary"
+                      />
+                    </div>
+                  </div>
+                  <p className="text-xs text-text-secondary mt-2">
+                    Find spaces within your price range per booking unit
+                  </p>
                 </div>
 
                 {/* Amenities Filter */}
@@ -593,6 +638,22 @@ const VenuesPage = () => {
                       </div>
                     )}
                   </div>
+
+                  {/* Price Range */}
+                  {space.priceRange && (
+                    <div className="mb-4 p-3 bg-primary/5 border border-primary/20 rounded-lg">
+                      <div className="flex items-baseline justify-between">
+                        <div>
+                          <span className="text-lg font-bold text-primary">
+                            ₹{space.priceRange.min.toLocaleString('en-IN')} - ₹{space.priceRange.max.toLocaleString('en-IN')}
+                          </span>
+                          <span className="text-xs text-text-secondary ml-2">
+                            per {space.bookingUnit === 'hour' ? 'hour' : space.bookingUnit === 'half-day' ? 'half day' : 'full day'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
                   {space.supportedEventTypes && space.supportedEventTypes.length > 0 && (
                     <div className="mb-3">

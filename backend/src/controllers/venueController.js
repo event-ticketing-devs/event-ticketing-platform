@@ -509,6 +509,7 @@ export const createSpace = async (req, res) => {
       areaSqFt,
       supportedEventTypes,
       bookingUnit,
+      priceRange,
       amenities,
       policies,
     } = req.body;
@@ -523,11 +524,42 @@ export const createSpace = async (req, res) => {
     if (typeof policies === 'string') {
       policies = JSON.parse(policies);
     }
+    if (typeof priceRange === 'string') {
+      priceRange = JSON.parse(priceRange);
+    }
 
     // Validate required fields
     if (!venue || !name || !type || !maxPax || !supportedEventTypes || !bookingUnit) {
       return res.status(400).json({ 
         message: "Venue, name, type, max capacity, supported event types, and booking unit are required" 
+      });
+    }
+
+    // Validate price range
+    if (!priceRange || !priceRange.min || !priceRange.max) {
+      return res.status(400).json({ 
+        message: "Price range (min and max) is required" 
+      });
+    }
+
+    const minPrice = parseFloat(priceRange.min);
+    const maxPrice = parseFloat(priceRange.max);
+
+    if (isNaN(minPrice) || isNaN(maxPrice)) {
+      return res.status(400).json({ 
+        message: "Price range must be valid numbers" 
+      });
+    }
+
+    if (minPrice < 0 || maxPrice < 0) {
+      return res.status(400).json({ 
+        message: "Price cannot be negative" 
+      });
+    }
+
+    if (maxPrice < minPrice) {
+      return res.status(400).json({ 
+        message: "Maximum price must be greater than or equal to minimum price" 
       });
     }
 
@@ -594,6 +626,10 @@ export const createSpace = async (req, res) => {
       areaSqFt,
       supportedEventTypes,
       bookingUnit,
+      priceRange: {
+        min: minPrice,
+        max: maxPrice,
+      },
       amenities: amenitiesData,
       policies: policiesData,
       photos: req.files ? req.files.map(file => file.path) : [],
@@ -663,6 +699,43 @@ export const updateSpace = async (req, res) => {
         space[field] = req.body[field];
       }
     });
+
+    // Handle price range update
+    if (req.body.priceRange !== undefined) {
+      const { min, max } = req.body.priceRange;
+      
+      if (min === undefined || max === undefined) {
+        return res.status(400).json({ 
+          message: "Both min and max price are required" 
+        });
+      }
+
+      const minPrice = parseFloat(min);
+      const maxPrice = parseFloat(max);
+
+      if (isNaN(minPrice) || isNaN(maxPrice)) {
+        return res.status(400).json({ 
+          message: "Price range must be valid numbers" 
+        });
+      }
+
+      if (minPrice < 0 || maxPrice < 0) {
+        return res.status(400).json({ 
+          message: "Price cannot be negative" 
+        });
+      }
+
+      if (maxPrice < minPrice) {
+        return res.status(400).json({ 
+          message: "Maximum price must be greater than or equal to minimum price" 
+        });
+      }
+
+      space.priceRange = {
+        min: minPrice,
+        max: maxPrice,
+      };
+    }
 
     // Handle amenities separately with structure conversion
     if (req.body.amenities !== undefined) {
@@ -814,7 +887,7 @@ export const getMySpaces = async (req, res) => {
 // @access  Public
 export const getPublicSpaces = async (req, res) => {
   try {
-    const { search, city, eventType, minPax, maxPax, spaceType, indoorOutdoor, startDate, endDate, parking, amenities, allowedItems, bannedItems, venueId, sortBy, sortOrder, page, limit } = req.query;
+    const { search, city, eventType, minPax, maxPax, spaceType, indoorOutdoor, startDate, endDate, parking, amenities, allowedItems, bannedItems, minBudget, maxBudget, venueId, sortBy, sortOrder, page, limit } = req.query;
 
     // Build space filter
     const spaceFilter = { isActive: true };
@@ -843,6 +916,19 @@ export const getPublicSpaces = async (req, res) => {
     }
     if (indoorOutdoor) {
       spaceFilter.indoorOutdoor = indoorOutdoor;
+    }
+
+    // Filter by price range (budget overlap logic)
+    // Show spaces where their price range overlaps with user's budget
+    if (minBudget || maxBudget) {
+      const min = minBudget ? parseFloat(minBudget) : 0;
+      const max = maxBudget ? parseFloat(maxBudget) : Number.MAX_SAFE_INTEGER;
+      
+      // Overlap condition: space.max >= user.min AND space.min <= user.max
+      spaceFilter.$and = [
+        { 'priceRange.max': { $gte: min } },
+        { 'priceRange.min': { $lte: max } }
+      ];
     }
 
     // Filter by standard amenities (only search standard amenities)
