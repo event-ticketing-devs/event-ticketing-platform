@@ -362,9 +362,8 @@ export default function AdminVenues() {
                       {venue.ownershipDocument?.url && (
                         <button
                           onClick={() => handleViewDocument(venue._id)}
-                          className="px-4 py-2 bg-blue-500/10 text-blue-600 rounded-lg hover:bg-blue-500/20 transition-colors cursor-pointer text-sm font-medium inline-flex items-center gap-2"
+                          className="px-4 py-2 bg-secondary/10 text-secondary rounded-lg hover:bg-secondary-500/20 transition-colors cursor-pointer text-sm font-medium inline-flex items-center gap-2"
                         >
-                          <FileText className="w-4 h-4" />
                           View Document
                         </button>
                       )}
