@@ -87,7 +87,7 @@ const ReviewForm = ({ venueId, onSuccess }) => {
         <button
           type="submit"
           disabled={submitting || rating === 0}
-          className="w-full bg-primary text-bg-primary px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full bg-primary text-bg-primary px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
         >
           {submitting ? "Submitting..." : "Submit Review"}
         </button>

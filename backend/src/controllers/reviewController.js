@@ -1,7 +1,6 @@
 import Review from "../models/Review.js";
 import Venue from "../models/Venue.js";
-import Booking from "../models/Booking.js";
-import Event from "../models/Event.js";
+import VenueRequest from "../models/VenueRequest.js";
 import { containsProfanity } from "../utils/profanityFilter.js";
 
 // Helper function to update venue rating statistics
@@ -33,54 +32,52 @@ const checkReviewEligibility = async (userId, venueId) => {
     return { eligible: false, reason: "You have already reviewed this venue" };
   }
   
-  // Find all bookings for this user where the event is at this venue
-  const bookings = await Booking.find({ userId })
-    .populate({
-      path: 'eventId',
-      select: 'venue date title'
-    });
-  
-  // Filter bookings where event venue name matches this venue
+  // Check if venue exists
   const venue = await Venue.findById(venueId);
   if (!venue) {
     return { eligible: false, reason: "Venue not found" };
   }
   
-  const venueBookings = bookings.filter(b => 
-    b.eventId !== null && b.eventId.venue.name === venue.name
-  );
-  
-  if (venueBookings.length === 0) {
-    return { eligible: false, reason: "You must have a booking at this venue to leave a review" };
-  }
-  
-  // Check if any event has passed
-  const now = new Date();
-  const completedBookings = venueBookings.filter(b => new Date(b.eventId.date) < now);
-  
-  if (completedBookings.length === 0) {
-    return { eligible: false, reason: "You can only review after attending an event at this venue" };
-  }
-  
-  // Check if review is within 60 days of event
-  const mostRecentEvent = completedBookings.reduce((latest, b) => {
-    const eventDate = new Date(b.eventId.date);
-    return eventDate > latest ? eventDate : latest;
-  }, new Date(0));
-  
-  const daysSinceEvent = (now - mostRecentEvent) / (1000 * 60 * 60 * 24);
-  if (daysSinceEvent > 60) {
-    return { eligible: false, reason: "Reviews must be submitted within 60 days of attending the event" };
-  }
-  
-  // Return the most recent completed booking
-  const eligibleBooking = completedBookings.reduce((latest, b) => {
-    const eventDate = new Date(b.eventId.date);
-    const latestDate = new Date(latest.eventId.date);
-    return eventDate > latestDate ? b : latest;
+  // Find all venue requests for this user at this venue
+  const venueRequests = await VenueRequest.find({ 
+    organizer: userId, 
+    venue: venueId 
   });
   
-  return { eligible: true, booking: eligibleBooking };
+  if (venueRequests.length === 0) {
+    return { eligible: false, reason: "You must have an enquiry for this venue to leave a review" };
+  }
+  
+  // Check if any request has a status that indicates engagement
+  // (quoted, externally_booked, or closed - meaning the venue owner engaged with the request)
+  const engagedRequests = venueRequests.filter(r => 
+    ['quoted', 'externally_booked', 'closed'].includes(r.status)
+  );
+  
+  if (engagedRequests.length === 0) {
+    return { eligible: false, reason: "You can only review after the venue has responded to your enquiry" };
+  }
+  
+  // Check if review is within 90 days of the most recent engaged request
+  const now = new Date();
+  const mostRecentRequest = engagedRequests.reduce((latest, r) => {
+    const requestDate = new Date(r.updatedAt);
+    return requestDate > latest ? requestDate : latest;
+  }, new Date(0));
+  
+  const daysSinceRequest = (now - mostRecentRequest) / (1000 * 60 * 60 * 24);
+  if (daysSinceRequest > 90) {
+    return { eligible: false, reason: "Reviews must be submitted within 90 days of your enquiry" };
+  }
+  
+  // Return the most recent engaged request
+  const eligibleRequest = engagedRequests.reduce((latest, r) => {
+    const requestDate = new Date(r.updatedAt);
+    const latestDate = new Date(latest.updatedAt);
+    return requestDate > latestDate ? r : latest;
+  });
+  
+  return { eligible: true, venueRequest: eligibleRequest };
 };
 
 // Check review rate limit (5 reviews per day)
@@ -134,7 +131,7 @@ export const createReview = async (req, res) => {
     const review = await Review.create({
       userId,
       venueId,
-      bookingId: eligibility.booking._id,
+      venueRequestId: eligibility.venueRequest._id,
       rating: parseInt(rating),
       reviewText: reviewText?.trim() || "",
     });

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import apiClient from "../../../api/apiClient";
 import { format } from "date-fns";
 import toast from "react-hot-toast";
-import { Building2, Clock, Plus, CheckCircle2, XCircle, Edit, LayoutGrid, FileText, AlertTriangle, Lock } from "lucide-react";
+import { Building2, Clock, Plus, CheckCircle2, XCircle, Edit, LayoutGrid, FileText, AlertTriangle, Lock, MessageSquare } from "lucide-react";
 import { VenueVerificationNotice } from "../../../common/components";
 
 const VenuePartnerDashboard = () => {
@@ -104,15 +104,26 @@ const VenuePartnerDashboard = () => {
               <h1 className="text-3xl font-bold text-text-primary">Venue Partner Dashboard</h1>
               <p className="mt-1 text-text-secondary">Manage your venues and enquiries in one place</p>
             </div>
-            {hasVenues && (
-              <Link
-                to="/venue-partner/register"
-                className="inline-flex items-center gap-2 bg-primary text-bg-primary px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors cursor-pointer font-medium"
-              >
-                <Plus className="h-5 w-5" />
-                Add New Venue
-              </Link>
-            )}
+            <div className="flex flex-wrap gap-3">
+              {hasVenues && (
+                <>
+                  <Link
+                    to="/venue-partner/reviews"
+                    className="inline-flex items-center gap-2 bg-secondary/10 text-secondary border border-secondary/20 px-6 py-3 rounded-lg hover:bg-secondary/20 transition-colors cursor-pointer font-medium"
+                  >
+                    <MessageSquare className="h-5 w-5" />
+                    Manage Reviews
+                  </Link>
+                  <Link
+                    to="/venue-partner/register"
+                    className="inline-flex items-center gap-2 bg-primary text-bg-primary px-6 py-3 rounded-lg hover:bg-primary/90 transition-colors cursor-pointer font-medium"
+                  >
+                    <Plus className="h-5 w-5" />
+                    Add New Venue
+                  </Link>
+                </>
+              )}
+            </div>
           </div>
         </div>
 
@@ -435,7 +446,7 @@ const VenuePartnerDashboard = () => {
                           </div>
                           <span className={`${config.bg} ${config.text} ${config.border} border px-3 py-1 rounded-md text-xs font-medium whitespace-nowrap ml-2 inline-flex items-center gap-1`}>
                             {config.icon}
-                            <span>{enquiry.status.replace("_", " ")}</span>
+                            <span className="capitalize">{enquiry.status.replace("_", " ")}</span>
                           </span>
                         </div>
 
