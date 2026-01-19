@@ -8,6 +8,7 @@ import toast from "react-hot-toast";
 import { getAmenityLabel, getPolicyItemLabel } from "../../../constants/venueConstants";
 import { MapPin, CheckCircle2, ArrowLeft, ChevronDown, X, XCircle, AlertCircle } from "lucide-react";
 import ReportVenueModal from "../components/ReportVenueModal";
+import VenueReviews from "../../reviews/pages/VenueReviews";
 
 const VenueDetails = () => {
   const { id } = useParams();
@@ -230,7 +231,7 @@ const VenueDetails = () => {
               <p className="text-text-secondary">No spaces available at this venue</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-24">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-8">
               {spaces.map((space) => {
                 const allAmenities = [
                   ...(space.amenities?.standard || []),
@@ -332,6 +333,12 @@ const VenueDetails = () => {
             </div>
           )}
         </div>
+
+        {/* Reviews Section */}
+        <VenueReviews 
+          venue={venue} 
+          isOwner={currentUser && venue.owner === currentUser._id}
+        />
       </div>
 
       {/* Space Details Modal */}

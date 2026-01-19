@@ -14,10 +14,10 @@ const reviewSchema = new mongoose.Schema(
       required: [true, "Venue is required"],
       index: true,
     },
-    bookingId: {
+    venueRequestId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Booking",
-      required: [true, "Booking is required"],
+      ref: "VenueRequest",
+      required: [true, "Venue request is required"],
       index: true,
     },
     rating: {

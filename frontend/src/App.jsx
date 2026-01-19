@@ -43,6 +43,9 @@ import VenueOptionsManagement from "./features/venues/pages/VenueOptionsManageme
 import ComparisonTray from "./features/venues/components/ComparisonTray";
 import SpaceComparisonModal from "./features/venues/components/SpaceComparisonModal";
 
+// Reviews
+import OwnerReviews from "./features/reviews/pages/OwnerReviews";
+
 // Admin
 import AdminDashboard from "./features/admin/pages/AdminDashboard";
 import FlaggedEvents from "./features/admin/pages/FlaggedEvents";
@@ -213,6 +216,14 @@ function App() {
                 element={
                   <PrivateRoute>
                     <VenuePartnerEnquiryDetail />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/venue-partner/reviews"
+                element={
+                  <PrivateRoute>
+                    <OwnerReviews />
                   </PrivateRoute>
                 }
               />
