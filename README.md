@@ -302,19 +302,19 @@ npm run dev
 
 ### Venue Reviews
 
-- `POST /api/reviews/venue/:venueId` - Submit review for venue (requires completed booking)
-- `GET /api/reviews/venue/:venueId` - Get all reviews for a venue (public)
-- `GET /api/reviews/venue/:venueId/eligibility` - Check if user can review venue
-- `GET /api/reviews/my-reviews` - Get user's own reviews
+- `POST /api/reviews/venue/:venueId` - Submit review for venue (requires completed venue enquiry with status: quoted/externally_booked/closed, within 90-day window)
+- `GET /api/reviews/venue/:venueId` - Get all reviews for a venue (public, supports pagination and sorting)
+- `GET /api/reviews/venue/:venueId/eligibility` - Check if user can review venue (validates enquiry status and time window)
+- `GET /api/reviews/my-reviews` - Get user's own reviews with venue details
 - `DELETE /api/reviews/:id` - Delete own review
-- `POST /api/reviews/:id/report` - Report inappropriate review
-- `POST /api/reviews/:id/response` - Add owner response to review (venue managers)
-- `PATCH /api/reviews/:id/response` - Update owner response
-- `DELETE /api/reviews/:id/response` - Remove owner response
-- `GET /api/reviews/owner-reviews` - Get reviews for venue manager's venues
-- `GET /api/reviews/admin/reported` - Get reported reviews (admin)
-- `DELETE /api/reviews/admin/:id` - Delete review (admin)
-- `PATCH /api/reviews/admin/:id/dismiss-report` - Dismiss review report (admin)
+- `POST /api/reviews/:id/report` - Report inappropriate review for admin review
+- `POST /api/reviews/:id/response` - Add owner response to review (venue managers only, max 300 characters)
+- `PATCH /api/reviews/:id/response` - Update owner response (venue managers only)
+- `DELETE /api/reviews/:id/response` - Remove owner response (venue managers only)
+- `GET /api/reviews/owner-reviews` - Get all reviews for venue manager's venues (supports filtering and sorting)
+- `GET /api/reviews/admin/reported` - Get reported reviews for moderation (admin only)
+- `DELETE /api/reviews/admin/:id` - Delete review (admin only)
+- `PATCH /api/reviews/admin/:id/dismiss-report` - Dismiss review report (admin only)
 
 ### Venue Options
 
@@ -460,26 +460,45 @@ Each feature contains its own `pages/` and `components/` with barrel exports for
 ### Venue Review & Rating System
 
 - **Star Rating System**: Users can rate venues from 1 to 5 stars based on their experience
-- **Review Eligibility**: Only users who have attended an event at a venue can leave a review
-- **Time-Limited Reviews**: Reviews must be submitted within 60 days of event attendance
+- **Review Eligibility**: 
+  - Only users who have submitted a venue enquiry (space booking request) can leave a review
+  - Enquiry must have status: quoted, externally booked, or closed
+  - Time-limited reviews: must be submitted within 90 days of enquiry creation
+  - Eligibility checked in real-time before showing review form
 - **Review Constraints**:
-  - One review per user per venue
+  - One review per user per venue (enforced by unique index)
   - Review text limited to 500 characters
   - Rate limit: maximum 5 reviews per day per user
-  - Profanity filtering on review content
+  - Profanity filtering applied to all review content
+  - Reviews linked to specific venue request for verification
 - **Owner Response System**:
-  - Venue managers can respond to reviews (max 300 characters)
+  - Venue managers can respond to reviews on their venues (max 300 characters)
   - Response rate tracked and displayed on venue profiles
   - Owners can update or delete their responses
+  - Profanity filtering applied to owner responses
+  - Response timestamps tracked for analytics
+- **Review Management Dashboard**:
+  - Venue managers can view all reviews for their venues at /venue-partner/reviews
+  - Sortable reviews by rating, date, or response status
+  - Direct access from venue partner dashboard
+  - Quick response interface for engaging with reviewers
 - **Review Moderation**:
   - Users can report inappropriate reviews
   - Admin dashboard for managing reported reviews
   - Option to dismiss reports or delete reviews
+  - Profanity filter prevents harmful content submission
 - **Rating Statistics**:
   - Average rating calculated and displayed (rounded to 1 decimal place)
-  - Total review count shown on venue listings
+  - Total review count shown on venue listings and detail pages
   - Response rate percentage indicates venue engagement
+  - Statistics updated in real-time on venue document
 - **Review Sorting**: Reviews can be sorted by recent, highest rating, or lowest rating
+- **User Experience**:
+  - Reviews integrated into venue detail pages
+  - Summary statistics displayed at top of reviews section
+  - Login prompt for unauthenticated users
+  - Eligibility message for users who haven't made enquiries
+  - Responsive design for mobile and desktop viewing
 
 ### Venue Pricing System
 
@@ -521,13 +540,13 @@ Each feature contains its own `pages/` and `components/` with barrel exports for
 - **Category**: Event categorization system
 - **Contact**: Manages contact messages and support tickets
 - **Report**: Handles event reporting and flagging system
-- **Venue**: Stores venue information, location, contact details, ownership verification documents, and rating statistics
+- **Venue**: Stores venue information, location, contact details, ownership verification documents, and rating statistics (average rating, total reviews, response rate)
 - **Space**: Defines individual spaces within venues with capacity, price ranges (min/max), booking units, amenities, and policies
-- **VenueRequest**: Tracks organizer requests for venue bookings
+- **VenueRequest**: Tracks organizer requests for venue bookings (used for review eligibility verification)
 - **VenueQuote**: Manages custom pricing quotes from venues
 - **VenueInquiryChat**: Real-time chat between organizers and venue managers
 - **TeamChat**: Real-time collaboration chat for event teams
-- **Review**: Stores venue reviews with ratings (1-5 stars), review text, owner responses, and moderation flags
+- **Review**: Stores venue reviews with ratings (1-5 stars), review text, owner responses, moderation flags, and reference to VenueRequest for eligibility tracking
 - **VenueReport**: Manages venue-related reports and compliance issues
 
 ## Technical Stack
